@@ -1,0 +1,108 @@
+{{- /* Loki in single-binary mode: logs over OTLP from the collector (spec 015). */ -}}
+{{- if .Values.observability.enabled }}
+{{- $ctx := dict "root" . "component" "loki" "storage" .Values.loki.storage }}
+{{- $config := .Files.Get "files/loki/loki.yaml" }}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ include "kritzel.componentName" $ctx }}
+  labels:
+    {{- include "kritzel.labels" $ctx | nindent 4 }}
+automountServiceAccountToken: false
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "kritzel.componentName" $ctx }}
+  labels:
+    {{- include "kritzel.labels" $ctx | nindent 4 }}
+data:
+  loki.yaml: |
+    {{- $config | nindent 4 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "kritzel.componentName" $ctx }}
+  labels:
+    {{- include "kritzel.labels" $ctx | nindent 4 }}
+spec:
+  type: ClusterIP
+  selector:
+    {{- include "kritzel.selectorLabels" $ctx | nindent 4 }}
+  ports:
+    - name: http
+      port: 3100
+      targetPort: http
+{{ include "kritzel.dataClaim" $ctx }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "kritzel.componentName" $ctx }}
+  labels:
+    {{- include "kritzel.labels" $ctx | nindent 4 }}
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      {{- include "kritzel.selectorLabels" $ctx | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "kritzel.labels" $ctx | nindent 8 }}
+      annotations:
+        checksum/config: {{ $config | sha256sum }}
+    spec:
+      serviceAccountName: {{ include "kritzel.componentName" $ctx }}
+      automountServiceAccountToken: false
+      terminationGracePeriodSeconds: 30
+      securityContext:
+        {{- include "kritzel.podSecurityContext" . | nindent 8 }}
+      containers:
+        - name: loki
+          image: {{ .Values.loki.image }}
+          args:
+            - -config.file=/etc/loki/loki.yaml
+            - -config.expand-env=true
+          securityContext:
+            {{- include "kritzel.containerSecurityContext" . | nindent 12 }}
+          env:
+            - name: LOKI_RETENTION
+              value: {{ .Values.loki.retention | quote }}
+          ports:
+            - name: http
+              containerPort: 3100
+          startupProbe:
+            httpGet:
+              path: /ready
+              port: http
+            periodSeconds: 5
+            failureThreshold: 36
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: http
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /ready
+              port: http
+            periodSeconds: 30
+            failureThreshold: 4
+          resources:
+            {{- toYaml .Values.loki.resources | nindent 12 }}
+          volumeMounts:
+            - name: config
+              mountPath: /etc/loki
+              readOnly: true
+            - name: data
+              mountPath: /loki
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "kritzel.componentName" $ctx }}
+        {{- include "kritzel.dataVolume" $ctx | nindent 8 }}
+{{- end }}

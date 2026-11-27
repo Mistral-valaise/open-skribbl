@@ -27,6 +27,24 @@ describe('configuration (spec 012)', () => {
   });
 });
 
+describe('proxy trust (spec 012)', () => {
+  it('AC-016-15: TRUST_PROXY accepts a list of proxy addresses and networks', () => {
+    expect(loadConfig({ TRUST_PROXY: 'true' }).trustProxy).toBe(true);
+    expect(loadConfig({ TRUST_PROXY: 'false' }).trustProxy).toBe(false);
+    expect(loadConfig({ TRUST_PROXY: '10.128.0.0/14, 172.30.0.1' }).trustProxy).toEqual([
+      '10.128.0.0/14',
+      '172.30.0.1',
+    ]);
+    expect(loadConfig({ TRUST_PROXY: 'fd00::/8' }).trustProxy).toEqual(['fd00::/8']);
+  });
+
+  it('AC-016-15: anything else, a bare hop count included, names the variable', () => {
+    for (const value of ['1', 'yes', '10.0.0.0/33', '10.0.0/8', 'proxy.example', ',']) {
+      expect(() => loadConfig({ TRUST_PROXY: value }), value).toThrow(/TRUST_PROXY/);
+    }
+  });
+});
+
 describe('telemetry configuration (spec 015)', () => {
   const on = { TELEMETRY_ENABLED: 'true' };
 

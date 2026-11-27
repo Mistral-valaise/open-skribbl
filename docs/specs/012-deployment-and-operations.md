@@ -21,15 +21,17 @@ Hosting Kritzel must be boring: one image, one port, no state, no secrets. An op
 
 All configuration is by environment variable; every variable is optional.
 
-| Variable      | Default   | Meaning                                                                          |
-| ------------- | --------- | -------------------------------------------------------------------------------- |
-| `PORT`        | `3000`    | Listening port                                                                   |
-| `HOST`        | `0.0.0.0` | Listening address                                                                |
-| `MAX_ROOMS`   | `500`     | Maximum number of live rooms                                                     |
-| `TRUST_PROXY` | `false`   | Read the client address from `X-Forwarded-For` (set when behind a reverse proxy) |
-| `LOG_LEVEL`   | `info`    | `debug`, `info`, `warn`, `error`                                                 |
+| Variable      | Default   | Meaning                                                                                                                                         |
+| ------------- | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `PORT`        | `3000`    | Listening port                                                                                                                                  |
+| `HOST`        | `0.0.0.0` | Listening address                                                                                                                               |
+| `MAX_ROOMS`   | `500`     | Maximum number of live rooms                                                                                                                    |
+| `TRUST_PROXY` | `false`   | Whose forwarded client address to believe: `true` (anyone's), or a comma-separated list of proxy addresses and networks such as `10.128.0.0/14` |
+| `LOG_LEVEL`   | `info`    | `debug`, `info`, `warn`, `error`                                                                                                                |
 
 Telemetry adds its own variables, all optional and off by default; they are listed in [spec 015](015-observability.md).
+
+`TRUST_PROXY=true` believes whatever `X-Forwarded-For` says, including an address the client wrote itself, so one client can evade the per-address limits. A list names the proxies: the header is believed only on connections from them, and the address the proxy appended counts. A bare hop count is not accepted, because it cannot tell a proxy from a client that connects directly.
 
 An invalid value stops the process at start-up with a message naming the variable.
 

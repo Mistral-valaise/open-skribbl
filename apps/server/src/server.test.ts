@@ -82,6 +82,47 @@ describe('rooms over HTTP and WebSocket (spec 001)', () => {
   });
 });
 
+describe('proxy trust (spec 012)', () => {
+  const create = (forwardedFor: string) =>
+    fetch(`${server.url}/api/rooms`, {
+      method: 'POST',
+      headers: { 'x-forwarded-for': forwardedFor },
+    });
+
+  it('AC-016-15: behind a listed proxy the address the proxy appended counts, not one the client claims', async () => {
+    // The test client connects from 127.0.0.1, which plays the proxy here.
+    server = await startTestServer({ trustProxy: ['127.0.0.1'] });
+    const statuses: number[] = [];
+    // The client invents a new first address for every request; the proxy appends the real one.
+    for (let attempt = 0; attempt < 11; attempt += 1) {
+      statuses.push((await create(`198.51.100.${attempt}, 203.0.113.7`)).status);
+    }
+    expect(statuses.slice(0, 10).every((status) => status === 201)).toBe(true);
+    expect(statuses[10]).toBe(429);
+    // Another visitor behind the same proxy has a budget of their own.
+    expect((await create('198.51.100.1, 203.0.113.8')).status).toBe(201);
+  });
+
+  it('AC-016-15: a client that is not a listed proxy cannot choose its address', async () => {
+    server = await startTestServer({ trustProxy: ['10.128.0.0/14'] });
+    const statuses: number[] = [];
+    for (let attempt = 0; attempt < 11; attempt += 1) {
+      statuses.push((await create(`198.51.100.${attempt}`)).status);
+    }
+    expect(statuses.slice(0, 10).every((status) => status === 201)).toBe(true);
+    expect(statuses[10]).toBe(429);
+  });
+
+  it('AC-016-15: with blanket trust the claimed address is believed, which is why a list is safer', async () => {
+    server = await startTestServer({ trustProxy: true });
+    const statuses: number[] = [];
+    for (let attempt = 0; attempt < 11; attempt += 1) {
+      statuses.push((await create(`198.51.100.${attempt}, 203.0.113.7`)).status);
+    }
+    expect(statuses.every((status) => status === 201)).toBe(true);
+  });
+});
+
 describe('gateway (architecture §4)', () => {
   it('refuses a client with another protocol version', async () => {
     server = await startTestServer();

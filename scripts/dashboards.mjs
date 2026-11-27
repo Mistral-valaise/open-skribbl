@@ -4,7 +4,7 @@
 //
 // Usage: node scripts/dashboards.mjs [--check]
 //
-// Writes deploy/observability/grafana/dashboards/kritzel-*.json. With
+// Writes deploy/helm/kritzel/files/grafana/dashboards/kritzel-*.json. With
 // --check nothing is written and the exit code is 1 when a file is out of
 // date. Every metric queried here is in the telemetry contract
 // (apps/server/src/telemetry/contract.ts), produced by a provisioned rule, or
@@ -13,7 +13,7 @@ import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
 const outDir = fileURLToPath(
-  new URL('../deploy/observability/grafana/dashboards/', import.meta.url),
+  new URL('../deploy/helm/kritzel/files/grafana/dashboards/', import.meta.url),
 );
 const check = process.argv.includes('--check');
 

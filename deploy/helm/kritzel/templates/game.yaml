@@ -1,0 +1,115 @@
+{{- /* The game: one process that holds every room in memory (ADR 0001). */ -}}
+{{- if ne (int .Values.replicaCount) 1 }}
+{{- fail (printf "replicaCount must be 1, got %v: rooms live in the memory of one process (ADR 0001), so a second replica would split the players" .Values.replicaCount) }}
+{{- end }}
+{{- $ctx := dict "root" . "component" "game" }}
+{{- $otlp := include "kritzel.otlpEndpoint" . }}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ include "kritzel.componentName" $ctx }}
+  labels:
+    {{- include "kritzel.labels" $ctx | nindent 4 }}
+automountServiceAccountToken: false
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "kritzel.componentName" $ctx }}
+  labels:
+    {{- include "kritzel.labels" $ctx | nindent 4 }}
+spec:
+  type: ClusterIP
+  selector:
+    {{- include "kritzel.selectorLabels" $ctx | nindent 4 }}
+  ports:
+    - name: http
+      port: {{ .Values.service.port }}
+      targetPort: http
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "kritzel.componentName" $ctx }}
+  labels:
+    {{- include "kritzel.labels" $ctx | nindent 4 }}
+spec:
+  replicas: 1
+  # Never two game processes at once: the old one stops before the new one starts.
+  # Games in progress end; players are told the server is restarting (spec 007).
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      {{- include "kritzel.selectorLabels" $ctx | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "kritzel.labels" $ctx | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "kritzel.componentName" $ctx }}
+      automountServiceAccountToken: false
+      terminationGracePeriodSeconds: {{ .Values.game.terminationGracePeriodSeconds }}
+      securityContext:
+        {{- include "kritzel.podSecurityContext" . | nindent 8 }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- range . }}
+        - name: {{ . }}
+        {{- end }}
+      {{- end }}
+      containers:
+        - name: kritzel
+          image: {{ include "kritzel.image" . }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          securityContext:
+            {{- include "kritzel.containerSecurityContext" . | nindent 12 }}
+          env:
+            - name: PORT
+              value: '3000'
+            - name: MAX_ROOMS
+              value: {{ .Values.game.maxRooms | quote }}
+            - name: TRUST_PROXY
+              value: {{ .Values.game.trustProxy | quote }}
+            - name: LOG_LEVEL
+              value: {{ .Values.game.logLevel | quote }}
+            {{- if $otlp }}
+            - name: TELEMETRY_ENABLED
+              value: 'true'
+            - name: RUM_ENABLED
+              value: {{ .Values.game.browserMeasurements | quote }}
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: {{ $otlp | quote }}
+            - name: OTEL_RESOURCE_ATTRIBUTES
+              value: {{ printf "deployment.environment.name=%s" .Values.environment | quote }}
+            - name: OTEL_TRACES_SAMPLER
+              value: {{ .Values.telemetry.sampler | quote }}
+            - name: OTEL_TRACES_SAMPLER_ARG
+              value: {{ .Values.telemetry.samplerArg | quote }}
+            {{- end }}
+          ports:
+            - name: http
+              containerPort: 3000
+          # /healthz does not depend on telemetry: a broken collector never
+          # takes the game out of service.
+          startupProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            periodSeconds: 2
+            failureThreshold: 30
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            periodSeconds: 10
+            timeoutSeconds: 3
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            periodSeconds: 20
+            timeoutSeconds: 3
+            failureThreshold: 3
+          resources:
+            {{- toYaml .Values.game.resources | nindent 12 }}

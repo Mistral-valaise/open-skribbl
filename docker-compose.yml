@@ -1,0 +1,17 @@
+# Runs Kritzel on http://localhost:3000. Put a TLS-terminating reverse proxy
+# in front of it for anything but local use (see README, "Hosting").
+services:
+  kritzel:
+    build: .
+    # image: ghcr.io/mistral-valaise/open-skribbl:latest
+    ports:
+      - '3000:3000'
+    environment:
+      # Set to "true" when a reverse proxy sits in front of the container.
+      TRUST_PROXY: 'false'
+    restart: unless-stopped
+    read_only: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true

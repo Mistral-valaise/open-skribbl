@@ -9,3 +9,4 @@ export * from './words/select.js';
 export * from './game/state.js';
 export * from './game/view.js';
 export * from './game/reduce.js';
+export * from './solo.js';

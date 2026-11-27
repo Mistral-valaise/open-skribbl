@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/main.ts",
-    "build": "esbuild src/main.ts --bundle --platform=node --format=esm --target=node22 --outfile=dist/main.js --external:fastify --external:@fastify/* --external:ws --external:zod && node -e \"require('node:fs').cpSync('../../packages/content/words','dist/words',{recursive:true})\"",
+    "build": "node build.mjs",
     "start": "node dist/main.js",
     "typecheck": "tsc --noEmit"
   },

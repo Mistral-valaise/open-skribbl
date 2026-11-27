@@ -58,3 +58,19 @@ export const RATE_LIMITS = {
   dropsToClose: 50,
   dropWindowMs: 10_000,
 } as const;
+
+/** Spec 009 — solo mode. */
+export const SOLO = {
+  drawingsPerRun: 10,
+  timePerDrawingMs: 30_000,
+  replayMs: 15_000,
+  strokePauseMs: 150,
+  revealMs: 2_500,
+  hints: 2,
+  /** Free space kept around a replayed drawing, as a fraction of the canvas. */
+  margin: 0.1,
+  /** Coordinate range of the dataset drawings. */
+  sourceSize: 256,
+  color: '#14151C',
+  brushSize: 8,
+} as const;

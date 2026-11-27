@@ -1,0 +1,11 @@
+.git
+.github
+**/node_modules
+**/dist
+**/coverage
+e2e
+docs
+playwright-report
+test-results
+*.md
+!packages/**/*.md

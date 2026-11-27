@@ -40,6 +40,7 @@ scripts/          Repository tooling
 | [Architecture guideline](docs/ARCHITECTURE.md) | Modules, protocol, drawing pipeline, testing, deployment    |
 | [Design guideline](docs/DESIGN.md)             | Brand, tokens, components, screens, accessibility           |
 | [Specs](docs/specs/README.md)                  | One spec per feature with numbered acceptance criteria      |
+| [Hosting](docs/HOSTING.md)                     | Docker, configuration, reverse proxies, capacity            |
 | [Roadmap](docs/ROADMAP.md)                     | Milestones and what comes after v1                          |
 | [Decisions](docs/adr/)                         | Architecture decision records                               |
 | [Glossary](CONTEXT.md)                         | The project's vocabulary                                    |
@@ -76,7 +77,15 @@ pnpm check
 
 ## Hosting
 
-The Docker image and the hosting guides arrive with milestone M4 ([spec 012](docs/specs/012-deployment-and-operations.md)). The target is a single command with no configuration.
+```bash
+docker build -t kritzel .
+```
+
+```bash
+docker run -d -p 3000:3000 kritzel
+```
+
+Then open <http://localhost:3000>. No database and no configuration are needed. [`docs/HOSTING.md`](docs/HOSTING.md) covers configuration, reverse proxies (Caddy, nginx, Traefik), hosting platforms and measured capacity.
 
 ## Contributing
 

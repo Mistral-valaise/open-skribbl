@@ -19,7 +19,8 @@
     "test": "vitest run",
     "spec:coverage": "node scripts/spec-coverage.mjs",
     "check": "pnpm lint && pnpm format:check && pnpm typecheck && pnpm test && pnpm spec:coverage --strict",
-    "e2e": "playwright test"
+    "e2e": "playwright test",
+    "loadtest": "node scripts/loadtest.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

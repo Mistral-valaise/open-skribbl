@@ -188,7 +188,7 @@ Rules:
 | `features/`   | One folder per screen or feature: `home`, `lobby`, `game`, `results`, `solo`   |
 | `canvas/`     | Renderer, pointer capture, flood fill, PNG export, replay                      |
 | `ui/`         | Design-system components from [`DESIGN.md`](DESIGN.md)                         |
-| `i18n/`       | Typed dictionaries (`en`, `de`, `es`) and the `t()` helper                     |
+| `i18n/`       | Typed dictionaries (`en`, `de`, `es`, `fr`) and the `t()` helper               |
 | `audio/`      | Web Audio synthesised sound effects                                            |
 
 Rules:
@@ -207,7 +207,7 @@ Solo mode runs entirely in the browser ([ADR 0005](adr/0005-client-side-solo-on-
 
 ```
 words/<lang>/{easy,medium,hard}.txt   one word per line, '#' comments
-solo/categories.json                  id plus en/de/es label per category
+solo/categories.json                  id plus en/de/es/fr label per category
 solo/drawings/<id>.json               curated drawings per category
 ```
 

@@ -1,12 +1,14 @@
 # Kritzel
 
-**Draw. Guess. No ads.** Kritzel is an open-source draw-and-guess party game you host yourself and play with your team: private rooms, no accounts, no tracking, no third-party requests. English, German and Spanish, with a solo mode against the computer.
+**Draw. Guess. No ads.** Kritzel is an open-source draw-and-guess party game you host yourself and play with your team: private rooms, no accounts, no tracking, no third-party requests. English, German, Spanish and French, with a solo mode against the computer.
 
 > **Status: milestone M0 (foundation).** The specifications and the workspace are in place; the game itself is built in milestones M1–M4. See the [roadmap](docs/ROADMAP.md).
 
-🇩🇪 Kritzel ist ein quelloffenes Zeichnen-und-Raten-Spiel zum Selbsthosten: private Räume fürs Team, ohne Werbung, ohne Konten, ohne Tracking. Auf Deutsch, Englisch und Spanisch, mit Solo-Modus gegen den Computer.
+🇩🇪 Kritzel ist ein quelloffenes Zeichnen-und-Raten-Spiel zum Selbsthosten: private Räume fürs Team, ohne Werbung, ohne Konten, ohne Tracking. Auf Deutsch, Englisch, Spanisch und Französisch, mit Solo-Modus gegen den Computer.
 
-🇪🇸 Kritzel es un juego de dibujar y adivinar de código abierto que alojas tú mismo: salas privadas para tu equipo, sin anuncios, sin cuentas y sin rastreo. En español, inglés y alemán, con modo en solitario contra el ordenador.
+🇪🇸 Kritzel es un juego de dibujar y adivinar de código abierto que alojas tú mismo: salas privadas para tu equipo, sin anuncios, sin cuentas y sin rastreo. En español, inglés, alemán y francés, con modo en solitario contra el ordenador.
+
+🇫🇷 Kritzel est un jeu de dessin et de devinettes open source à héberger soi-même : des salons privés pour ton équipe, sans publicité, sans compte et sans pistage. En français, anglais, allemand et espagnol, avec un mode solo contre l'ordinateur.
 
 ## What you get in v1
 

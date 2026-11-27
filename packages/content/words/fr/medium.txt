@@ -1,0 +1,233 @@
+# Kritzel word list: French, medium
+# Activities, places and less common objects. One word per line; see docs/specs/006-words-and-languages.md.
+aéroport
+ancre
+sac à dos
+boulangerie
+barbecue
+baignoire
+bibliothèque
+bowling
+feu de camp
+château
+cactus
+calendrier
+appareil photo
+canoë
+manège
+cheminée
+boussole
+couronne
+désert
+dinosaure
+plongée
+dauphin
+dragon
+tremblement de terre
+escalator
+feu d'artifice
+pêche
+lampe de poche
+fontaine
+jardin
+coupe de cheveux
+hamac
+poignée de main
+écouteurs
+hélicoptère
+randonnée
+hôpital
+iceberg
+île
+méduse
+jungle
+kangourou
+clavier
+phare
+éclair
+aimant
+boîte aux lettres
+sirène
+microphone
+miroir
+musée
+collier
+orchestre
+tableau
+parachute
+perroquet
+paon
+pique-nique
+pirate
+aire de jeux
+pop-corn
+carte postale
+pyramide
+recyclage
+montagnes russes
+voilier
+château de sable
+saxophone
+épouvantail
+skateboard
+gratte-ciel
+sac de couchage
+tuba
+vaisseau spatial
+stade
+sous-marin
+tournesol
+lever du soleil
+surf
+piscine
+télescope
+tente
+orage
+grille-pain
+tornade
+tracteur
+feu tricolore
+trésor
+trophée
+tunnel
+licorne
+aspirateur
+volcan
+cascade
+pastèque
+mariage
+brouette
+moulin à vent
+magicien
+yoga
+fermeture éclair
+zèbre
+valise
+tondeuse
+arrêt de bus
+camping
+snowboard
+poisson rouge
+sandwich
+crêpe
+accordéon
+réveil
+ambulance
+aquarium
+fauteuil
+avocat
+balcon
+ballet
+pansement
+grange
+cave
+pile
+jumelles
+mixeur
+boomerang
+bracelet
+brocoli
+pelleteuse
+lit superposé
+téléphérique
+café
+bonbon
+tapis
+grotte
+caméléon
+échecs
+baguettes
+cirque
+falaise
+clown
+noix de coco
+cow-boy
+grue
+crocodile
+mots croisés
+paquebot
+placard
+rideau
+dentiste
+lave-vaisselle
+niche
+sonnette
+libellule
+pont-levis
+haltère
+éclipse
+ascenseur
+fermier
+ferry
+camion de pompiers
+flamant rose
+tongs
+brouillard
+forêt
+frigo
+garage
+gymnastique
+sèche-cheveux
+port
+harpe
+hérisson
+montgolfière
+sablier
+igloo
+planche à repasser
+jongleur
+karaté
+chevalier
+coccinelle
+lanterne
+lasso
+canot de sauvetage
+homard
+bagages
+labyrinthe
+météorite
+moustique
+moto
+moustache
+ninja
+oasis
+autruche
+pagaie
+palmier
+panda
+pélican
+piano
+bataille d'oreillers
+bretzel
+flaque
+marionnette
+raton laveur
+radeau
+arbitre
+rhinocéros
+safari
+trottinette
+hippocampe
+balançoire
+épave
+chariot
+squelette
+télésiège
+paresseux
+flocon de neige
+projecteur
+calmar
+stéthoscope
+tambourin
+taxi
+toucan
+trampoline
+cabane
+trompette
+vampire
+serveur
+morse
+fauteuil roulant
+pic-vert
+radiographie
+yacht

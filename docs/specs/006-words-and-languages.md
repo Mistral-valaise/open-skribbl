@@ -7,11 +7,11 @@
 
 ## Intent
 
-Kritzel is played by mixed teams in English, German and Spanish. The interface language is each participant's own choice; the language of the words is the room's choice. Word lists are plain files the community can improve.
+Kritzel is played by mixed teams in English, German, Spanish and French. The interface language is each participant's own choice; the language of the words is the room's choice. Word lists are plain files the community can improve.
 
 ## Behaviour
 
-- The interface appears in the browser's language when it is English, German or Spanish, otherwise in English. A switch on every screen changes it at once; the choice is remembered.
+- The interface appears in the browser's language when it is English, German, Spanish or French, otherwise in English. A switch on every screen changes it at once; the choice is remembered.
 - The host picks the room's word language and difficulty in the lobby. Each participant keeps their own interface language.
 - The host can paste custom words. They are mixed with the built-in list, or used exclusively with **Use only custom words**.
 - During the drawing phase guessers see the mask with the number of letters, and hints reveal letters over time.
@@ -20,8 +20,8 @@ Kritzel is played by mixed teams in English, German and Spanish. The interface l
 
 ### Interface languages
 
-- `en`, `de`, `es`. Detection uses the first entry of `navigator.languages` whose primary subtag matches; the stored choice wins.
-- Every visible string comes from the dictionary of the active language. `en` defines the keys; `de` and `es` contain exactly the same keys.
+- `en`, `de`, `es`, `fr`. Detection uses the first entry of `navigator.languages` whose primary subtag matches; the stored choice wins.
+- Every visible string comes from the dictionary of the active language. `en` defines the keys; `de`, `es` and `fr` contain exactly the same keys.
 - From M1 on, all interface text goes through the dictionary, even while only English exists.
 - System messages are sent as key plus parameters and rendered in the recipient's language.
 
@@ -63,9 +63,9 @@ Example: "lighthouse" (`L` = 10) with `hints` 2 and `drawTime` 80 s reveals one 
 
 ## Acceptance criteria
 
-- **AC-006-01** With browser languages `["de-AT", "en"]` and no stored choice, the interface starts in German; with `["fr"]` it starts in English.
+- **AC-006-01** With browser languages `["de-AT", "en"]` and no stored choice, the interface starts in German; with `["fr-CA"]` it starts in French; with `["it"]` it starts in English.
 - **AC-006-02** Switching the language updates every visible string without a reload and survives a reload.
-- **AC-006-03** The `de` and `es` dictionaries have exactly the keys of `en`; a missing or extra key fails the type check.
+- **AC-006-03** The `de`, `es` and `fr` dictionaries have exactly the keys of `en`; a missing or extra key fails the type check.
 - **AC-006-04** Two participants with different interface languages each read the same system message in their own language.
 - **AC-006-05** Every word-list file passes validation: character set, length, no duplicates after normalisation within its language, at least 200 words.
 - **AC-006-06** With word language `de` and difficulty `easy`, every offered word comes from `words/de/easy.txt` or from the custom words.
@@ -85,4 +85,4 @@ Example: "lighthouse" (`L` = 10) with `hints` 2 and `drawTime` 80 s reveals one 
 
 ## Out of scope
 
-More than three languages in v1, per-player word language, importing word lists from files or URLs, sharing custom word sets between rooms.
+More than four languages in v1, per-player word language, importing word lists from files or URLs, sharing custom word sets between rooms.

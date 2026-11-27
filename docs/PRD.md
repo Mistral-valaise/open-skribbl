@@ -24,7 +24,7 @@ Teams use public draw-and-guess sites for remote socials and warm-ups. Those sit
 - **G2 One-command hosting.** `docker run` gives a working instance; no database, no external service, no configuration required.
 - **G3 A better game.** Everything a team expects from the genre, plus quality-of-life features that public sites lack (see §6).
 - **G4 Modern and professional.** A polished, consistent interface in light and dark themes that works on desktop, tablet and phone.
-- **G5 Three languages.** Interface and word lists in English, German and Spanish.
+- **G5 Four languages.** Interface and word lists in English, German, Spanish and French.
 - **G6 Playable alone.** A solo mode against the computer with no API key and no running costs.
 - **G7 Agent-ready repository.** Specs with testable acceptance criteria are the source of truth, so coding agents and humans can extend the game predictably.
 
@@ -69,7 +69,7 @@ Each feature is specified in `docs/specs/`. Milestones are defined in [`ROADMAP.
 | F3  | Drawing canvas: brush, eraser, fill, undo/redo, clear, live sync             | [003](specs/003-drawing.md)                   | M1        |
 | F4  | Guessing and chat: tolerant matching, close-guess notice, guessed channel    | [004](specs/004-guessing-and-chat.md)         | M1        |
 | F5  | Scoring and ranking                                                          | [005](specs/005-scoring.md)                   | M1        |
-| F6  | Words and languages: EN/DE/ES interface, word lists, custom words, hints     | [006](specs/006-words-and-languages.md)       | M2        |
+| F6  | Words and languages: EN/DE/ES/FR interface, word lists, custom words, hints  | [006](specs/006-words-and-languages.md)       | M2        |
 | F7  | Presence: reconnect, spectators, late join, host migration                   | [007](specs/007-presence-and-resilience.md)   | M2        |
 | F8  | Reactions, likes, results with podium and gallery, PNG download              | [008](specs/008-reactions-and-gallery.md)     | M2        |
 | F9  | Identity: nickname and avatar builder                                        | [010](specs/010-identity-and-avatars.md)      | M2        |
@@ -101,7 +101,7 @@ Each feature is specified in `docs/specs/`. Milestones are defined in [`ROADMAP.
 
 ## 8. Success criteria for v1
 
-- A new user creates a room and a second user joins by link and both complete a full game, on desktop and on a phone, in each of the three languages.
+- A new user creates a room and a second user joins by link and both complete a full game, on desktop and on a phone, in each of the four languages.
 - A fresh machine goes from `docker run` to a playable game with no further steps.
 - A browser network log of a full game shows same-origin requests only.
 - A solo run is playable start to finish with the server unreachable after page load.
@@ -137,3 +137,4 @@ Decisions taken with the project owner before the specs were written.
 | Avatars      | Built from bundled SVG parts. No uploads.                                                                                                           |
 | Quality      | Rules as pure tested functions, WebSocket integration tests, two-browser end-to-end test, CI, acceptance criteria linked to tests.                  |
 | Publishing   | Push to GitHub; CI publishes the image to GHCR from `main` and version tags. Roadmap lives in `docs/ROADMAP.md`.                                    |
+| Languages    | English, German, Spanish and, added by the owner during M1, French: interface, word lists and solo labels.                                          |

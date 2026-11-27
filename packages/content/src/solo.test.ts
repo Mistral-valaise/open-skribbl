@@ -1,6 +1,6 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { isValidWord, wordKey } from '@kritzel/shared';
+import { isValidWord, LANGUAGES, wordKey } from '@kritzel/shared';
 import { describe, expect, it } from 'vitest';
 
 const soloDir = fileURLToPath(new URL('../solo', import.meta.url));
@@ -11,6 +11,7 @@ interface Category {
   en: string | null;
   de: string | null;
   es: string | null;
+  fr: string | null;
 }
 
 describe('solo content (spec 009)', () => {
@@ -21,7 +22,7 @@ describe('solo content (spec 009)', () => {
     expect(new Set(categories.map((category) => category.file)).size).toBe(categories.length);
 
     for (const category of categories) {
-      for (const language of ['en', 'de', 'es'] as const) {
+      for (const language of LANGUAGES) {
         const label = category[language];
         if (label !== null)
           expect(isValidWord(label), `${category.id}/${language}: ${label}`).toBe(true);
@@ -43,7 +44,7 @@ describe('solo content (spec 009)', () => {
   });
 
   it('labels are unique within each language', () => {
-    for (const language of ['en', 'de', 'es'] as const) {
+    for (const language of LANGUAGES) {
       const keys = categories.flatMap((category) => {
         const label = category[language];
         return label === null ? [] : [wordKey(label)];

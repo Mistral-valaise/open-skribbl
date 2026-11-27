@@ -6,14 +6,16 @@ function strip(text: string): string {
   return text
     .normalize('NFKC')
     .toLowerCase()
-    .replace(/[^\p{L}\p{N}]/gu, '');
+    .replace(/[^\p{L}\p{N}]/gu, '')
+    .replace(/œ/g, 'oe')
+    .replace(/æ/g, 'ae');
 }
 
 function removeMarks(text: string): string {
   return text.normalize('NFD').replace(/\p{M}/gu, '');
 }
 
-/** Diacritics removed: é→e, ñ→n, ü→u, ß→ss. */
+/** Diacritics removed: é→e, ñ→n, ü→u, ç→c; ß→ss, œ→oe, æ→ae. */
 export function plainFolding(text: string): string {
   return removeMarks(strip(text).replace(/ß/g, 'ss'));
 }

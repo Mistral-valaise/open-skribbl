@@ -10,7 +10,7 @@ import type { Avatar } from './identity.js';
  */
 export const PROTOCOL_VERSION = 1;
 
-export const LANGUAGES = ['en', 'de', 'es'] as const;
+export const LANGUAGES = ['en', 'de', 'es', 'fr'] as const;
 export type Language = (typeof LANGUAGES)[number];
 export const DIFFICULTIES = ['easy', 'medium', 'hard', 'mixed'] as const;
 export type Difficulty = (typeof DIFFICULTIES)[number];

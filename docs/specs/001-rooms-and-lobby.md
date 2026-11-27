@@ -34,7 +34,7 @@ A team needs a private place to play that takes seconds to create and one link t
 
 | Setting           | Values                            | Default                   |
 | ----------------- | --------------------------------- | ------------------------- |
-| `language`        | `en`, `de`, `es`                  | Host's interface language |
+| `language`        | `en`, `de`, `es`, `fr`            | Host's interface language |
 | `rounds`          | 1–10                              | 3                         |
 | `drawTime`        | 30–180 s in steps of 10           | 80                        |
 | `wordChoices`     | 2–5                               | 3                         |

@@ -40,7 +40,7 @@ A milestone is complete when each of its specs has every criterion covered, its 
 - **`viewFor` is the single gate for visibility.** Anything a participant may see passes through it; the secret word reaches a client only through that function.
 - **Spec constants are defined once** in `packages/shared` and imported; a number that appears in a spec appears in exactly one place in code.
 - **Same-origin only.** Fonts, icons, sounds and data are bundled. A dependency or asset that would contact another host at runtime does not go in.
-- **Every visible string goes through `t()`**, with keys present in `en`, `de` and `es`.
+- **Every visible string goes through `t()`**, with keys present in `en`, `de`, `es` and `fr`.
 - **Colours come from design tokens**; raw hex values belong in the token file and the drawing palette only.
 - **Logs carry counts and room codes**, never nicknames, chat text, words or tokens.
 - **Packages import each other through the package root**; `apps/web` and `apps/server` stay independent of each other.
@@ -53,7 +53,7 @@ A milestone is complete when each of its specs has every criterion covered, its 
 - Reducer tests use the harness in `packages/shared/src/testing/harness.ts`; server tests use `apps/server/src/testing/client.ts` with a manual clock. Time moves only when a test advances it.
 - Interactive elements the end-to-end tests touch carry a `data-testid`; keep existing ids stable.
 - Commit messages: imperative summary, with the spec or criterion ids the change addresses (`Add hint schedule (AC-006-15..18)`).
-- Documentation and code are in English. UI copy in German and Spanish addresses the player informally.
+- Documentation and code are in English. UI copy in German, Spanish and French addresses the player informally.
 
 ## Scope guard
 

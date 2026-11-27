@@ -4,2232 +4,2551 @@
     "file": "aircraft-carrier",
     "en": "aircraft carrier",
     "de": "Flugzeugträger",
-    "es": "portaaviones"
+    "es": "portaaviones",
+    "fr": "porte-avions"
   },
   {
     "id": "airplane",
     "file": "airplane",
     "en": "airplane",
     "de": "Flugzeug",
-    "es": "avión"
+    "es": "avión",
+    "fr": "avion"
   },
   {
     "id": "alarm clock",
     "file": "alarm-clock",
     "en": "alarm clock",
     "de": "Wecker",
-    "es": "despertador"
+    "es": "despertador",
+    "fr": "réveil"
   },
   {
     "id": "ambulance",
     "file": "ambulance",
     "en": "ambulance",
     "de": "Krankenwagen",
-    "es": "ambulancia"
+    "es": "ambulancia",
+    "fr": "ambulance"
   },
   {
     "id": "angel",
     "file": "angel",
     "en": "angel",
     "de": "Engel",
-    "es": "ángel"
+    "es": "ángel",
+    "fr": "ange"
   },
   {
     "id": "ant",
     "file": "ant",
     "en": "ant",
     "de": "Ameise",
-    "es": "hormiga"
+    "es": "hormiga",
+    "fr": "fourmi"
   },
   {
     "id": "anvil",
     "file": "anvil",
     "en": "anvil",
     "de": "Amboss",
-    "es": "yunque"
+    "es": "yunque",
+    "fr": "enclume"
   },
   {
     "id": "apple",
     "file": "apple",
     "en": "apple",
     "de": "Apfel",
-    "es": "manzana"
+    "es": "manzana",
+    "fr": "pomme"
   },
   {
     "id": "arm",
     "file": "arm",
     "en": "arm",
     "de": "Arm",
-    "es": "brazo"
+    "es": "brazo",
+    "fr": "bras"
   },
   {
     "id": "asparagus",
     "file": "asparagus",
     "en": "asparagus",
     "de": "Spargel",
-    "es": "espárrago"
+    "es": "espárrago",
+    "fr": "asperge"
   },
   {
     "id": "axe",
     "file": "axe",
     "en": "axe",
     "de": "Axt",
-    "es": "hacha"
+    "es": "hacha",
+    "fr": "hache"
   },
   {
     "id": "backpack",
     "file": "backpack",
     "en": "backpack",
     "de": "Rucksack",
-    "es": "mochila"
+    "es": "mochila",
+    "fr": "sac à dos"
   },
   {
     "id": "banana",
     "file": "banana",
     "en": "banana",
     "de": "Banane",
-    "es": "plátano"
+    "es": "plátano",
+    "fr": "banane"
   },
   {
     "id": "bandage",
     "file": "bandage",
     "en": "bandage",
     "de": "Pflaster",
-    "es": "tirita"
+    "es": "tirita",
+    "fr": "pansement"
   },
   {
     "id": "barn",
     "file": "barn",
     "en": "barn",
     "de": "Scheune",
-    "es": "granero"
+    "es": "granero",
+    "fr": "grange"
   },
   {
     "id": "baseball",
     "file": "baseball",
     "en": "baseball",
     "de": "Baseball",
-    "es": "pelota de béisbol"
+    "es": "pelota de béisbol",
+    "fr": "balle de baseball"
   },
   {
     "id": "baseball bat",
     "file": "baseball-bat",
     "en": "baseball bat",
     "de": "Baseballschläger",
-    "es": "bate de béisbol"
+    "es": "bate de béisbol",
+    "fr": "batte de baseball"
   },
   {
     "id": "basket",
     "file": "basket",
     "en": "basket",
     "de": "Korb",
-    "es": "cesta"
+    "es": "cesta",
+    "fr": "panier"
   },
   {
     "id": "basketball",
     "file": "basketball",
     "en": "basketball",
     "de": "Basketball",
-    "es": "balón de baloncesto"
+    "es": "balón de baloncesto",
+    "fr": "ballon de basket"
   },
   {
     "id": "bat",
     "file": "bat",
     "en": "bat",
     "de": "Fledermaus",
-    "es": "murciélago"
+    "es": "murciélago",
+    "fr": "chauve-souris"
   },
   {
     "id": "bathtub",
     "file": "bathtub",
     "en": "bathtub",
     "de": "Badewanne",
-    "es": "bañera"
+    "es": "bañera",
+    "fr": "baignoire"
   },
   {
     "id": "beach",
     "file": "beach",
     "en": "beach",
     "de": "Strand",
-    "es": "playa"
+    "es": "playa",
+    "fr": "plage"
   },
   {
     "id": "bear",
     "file": "bear",
     "en": "bear",
     "de": "Bär",
-    "es": "oso"
+    "es": "oso",
+    "fr": "ours"
   },
   {
     "id": "beard",
     "file": "beard",
     "en": "beard",
     "de": "Bart",
-    "es": "barba"
+    "es": "barba",
+    "fr": "barbe"
   },
   {
     "id": "bed",
     "file": "bed",
     "en": "bed",
     "de": "Bett",
-    "es": "cama"
+    "es": "cama",
+    "fr": "lit"
   },
   {
     "id": "bee",
     "file": "bee",
     "en": "bee",
     "de": "Biene",
-    "es": "abeja"
+    "es": "abeja",
+    "fr": "abeille"
   },
   {
     "id": "belt",
     "file": "belt",
     "en": "belt",
     "de": "Gürtel",
-    "es": "cinturón"
+    "es": "cinturón",
+    "fr": "ceinture"
   },
   {
     "id": "bench",
     "file": "bench",
     "en": "bench",
     "de": "Bank",
-    "es": "banco"
+    "es": "banco",
+    "fr": "banc"
   },
   {
     "id": "bicycle",
     "file": "bicycle",
     "en": "bicycle",
     "de": "Fahrrad",
-    "es": "bicicleta"
+    "es": "bicicleta",
+    "fr": "vélo"
   },
   {
     "id": "binoculars",
     "file": "binoculars",
     "en": "binoculars",
     "de": "Fernglas",
-    "es": "prismáticos"
+    "es": "prismáticos",
+    "fr": "jumelles"
   },
   {
     "id": "bird",
     "file": "bird",
     "en": "bird",
     "de": "Vogel",
-    "es": "pájaro"
+    "es": "pájaro",
+    "fr": "oiseau"
   },
   {
     "id": "birthday cake",
     "file": "birthday-cake",
     "en": "birthday cake",
     "de": "Geburtstagstorte",
-    "es": "tarta de cumpleaños"
+    "es": "tarta de cumpleaños",
+    "fr": "gâteau d'anniversaire"
   },
   {
     "id": "blackberry",
     "file": "blackberry",
     "en": "blackberry",
     "de": "Brombeere",
-    "es": "mora"
+    "es": "mora",
+    "fr": "mûre"
   },
   {
     "id": "blueberry",
     "file": "blueberry",
     "en": "blueberry",
     "de": "Heidelbeere",
-    "es": "arándano"
+    "es": "arándano",
+    "fr": "myrtille"
   },
   {
     "id": "book",
     "file": "book",
     "en": "book",
     "de": "Buch",
-    "es": "libro"
+    "es": "libro",
+    "fr": "livre"
   },
   {
     "id": "boomerang",
     "file": "boomerang",
     "en": "boomerang",
     "de": "Bumerang",
-    "es": "bumerán"
+    "es": "bumerán",
+    "fr": "boomerang"
   },
   {
     "id": "bottlecap",
     "file": "bottlecap",
     "en": "bottle cap",
     "de": "Kronkorken",
-    "es": "chapa"
+    "es": "chapa",
+    "fr": "capsule"
   },
   {
     "id": "bowtie",
     "file": "bowtie",
     "en": "bow tie",
     "de": "Fliege",
-    "es": "pajarita"
+    "es": "pajarita",
+    "fr": "nœud papillon"
   },
   {
     "id": "bracelet",
     "file": "bracelet",
     "en": "bracelet",
     "de": "Armband",
-    "es": "pulsera"
+    "es": "pulsera",
+    "fr": "bracelet"
   },
   {
     "id": "brain",
     "file": "brain",
     "en": "brain",
     "de": "Gehirn",
-    "es": "cerebro"
+    "es": "cerebro",
+    "fr": "cerveau"
   },
   {
     "id": "bread",
     "file": "bread",
     "en": "bread",
     "de": "Brot",
-    "es": "pan"
+    "es": "pan",
+    "fr": "pain"
   },
   {
     "id": "bridge",
     "file": "bridge",
     "en": "bridge",
     "de": "Brücke",
-    "es": "puente"
+    "es": "puente",
+    "fr": "pont"
   },
   {
     "id": "broccoli",
     "file": "broccoli",
     "en": "broccoli",
     "de": "Brokkoli",
-    "es": "brócoli"
+    "es": "brócoli",
+    "fr": "brocoli"
   },
   {
     "id": "broom",
     "file": "broom",
     "en": "broom",
     "de": "Besen",
-    "es": "escoba"
+    "es": "escoba",
+    "fr": "balai"
   },
   {
     "id": "bucket",
     "file": "bucket",
     "en": "bucket",
     "de": "Eimer",
-    "es": "cubo"
+    "es": "cubo",
+    "fr": "seau"
   },
   {
     "id": "bulldozer",
     "file": "bulldozer",
     "en": "bulldozer",
     "de": "Planierraupe",
-    "es": "excavadora"
+    "es": "excavadora",
+    "fr": "bulldozer"
   },
   {
     "id": "bus",
     "file": "bus",
     "en": "bus",
     "de": "Bus",
-    "es": "autobús"
+    "es": "autobús",
+    "fr": "bus"
   },
   {
     "id": "bush",
     "file": "bush",
     "en": "bush",
     "de": "Busch",
-    "es": "arbusto"
+    "es": "arbusto",
+    "fr": "buisson"
   },
   {
     "id": "butterfly",
     "file": "butterfly",
     "en": "butterfly",
     "de": "Schmetterling",
-    "es": "mariposa"
+    "es": "mariposa",
+    "fr": "papillon"
   },
   {
     "id": "cactus",
     "file": "cactus",
     "en": "cactus",
     "de": "Kaktus",
-    "es": "cactus"
+    "es": "cactus",
+    "fr": "cactus"
   },
   {
     "id": "cake",
     "file": "cake",
     "en": "cake",
     "de": "Kuchen",
-    "es": "pastel"
+    "es": "pastel",
+    "fr": "gâteau"
   },
   {
     "id": "calculator",
     "file": "calculator",
     "en": "calculator",
     "de": "Taschenrechner",
-    "es": "calculadora"
+    "es": "calculadora",
+    "fr": "calculatrice"
   },
   {
     "id": "calendar",
     "file": "calendar",
     "en": "calendar",
     "de": "Kalender",
-    "es": "calendario"
+    "es": "calendario",
+    "fr": "calendrier"
   },
   {
     "id": "camel",
     "file": "camel",
     "en": "camel",
     "de": "Kamel",
-    "es": "camello"
+    "es": "camello",
+    "fr": "chameau"
   },
   {
     "id": "camera",
     "file": "camera",
     "en": "camera",
     "de": "Kamera",
-    "es": "cámara"
+    "es": "cámara",
+    "fr": "appareil photo"
   },
   {
     "id": "campfire",
     "file": "campfire",
     "en": "campfire",
     "de": "Lagerfeuer",
-    "es": "hoguera"
+    "es": "hoguera",
+    "fr": "feu de camp"
   },
   {
     "id": "candle",
     "file": "candle",
     "en": "candle",
     "de": "Kerze",
-    "es": "vela"
+    "es": "vela",
+    "fr": "bougie"
   },
   {
     "id": "cannon",
     "file": "cannon",
     "en": "cannon",
     "de": "Kanone",
-    "es": "cañón"
+    "es": "cañón",
+    "fr": "canon"
   },
   {
     "id": "canoe",
     "file": "canoe",
     "en": "canoe",
     "de": "Kanu",
-    "es": "canoa"
+    "es": "canoa",
+    "fr": "canoë"
   },
   {
     "id": "car",
     "file": "car",
     "en": "car",
     "de": "Auto",
-    "es": "coche"
+    "es": "coche",
+    "fr": "voiture"
   },
   {
     "id": "carrot",
     "file": "carrot",
     "en": "carrot",
     "de": "Karotte",
-    "es": "zanahoria"
+    "es": "zanahoria",
+    "fr": "carotte"
   },
   {
     "id": "castle",
     "file": "castle",
     "en": "castle",
     "de": "Burg",
-    "es": "castillo"
+    "es": "castillo",
+    "fr": "château"
   },
   {
     "id": "cat",
     "file": "cat",
     "en": "cat",
     "de": "Katze",
-    "es": "gato"
+    "es": "gato",
+    "fr": "chat"
   },
   {
     "id": "ceiling fan",
     "file": "ceiling-fan",
     "en": "ceiling fan",
     "de": "Deckenventilator",
-    "es": "ventilador de techo"
+    "es": "ventilador de techo",
+    "fr": "ventilateur de plafond"
   },
   {
     "id": "cello",
     "file": "cello",
     "en": "cello",
     "de": "Cello",
-    "es": "violonchelo"
+    "es": "violonchelo",
+    "fr": "violoncelle"
   },
   {
     "id": "cell phone",
     "file": "cell-phone",
     "en": "cell phone",
     "de": "Handy",
-    "es": "móvil"
+    "es": "móvil",
+    "fr": "portable"
   },
   {
     "id": "chair",
     "file": "chair",
     "en": "chair",
     "de": "Stuhl",
-    "es": "silla"
+    "es": "silla",
+    "fr": "chaise"
   },
   {
     "id": "chandelier",
     "file": "chandelier",
     "en": "chandelier",
     "de": "Kronleuchter",
-    "es": "candelabro"
+    "es": "candelabro",
+    "fr": "lustre"
   },
   {
     "id": "church",
     "file": "church",
     "en": "church",
     "de": "Kirche",
-    "es": "iglesia"
+    "es": "iglesia",
+    "fr": "église"
   },
   {
     "id": "clarinet",
     "file": "clarinet",
     "en": "clarinet",
     "de": "Klarinette",
-    "es": "clarinete"
+    "es": "clarinete",
+    "fr": "clarinette"
   },
   {
     "id": "clock",
     "file": "clock",
     "en": "clock",
     "de": "Uhr",
-    "es": "reloj"
+    "es": "reloj",
+    "fr": "horloge"
   },
   {
     "id": "cloud",
     "file": "cloud",
     "en": "cloud",
     "de": "Wolke",
-    "es": "nube"
+    "es": "nube",
+    "fr": "nuage"
   },
   {
     "id": "coffee cup",
     "file": "coffee-cup",
     "en": "coffee cup",
     "de": "Kaffeetasse",
-    "es": "taza de café"
+    "es": "taza de café",
+    "fr": "tasse de café"
   },
   {
     "id": "compass",
     "file": "compass",
     "en": "compass",
     "de": "Kompass",
-    "es": "brújula"
+    "es": "brújula",
+    "fr": "boussole"
   },
   {
     "id": "computer",
     "file": "computer",
     "en": "computer",
     "de": "Computer",
-    "es": "ordenador"
+    "es": "ordenador",
+    "fr": "ordinateur"
   },
   {
     "id": "cookie",
     "file": "cookie",
     "en": "cookie",
     "de": "Keks",
-    "es": "galleta"
+    "es": "galleta",
+    "fr": "biscuit"
   },
   {
     "id": "couch",
     "file": "couch",
     "en": "couch",
     "de": "Sofa",
-    "es": "sofá"
+    "es": "sofá",
+    "fr": "canapé"
   },
   {
     "id": "cow",
     "file": "cow",
     "en": "cow",
     "de": "Kuh",
-    "es": "vaca"
+    "es": "vaca",
+    "fr": "vache"
   },
   {
     "id": "crab",
     "file": "crab",
     "en": "crab",
     "de": "Krabbe",
-    "es": "cangrejo"
+    "es": "cangrejo",
+    "fr": "crabe"
   },
   {
     "id": "crocodile",
     "file": "crocodile",
     "en": "crocodile",
     "de": "Krokodil",
-    "es": "cocodrilo"
+    "es": "cocodrilo",
+    "fr": "crocodile"
   },
   {
     "id": "crown",
     "file": "crown",
     "en": "crown",
     "de": "Krone",
-    "es": "corona"
+    "es": "corona",
+    "fr": "couronne"
   },
   {
     "id": "cruise ship",
     "file": "cruise-ship",
     "en": "cruise ship",
     "de": "Kreuzfahrtschiff",
-    "es": "crucero"
+    "es": "crucero",
+    "fr": "paquebot"
   },
   {
     "id": "cup",
     "file": "cup",
     "en": "cup",
     "de": "Tasse",
-    "es": "taza"
+    "es": "taza",
+    "fr": "tasse"
   },
   {
     "id": "diamond",
     "file": "diamond",
     "en": "diamond",
     "de": "Diamant",
-    "es": "diamante"
+    "es": "diamante",
+    "fr": "diamant"
   },
   {
     "id": "dishwasher",
     "file": "dishwasher",
     "en": "dishwasher",
     "de": "Spülmaschine",
-    "es": "lavavajillas"
+    "es": "lavavajillas",
+    "fr": "lave-vaisselle"
   },
   {
     "id": "diving board",
     "file": "diving-board",
     "en": "diving board",
     "de": "Sprungbrett",
-    "es": "trampolín"
+    "es": "trampolín",
+    "fr": "plongeoir"
   },
   {
     "id": "dog",
     "file": "dog",
     "en": "dog",
     "de": "Hund",
-    "es": "perro"
+    "es": "perro",
+    "fr": "chien"
   },
   {
     "id": "dolphin",
     "file": "dolphin",
     "en": "dolphin",
     "de": "Delfin",
-    "es": "delfín"
+    "es": "delfín",
+    "fr": "dauphin"
   },
   {
     "id": "donut",
     "file": "donut",
     "en": "donut",
     "de": "Donut",
-    "es": "rosquilla"
+    "es": "rosquilla",
+    "fr": "beignet"
   },
   {
     "id": "door",
     "file": "door",
     "en": "door",
     "de": "Tür",
-    "es": "puerta"
+    "es": "puerta",
+    "fr": "porte"
   },
   {
     "id": "dragon",
     "file": "dragon",
     "en": "dragon",
     "de": "Drache",
-    "es": "dragón"
+    "es": "dragón",
+    "fr": "dragon"
   },
   {
     "id": "dresser",
     "file": "dresser",
     "en": "dresser",
     "de": "Kommode",
-    "es": "cómoda"
+    "es": "cómoda",
+    "fr": "commode"
   },
   {
     "id": "drill",
     "file": "drill",
     "en": "drill",
     "de": "Bohrmaschine",
-    "es": "taladro"
+    "es": "taladro",
+    "fr": "perceuse"
   },
   {
     "id": "drums",
     "file": "drums",
     "en": "drums",
     "de": "Schlagzeug",
-    "es": "batería"
+    "es": "batería",
+    "fr": "batterie"
   },
   {
     "id": "duck",
     "file": "duck",
     "en": "duck",
     "de": "Ente",
-    "es": "pato"
+    "es": "pato",
+    "fr": "canard"
   },
   {
     "id": "dumbbell",
     "file": "dumbbell",
     "en": "dumbbell",
     "de": "Hantel",
-    "es": "pesa"
+    "es": "pesa",
+    "fr": "haltère"
   },
   {
     "id": "ear",
     "file": "ear",
     "en": "ear",
     "de": "Ohr",
-    "es": "oreja"
+    "es": "oreja",
+    "fr": "oreille"
   },
   {
     "id": "elbow",
     "file": "elbow",
     "en": "elbow",
     "de": "Ellbogen",
-    "es": "codo"
+    "es": "codo",
+    "fr": "coude"
   },
   {
     "id": "elephant",
     "file": "elephant",
     "en": "elephant",
     "de": "Elefant",
-    "es": "elefante"
+    "es": "elefante",
+    "fr": "éléphant"
   },
   {
     "id": "envelope",
     "file": "envelope",
     "en": "envelope",
     "de": "Briefumschlag",
-    "es": "sobre"
+    "es": "sobre",
+    "fr": "enveloppe"
   },
   {
     "id": "eraser",
     "file": "eraser",
     "en": "eraser",
     "de": "Radiergummi",
-    "es": "goma de borrar"
+    "es": "goma de borrar",
+    "fr": "gomme"
   },
   {
     "id": "eye",
     "file": "eye",
     "en": "eye",
     "de": "Auge",
-    "es": "ojo"
+    "es": "ojo",
+    "fr": "œil"
   },
   {
     "id": "eyeglasses",
     "file": "eyeglasses",
     "en": "glasses",
     "de": "Brille",
-    "es": "gafas"
+    "es": "gafas",
+    "fr": "lunettes"
   },
   {
     "id": "face",
     "file": "face",
     "en": "face",
     "de": "Gesicht",
-    "es": "cara"
+    "es": "cara",
+    "fr": "visage"
   },
   {
     "id": "fan",
     "file": "fan",
     "en": "fan",
     "de": "Ventilator",
-    "es": "ventilador"
+    "es": "ventilador",
+    "fr": "ventilateur"
   },
   {
     "id": "feather",
     "file": "feather",
     "en": "feather",
     "de": "Feder",
-    "es": "pluma"
+    "es": "pluma",
+    "fr": "plume"
   },
   {
     "id": "fence",
     "file": "fence",
     "en": "fence",
     "de": "Zaun",
-    "es": "valla"
+    "es": "valla",
+    "fr": "clôture"
   },
   {
     "id": "finger",
     "file": "finger",
     "en": "finger",
     "de": "Finger",
-    "es": "dedo"
+    "es": "dedo",
+    "fr": "doigt"
   },
   {
     "id": "fire hydrant",
     "file": "fire-hydrant",
     "en": "fire hydrant",
     "de": "Hydrant",
-    "es": "boca de incendios"
+    "es": "boca de incendios",
+    "fr": "bouche d'incendie"
   },
   {
     "id": "fireplace",
     "file": "fireplace",
     "en": "fireplace",
     "de": "Kamin",
-    "es": "chimenea"
+    "es": "chimenea",
+    "fr": "cheminée"
   },
   {
     "id": "firetruck",
     "file": "firetruck",
     "en": "fire truck",
     "de": "Feuerwehrauto",
-    "es": "camión de bomberos"
+    "es": "camión de bomberos",
+    "fr": "camion de pompiers"
   },
   {
     "id": "fish",
     "file": "fish",
     "en": "fish",
     "de": "Fisch",
-    "es": "pez"
+    "es": "pez",
+    "fr": "poisson"
   },
   {
     "id": "flamingo",
     "file": "flamingo",
     "en": "flamingo",
     "de": "Flamingo",
-    "es": "flamenco"
+    "es": "flamenco",
+    "fr": "flamant rose"
   },
   {
     "id": "flashlight",
     "file": "flashlight",
     "en": "flashlight",
     "de": "Taschenlampe",
-    "es": "linterna"
+    "es": "linterna",
+    "fr": "lampe de poche"
   },
   {
     "id": "flip flops",
     "file": "flip-flops",
     "en": "flip flops",
     "de": "Flipflops",
-    "es": "chanclas"
+    "es": "chanclas",
+    "fr": "tongs"
   },
   {
     "id": "floor lamp",
     "file": "floor-lamp",
     "en": "floor lamp",
     "de": "Stehlampe",
-    "es": "lámpara de pie"
+    "es": "lámpara de pie",
+    "fr": "lampadaire"
   },
   {
     "id": "flower",
     "file": "flower",
     "en": "flower",
     "de": "Blume",
-    "es": "flor"
+    "es": "flor",
+    "fr": "fleur"
   },
   {
     "id": "flying saucer",
     "file": "flying-saucer",
     "en": "flying saucer",
     "de": "Ufo",
-    "es": "ovni"
+    "es": "ovni",
+    "fr": "soucoupe volante"
   },
   {
     "id": "foot",
     "file": "foot",
     "en": "foot",
     "de": "Fuß",
-    "es": "pie"
+    "es": "pie",
+    "fr": "pied"
   },
   {
     "id": "fork",
     "file": "fork",
     "en": "fork",
     "de": "Gabel",
-    "es": "tenedor"
+    "es": "tenedor",
+    "fr": "fourchette"
   },
   {
     "id": "frog",
     "file": "frog",
     "en": "frog",
     "de": "Frosch",
-    "es": "rana"
+    "es": "rana",
+    "fr": "grenouille"
   },
   {
     "id": "frying pan",
     "file": "frying-pan",
     "en": "frying pan",
     "de": "Bratpfanne",
-    "es": "sartén"
+    "es": "sartén",
+    "fr": "poêle"
   },
   {
     "id": "garden hose",
     "file": "garden-hose",
     "en": "garden hose",
     "de": "Gartenschlauch",
-    "es": "manguera"
+    "es": "manguera",
+    "fr": "tuyau d'arrosage"
   },
   {
     "id": "giraffe",
     "file": "giraffe",
     "en": "giraffe",
     "de": "Giraffe",
-    "es": "jirafa"
+    "es": "jirafa",
+    "fr": "girafe"
   },
   {
     "id": "goatee",
     "file": "goatee",
     "en": "goatee",
     "de": "Ziegenbart",
-    "es": "perilla"
+    "es": "perilla",
+    "fr": "bouc"
   },
   {
     "id": "golf club",
     "file": "golf-club",
     "en": "golf club",
     "de": "Golfschläger",
-    "es": "palo de golf"
+    "es": "palo de golf",
+    "fr": "club de golf"
   },
   {
     "id": "grapes",
     "file": "grapes",
     "en": "grapes",
     "de": "Trauben",
-    "es": "uvas"
+    "es": "uvas",
+    "fr": "raisin"
   },
   {
     "id": "grass",
     "file": "grass",
     "en": "grass",
     "de": "Gras",
-    "es": "hierba"
+    "es": "hierba",
+    "fr": "herbe"
   },
   {
     "id": "guitar",
     "file": "guitar",
     "en": "guitar",
     "de": "Gitarre",
-    "es": "guitarra"
+    "es": "guitarra",
+    "fr": "guitare"
   },
   {
     "id": "hamburger",
     "file": "hamburger",
     "en": "hamburger",
     "de": "Hamburger",
-    "es": "hamburguesa"
+    "es": "hamburguesa",
+    "fr": "hamburger"
   },
   {
     "id": "hammer",
     "file": "hammer",
     "en": "hammer",
     "de": "Hammer",
-    "es": "martillo"
+    "es": "martillo",
+    "fr": "marteau"
   },
   {
     "id": "hand",
     "file": "hand",
     "en": "hand",
     "de": "Hand",
-    "es": "mano"
+    "es": "mano",
+    "fr": "main"
   },
   {
     "id": "harp",
     "file": "harp",
     "en": "harp",
     "de": "Harfe",
-    "es": "arpa"
+    "es": "arpa",
+    "fr": "harpe"
   },
   {
     "id": "hat",
     "file": "hat",
     "en": "hat",
     "de": "Hut",
-    "es": "sombrero"
+    "es": "sombrero",
+    "fr": "chapeau"
   },
   {
     "id": "headphones",
     "file": "headphones",
     "en": "headphones",
     "de": "Kopfhörer",
-    "es": "auriculares"
+    "es": "auriculares",
+    "fr": "casque audio"
   },
   {
     "id": "hedgehog",
     "file": "hedgehog",
     "en": "hedgehog",
     "de": "Igel",
-    "es": "erizo"
+    "es": "erizo",
+    "fr": "hérisson"
   },
   {
     "id": "helicopter",
     "file": "helicopter",
     "en": "helicopter",
     "de": "Hubschrauber",
-    "es": "helicóptero"
+    "es": "helicóptero",
+    "fr": "hélicoptère"
   },
   {
     "id": "helmet",
     "file": "helmet",
     "en": "helmet",
     "de": "Helm",
-    "es": "casco"
+    "es": "casco",
+    "fr": "casque"
   },
   {
     "id": "hockey puck",
     "file": "hockey-puck",
     "en": "hockey puck",
     "de": "Puck",
-    "es": "disco de hockey"
+    "es": "disco de hockey",
+    "fr": "palet"
   },
   {
     "id": "hockey stick",
     "file": "hockey-stick",
     "en": "hockey stick",
     "de": "Hockeyschläger",
-    "es": "palo de hockey"
+    "es": "palo de hockey",
+    "fr": "crosse de hockey"
   },
   {
     "id": "horse",
     "file": "horse",
     "en": "horse",
     "de": "Pferd",
-    "es": "caballo"
+    "es": "caballo",
+    "fr": "cheval"
   },
   {
     "id": "hospital",
     "file": "hospital",
     "en": "hospital",
     "de": "Krankenhaus",
-    "es": "hospital"
+    "es": "hospital",
+    "fr": "hôpital"
   },
   {
     "id": "hot air balloon",
     "file": "hot-air-balloon",
     "en": "hot air balloon",
     "de": "Heißluftballon",
-    "es": "globo aerostático"
+    "es": "globo aerostático",
+    "fr": "montgolfière"
   },
   {
     "id": "hot dog",
     "file": "hot-dog",
     "en": "hot dog",
     "de": "Hotdog",
-    "es": "perrito caliente"
+    "es": "perrito caliente",
+    "fr": "hot-dog"
   },
   {
     "id": "hourglass",
     "file": "hourglass",
     "en": "hourglass",
     "de": "Sanduhr",
-    "es": "reloj de arena"
+    "es": "reloj de arena",
+    "fr": "sablier"
   },
   {
     "id": "house",
     "file": "house",
     "en": "house",
     "de": "Haus",
-    "es": "casa"
+    "es": "casa",
+    "fr": "maison"
   },
   {
     "id": "house plant",
     "file": "house-plant",
     "en": "house plant",
     "de": "Zimmerpflanze",
-    "es": "planta de interior"
+    "es": "planta de interior",
+    "fr": "plante verte"
   },
   {
     "id": "ice cream",
     "file": "ice-cream",
     "en": "ice cream",
     "de": "Eis",
-    "es": "helado"
+    "es": "helado",
+    "fr": "glace"
   },
   {
     "id": "jacket",
     "file": "jacket",
     "en": "jacket",
     "de": "Jacke",
-    "es": "chaqueta"
+    "es": "chaqueta",
+    "fr": "veste"
   },
   {
     "id": "jail",
     "file": "jail",
     "en": "jail",
     "de": "Gefängnis",
-    "es": "cárcel"
+    "es": "cárcel",
+    "fr": "prison"
   },
   {
     "id": "kangaroo",
     "file": "kangaroo",
     "en": "kangaroo",
     "de": "Känguru",
-    "es": "canguro"
+    "es": "canguro",
+    "fr": "kangourou"
   },
   {
     "id": "key",
     "file": "key",
     "en": "key",
     "de": "Schlüssel",
-    "es": "llave"
+    "es": "llave",
+    "fr": "clé"
   },
   {
     "id": "keyboard",
     "file": "keyboard",
     "en": "keyboard",
     "de": "Tastatur",
-    "es": "teclado"
+    "es": "teclado",
+    "fr": "clavier"
   },
   {
     "id": "knee",
     "file": "knee",
     "en": "knee",
     "de": "Knie",
-    "es": "rodilla"
+    "es": "rodilla",
+    "fr": "genou"
   },
   {
     "id": "knife",
     "file": "knife",
     "en": "knife",
     "de": "Messer",
-    "es": "cuchillo"
+    "es": "cuchillo",
+    "fr": "couteau"
   },
   {
     "id": "ladder",
     "file": "ladder",
     "en": "ladder",
     "de": "Leiter",
-    "es": "escalera"
+    "es": "escalera",
+    "fr": "échelle"
   },
   {
     "id": "lantern",
     "file": "lantern",
     "en": "lantern",
     "de": "Laterne",
-    "es": "farol"
+    "es": "farol",
+    "fr": "lanterne"
   },
   {
     "id": "laptop",
     "file": "laptop",
     "en": "laptop",
     "de": "Laptop",
-    "es": "portátil"
+    "es": "portátil",
+    "fr": "ordinateur portable"
   },
   {
     "id": "leaf",
     "file": "leaf",
     "en": "leaf",
     "de": "Blatt",
-    "es": "hoja"
+    "es": "hoja",
+    "fr": "feuille"
   },
   {
     "id": "leg",
     "file": "leg",
     "en": "leg",
     "de": "Bein",
-    "es": "pierna"
+    "es": "pierna",
+    "fr": "jambe"
   },
   {
     "id": "light bulb",
     "file": "light-bulb",
     "en": "light bulb",
     "de": "Glühbirne",
-    "es": "bombilla"
+    "es": "bombilla",
+    "fr": "ampoule"
   },
   {
     "id": "lighter",
     "file": "lighter",
     "en": "lighter",
     "de": "Feuerzeug",
-    "es": "mechero"
+    "es": "mechero",
+    "fr": "briquet"
   },
   {
     "id": "lighthouse",
     "file": "lighthouse",
     "en": "lighthouse",
     "de": "Leuchtturm",
-    "es": "faro"
+    "es": "faro",
+    "fr": "phare"
   },
   {
     "id": "lightning",
     "file": "lightning",
     "en": "lightning",
     "de": "Blitz",
-    "es": "rayo"
+    "es": "rayo",
+    "fr": "éclair"
   },
   {
     "id": "lion",
     "file": "lion",
     "en": "lion",
     "de": "Löwe",
-    "es": "león"
+    "es": "león",
+    "fr": "lion"
   },
   {
     "id": "lipstick",
     "file": "lipstick",
     "en": "lipstick",
     "de": "Lippenstift",
-    "es": "pintalabios"
+    "es": "pintalabios",
+    "fr": "rouge à lèvres"
   },
   {
     "id": "lobster",
     "file": "lobster",
     "en": "lobster",
     "de": "Hummer",
-    "es": "langosta"
+    "es": "langosta",
+    "fr": "homard"
   },
   {
     "id": "lollipop",
     "file": "lollipop",
     "en": "lollipop",
     "de": "Lutscher",
-    "es": "piruleta"
+    "es": "piruleta",
+    "fr": "sucette"
   },
   {
     "id": "mailbox",
     "file": "mailbox",
     "en": "mailbox",
     "de": "Briefkasten",
-    "es": "buzón"
+    "es": "buzón",
+    "fr": "boîte aux lettres"
   },
   {
     "id": "map",
     "file": "map",
     "en": "map",
     "de": "Landkarte",
-    "es": "mapa"
+    "es": "mapa",
+    "fr": "carte"
   },
   {
     "id": "matches",
     "file": "matches",
     "en": "matches",
     "de": "Streichhölzer",
-    "es": "cerillas"
+    "es": "cerillas",
+    "fr": "allumettes"
   },
   {
     "id": "megaphone",
     "file": "megaphone",
     "en": "megaphone",
     "de": "Megafon",
-    "es": "megáfono"
+    "es": "megáfono",
+    "fr": "mégaphone"
   },
   {
     "id": "mermaid",
     "file": "mermaid",
     "en": "mermaid",
     "de": "Meerjungfrau",
-    "es": "sirena"
+    "es": "sirena",
+    "fr": "sirène"
   },
   {
     "id": "microphone",
     "file": "microphone",
     "en": "microphone",
     "de": "Mikrofon",
-    "es": "micrófono"
+    "es": "micrófono",
+    "fr": "microphone"
   },
   {
     "id": "microwave",
     "file": "microwave",
     "en": "microwave",
     "de": "Mikrowelle",
-    "es": "microondas"
+    "es": "microondas",
+    "fr": "micro-ondes"
   },
   {
     "id": "monkey",
     "file": "monkey",
     "en": "monkey",
     "de": "Affe",
-    "es": "mono"
+    "es": "mono",
+    "fr": "singe"
   },
   {
     "id": "moon",
     "file": "moon",
     "en": "moon",
     "de": "Mond",
-    "es": "luna"
+    "es": "luna",
+    "fr": "lune"
   },
   {
     "id": "mosquito",
     "file": "mosquito",
     "en": "mosquito",
     "de": "Mücke",
-    "es": "mosquito"
+    "es": "mosquito",
+    "fr": "moustique"
   },
   {
     "id": "motorbike",
     "file": "motorbike",
     "en": "motorbike",
     "de": "Motorrad",
-    "es": "moto"
+    "es": "moto",
+    "fr": "moto"
   },
   {
     "id": "mountain",
     "file": "mountain",
     "en": "mountain",
     "de": "Berg",
-    "es": "montaña"
+    "es": "montaña",
+    "fr": "montagne"
   },
   {
     "id": "mouse",
     "file": "mouse",
     "en": "mouse",
     "de": "Maus",
-    "es": "ratón"
+    "es": "ratón",
+    "fr": "souris"
   },
   {
     "id": "moustache",
     "file": "moustache",
     "en": "moustache",
     "de": "Schnurrbart",
-    "es": "bigote"
+    "es": "bigote",
+    "fr": "moustache"
   },
   {
     "id": "mouth",
     "file": "mouth",
     "en": "mouth",
     "de": "Mund",
-    "es": "boca"
+    "es": "boca",
+    "fr": "bouche"
   },
   {
     "id": "mug",
     "file": "mug",
     "en": "mug",
     "de": "Becher",
-    "es": "jarra"
+    "es": "jarra",
+    "fr": "mug"
   },
   {
     "id": "mushroom",
     "file": "mushroom",
     "en": "mushroom",
     "de": "Pilz",
-    "es": "seta"
+    "es": "seta",
+    "fr": "champignon"
   },
   {
     "id": "nail",
     "file": "nail",
     "en": "nail",
     "de": "Nagel",
-    "es": "clavo"
+    "es": "clavo",
+    "fr": "clou"
   },
   {
     "id": "necklace",
     "file": "necklace",
     "en": "necklace",
     "de": "Halskette",
-    "es": "collar"
+    "es": "collar",
+    "fr": "collier"
   },
   {
     "id": "nose",
     "file": "nose",
     "en": "nose",
     "de": "Nase",
-    "es": "nariz"
+    "es": "nariz",
+    "fr": "nez"
   },
   {
     "id": "octopus",
     "file": "octopus",
     "en": "octopus",
     "de": "Krake",
-    "es": "pulpo"
+    "es": "pulpo",
+    "fr": "pieuvre"
   },
   {
     "id": "onion",
     "file": "onion",
     "en": "onion",
     "de": "Zwiebel",
-    "es": "cebolla"
+    "es": "cebolla",
+    "fr": "oignon"
   },
   {
     "id": "oven",
     "file": "oven",
     "en": "oven",
     "de": "Ofen",
-    "es": "horno"
+    "es": "horno",
+    "fr": "four"
   },
   {
     "id": "owl",
     "file": "owl",
     "en": "owl",
     "de": "Eule",
-    "es": "búho"
+    "es": "búho",
+    "fr": "hibou"
   },
   {
     "id": "paintbrush",
     "file": "paintbrush",
     "en": "paintbrush",
     "de": "Pinsel",
-    "es": "pincel"
+    "es": "pincel",
+    "fr": "pinceau"
   },
   {
     "id": "paint can",
     "file": "paint-can",
     "en": "paint can",
     "de": "Farbeimer",
-    "es": "bote de pintura"
+    "es": "bote de pintura",
+    "fr": "pot de peinture"
   },
   {
     "id": "palm tree",
     "file": "palm-tree",
     "en": "palm tree",
     "de": "Palme",
-    "es": "palmera"
+    "es": "palmera",
+    "fr": "palmier"
   },
   {
     "id": "panda",
     "file": "panda",
     "en": "panda",
     "de": "Panda",
-    "es": "panda"
+    "es": "panda",
+    "fr": "panda"
   },
   {
     "id": "pants",
     "file": "pants",
     "en": "pants",
     "de": "Hose",
-    "es": "pantalón"
+    "es": "pantalón",
+    "fr": "pantalon"
   },
   {
     "id": "paper clip",
     "file": "paper-clip",
     "en": "paper clip",
     "de": "Büroklammer",
-    "es": "clip"
+    "es": "clip",
+    "fr": "attache-trombone"
   },
   {
     "id": "parachute",
     "file": "parachute",
     "en": "parachute",
     "de": "Fallschirm",
-    "es": "paracaídas"
+    "es": "paracaídas",
+    "fr": "parachute"
   },
   {
     "id": "parrot",
     "file": "parrot",
     "en": "parrot",
     "de": "Papagei",
-    "es": "loro"
+    "es": "loro",
+    "fr": "perroquet"
   },
   {
     "id": "passport",
     "file": "passport",
     "en": "passport",
     "de": "Reisepass",
-    "es": "pasaporte"
+    "es": "pasaporte",
+    "fr": "passeport"
   },
   {
     "id": "peanut",
     "file": "peanut",
     "en": "peanut",
     "de": "Erdnuss",
-    "es": "cacahuete"
+    "es": "cacahuete",
+    "fr": "cacahuète"
   },
   {
     "id": "pear",
     "file": "pear",
     "en": "pear",
     "de": "Birne",
-    "es": "pera"
+    "es": "pera",
+    "fr": "poire"
   },
   {
     "id": "peas",
     "file": "peas",
     "en": "peas",
     "de": "Erbsen",
-    "es": "guisantes"
+    "es": "guisantes",
+    "fr": "petits pois"
   },
   {
     "id": "pencil",
     "file": "pencil",
     "en": "pencil",
     "de": "Bleistift",
-    "es": "lápiz"
+    "es": "lápiz",
+    "fr": "crayon"
   },
   {
     "id": "penguin",
     "file": "penguin",
     "en": "penguin",
     "de": "Pinguin",
-    "es": "pingüino"
+    "es": "pingüino",
+    "fr": "pingouin"
   },
   {
     "id": "piano",
     "file": "piano",
     "en": "piano",
     "de": "Klavier",
-    "es": "piano"
+    "es": "piano",
+    "fr": "piano"
   },
   {
     "id": "pickup truck",
     "file": "pickup-truck",
     "en": "pickup truck",
     "de": "Pick-up",
-    "es": "camioneta"
+    "es": "camioneta",
+    "fr": "pick-up"
   },
   {
     "id": "picture frame",
     "file": "picture-frame",
     "en": "picture frame",
     "de": "Bilderrahmen",
-    "es": "marco"
+    "es": "marco",
+    "fr": "cadre"
   },
   {
     "id": "pig",
     "file": "pig",
     "en": "pig",
     "de": "Schwein",
-    "es": "cerdo"
+    "es": "cerdo",
+    "fr": "cochon"
   },
   {
     "id": "pillow",
     "file": "pillow",
     "en": "pillow",
     "de": "Kissen",
-    "es": "almohada"
+    "es": "almohada",
+    "fr": "oreiller"
   },
   {
     "id": "pineapple",
     "file": "pineapple",
     "en": "pineapple",
     "de": "Ananas",
-    "es": "piña"
+    "es": "piña",
+    "fr": "ananas"
   },
   {
     "id": "pizza",
     "file": "pizza",
     "en": "pizza",
     "de": "Pizza",
-    "es": "pizza"
+    "es": "pizza",
+    "fr": "pizza"
   },
   {
     "id": "pliers",
     "file": "pliers",
     "en": "pliers",
     "de": "Zange",
-    "es": "alicates"
+    "es": "alicates",
+    "fr": "pince"
   },
   {
     "id": "police car",
     "file": "police-car",
     "en": "police car",
     "de": "Polizeiauto",
-    "es": "coche de policía"
+    "es": "coche de policía",
+    "fr": "voiture de police"
   },
   {
     "id": "postcard",
     "file": "postcard",
     "en": "postcard",
     "de": "Postkarte",
-    "es": "postal"
+    "es": "postal",
+    "fr": "carte postale"
   },
   {
     "id": "potato",
     "file": "potato",
     "en": "potato",
     "de": "Kartoffel",
-    "es": "patata"
+    "es": "patata",
+    "fr": "pomme de terre"
   },
   {
     "id": "power outlet",
     "file": "power-outlet",
     "en": "power outlet",
     "de": "Steckdose",
-    "es": "enchufe"
+    "es": "enchufe",
+    "fr": "prise électrique"
   },
   {
     "id": "purse",
     "file": "purse",
     "en": "purse",
     "de": "Handtasche",
-    "es": "bolso"
+    "es": "bolso",
+    "fr": "sac à main"
   },
   {
     "id": "rabbit",
     "file": "rabbit",
     "en": "rabbit",
     "de": "Hase",
-    "es": "conejo"
+    "es": "conejo",
+    "fr": "lapin"
   },
   {
     "id": "raccoon",
     "file": "raccoon",
     "en": "raccoon",
     "de": "Waschbär",
-    "es": "mapache"
+    "es": "mapache",
+    "fr": "raton laveur"
   },
   {
     "id": "radio",
     "file": "radio",
     "en": "radio",
     "de": "Radio",
-    "es": "radio"
+    "es": "radio",
+    "fr": "radio"
   },
   {
     "id": "rain",
     "file": "rain",
     "en": "rain",
     "de": "Regen",
-    "es": "lluvia"
+    "es": "lluvia",
+    "fr": "pluie"
   },
   {
     "id": "rainbow",
     "file": "rainbow",
     "en": "rainbow",
     "de": "Regenbogen",
-    "es": "arcoíris"
+    "es": "arcoíris",
+    "fr": "arc-en-ciel"
   },
   {
     "id": "rake",
     "file": "rake",
     "en": "rake",
     "de": "Rechen",
-    "es": "rastrillo"
+    "es": "rastrillo",
+    "fr": "râteau"
   },
   {
     "id": "remote control",
     "file": "remote-control",
     "en": "remote control",
     "de": "Fernbedienung",
-    "es": "mando a distancia"
+    "es": "mando a distancia",
+    "fr": "télécommande"
   },
   {
     "id": "rhinoceros",
     "file": "rhinoceros",
     "en": "rhinoceros",
     "de": "Nashorn",
-    "es": "rinoceronte"
+    "es": "rinoceronte",
+    "fr": "rhinocéros"
   },
   {
     "id": "river",
     "file": "river",
     "en": "river",
     "de": "Fluss",
-    "es": "río"
+    "es": "río",
+    "fr": "rivière"
   },
   {
     "id": "roller coaster",
     "file": "roller-coaster",
     "en": "roller coaster",
     "de": "Achterbahn",
-    "es": "montaña rusa"
+    "es": "montaña rusa",
+    "fr": "montagnes russes"
   },
   {
     "id": "rollerskates",
     "file": "rollerskates",
     "en": "roller skates",
     "de": "Rollschuhe",
-    "es": "patines"
+    "es": "patines",
+    "fr": "patins à roulettes"
   },
   {
     "id": "sailboat",
     "file": "sailboat",
     "en": "sailboat",
     "de": "Segelboot",
-    "es": "velero"
+    "es": "velero",
+    "fr": "voilier"
   },
   {
     "id": "sandwich",
     "file": "sandwich",
     "en": "sandwich",
     "de": "Sandwich",
-    "es": "sándwich"
+    "es": "sándwich",
+    "fr": "sandwich"
   },
   {
     "id": "saw",
     "file": "saw",
     "en": "saw",
     "de": "Säge",
-    "es": "sierra"
+    "es": "sierra",
+    "fr": "scie"
   },
   {
     "id": "saxophone",
     "file": "saxophone",
     "en": "saxophone",
     "de": "Saxofon",
-    "es": "saxofón"
+    "es": "saxofón",
+    "fr": "saxophone"
   },
   {
     "id": "school bus",
     "file": "school-bus",
     "en": "school bus",
     "de": "Schulbus",
-    "es": "autobús escolar"
+    "es": "autobús escolar",
+    "fr": "bus scolaire"
   },
   {
     "id": "scissors",
     "file": "scissors",
     "en": "scissors",
     "de": "Schere",
-    "es": "tijeras"
+    "es": "tijeras",
+    "fr": "ciseaux"
   },
   {
     "id": "scorpion",
     "file": "scorpion",
     "en": "scorpion",
     "de": "Skorpion",
-    "es": "escorpión"
+    "es": "escorpión",
+    "fr": "scorpion"
   },
   {
     "id": "screwdriver",
     "file": "screwdriver",
     "en": "screwdriver",
     "de": "Schraubenzieher",
-    "es": "destornillador"
+    "es": "destornillador",
+    "fr": "tournevis"
   },
   {
     "id": "sea turtle",
     "file": "sea-turtle",
     "en": "sea turtle",
     "de": "Meeresschildkröte",
-    "es": "tortuga marina"
+    "es": "tortuga marina",
+    "fr": "tortue de mer"
   },
   {
     "id": "see saw",
     "file": "see-saw",
     "en": "seesaw",
     "de": "Wippe",
-    "es": "balancín"
+    "es": "balancín",
+    "fr": "balançoire à bascule"
   },
   {
     "id": "shark",
     "file": "shark",
     "en": "shark",
     "de": "Hai",
-    "es": "tiburón"
+    "es": "tiburón",
+    "fr": "requin"
   },
   {
     "id": "sheep",
     "file": "sheep",
     "en": "sheep",
     "de": "Schaf",
-    "es": "oveja"
+    "es": "oveja",
+    "fr": "mouton"
   },
   {
     "id": "shoe",
     "file": "shoe",
     "en": "shoe",
     "de": "Schuh",
-    "es": "zapato"
+    "es": "zapato",
+    "fr": "chaussure"
   },
   {
     "id": "shorts",
     "file": "shorts",
     "en": "shorts",
     "de": "Shorts",
-    "es": "pantalón corto"
+    "es": "pantalón corto",
+    "fr": "short"
   },
   {
     "id": "shovel",
     "file": "shovel",
     "en": "shovel",
     "de": "Schaufel",
-    "es": "pala"
+    "es": "pala",
+    "fr": "pelle"
   },
   {
     "id": "sink",
     "file": "sink",
     "en": "sink",
     "de": "Waschbecken",
-    "es": "lavabo"
+    "es": "lavabo",
+    "fr": "lavabo"
   },
   {
     "id": "skateboard",
     "file": "skateboard",
     "en": "skateboard",
     "de": "Skateboard",
-    "es": "monopatín"
+    "es": "monopatín",
+    "fr": "skateboard"
   },
   {
     "id": "skull",
     "file": "skull",
     "en": "skull",
     "de": "Totenkopf",
-    "es": "calavera"
+    "es": "calavera",
+    "fr": "crâne"
   },
   {
     "id": "skyscraper",
     "file": "skyscraper",
     "en": "skyscraper",
     "de": "Wolkenkratzer",
-    "es": "rascacielos"
+    "es": "rascacielos",
+    "fr": "gratte-ciel"
   },
   {
     "id": "sleeping bag",
     "file": "sleeping-bag",
     "en": "sleeping bag",
     "de": "Schlafsack",
-    "es": "saco de dormir"
+    "es": "saco de dormir",
+    "fr": "sac de couchage"
   },
   {
     "id": "smiley face",
     "file": "smiley-face",
     "en": "smiley face",
     "de": "Smiley",
-    "es": "cara sonriente"
+    "es": "cara sonriente",
+    "fr": "smiley"
   },
   {
     "id": "snail",
     "file": "snail",
     "en": "snail",
     "de": "Schnecke",
-    "es": "caracol"
+    "es": "caracol",
+    "fr": "escargot"
   },
   {
     "id": "snake",
     "file": "snake",
     "en": "snake",
     "de": "Schlange",
-    "es": "serpiente"
+    "es": "serpiente",
+    "fr": "serpent"
   },
   {
     "id": "snorkel",
     "file": "snorkel",
     "en": "snorkel",
     "de": "Schnorchel",
-    "es": "esnórquel"
+    "es": "esnórquel",
+    "fr": "tuba"
   },
   {
     "id": "snowflake",
     "file": "snowflake",
     "en": "snowflake",
     "de": "Schneeflocke",
-    "es": "copo de nieve"
+    "es": "copo de nieve",
+    "fr": "flocon de neige"
   },
   {
     "id": "snowman",
     "file": "snowman",
     "en": "snowman",
     "de": "Schneemann",
-    "es": "muñeco de nieve"
+    "es": "muñeco de nieve",
+    "fr": "bonhomme de neige"
   },
   {
     "id": "soccer ball",
     "file": "soccer-ball",
     "en": "soccer ball",
     "de": "Fußball",
-    "es": "balón de fútbol"
+    "es": "balón de fútbol",
+    "fr": "ballon de foot"
   },
   {
     "id": "sock",
     "file": "sock",
     "en": "sock",
     "de": "Socke",
-    "es": "calcetín"
+    "es": "calcetín",
+    "fr": "chaussette"
   },
   {
     "id": "speedboat",
     "file": "speedboat",
     "en": "speedboat",
     "de": "Schnellboot",
-    "es": "lancha"
+    "es": "lancha",
+    "fr": "hors-bord"
   },
   {
     "id": "spider",
     "file": "spider",
     "en": "spider",
     "de": "Spinne",
-    "es": "araña"
+    "es": "araña",
+    "fr": "araignée"
   },
   {
     "id": "spoon",
     "file": "spoon",
     "en": "spoon",
     "de": "Löffel",
-    "es": "cuchara"
+    "es": "cuchara",
+    "fr": "cuillère"
   },
   {
     "id": "squirrel",
     "file": "squirrel",
     "en": "squirrel",
     "de": "Eichhörnchen",
-    "es": "ardilla"
+    "es": "ardilla",
+    "fr": "écureuil"
   },
   {
     "id": "stairs",
     "file": "stairs",
     "en": "stairs",
     "de": "Treppe",
-    "es": "escaleras"
+    "es": "escaleras",
+    "fr": "escalier"
   },
   {
     "id": "star",
     "file": "star",
     "en": "star",
     "de": "Stern",
-    "es": "estrella"
+    "es": "estrella",
+    "fr": "étoile"
   },
   {
     "id": "steak",
     "file": "steak",
     "en": "steak",
     "de": "Steak",
-    "es": "filete"
+    "es": "filete",
+    "fr": "steak"
   },
   {
     "id": "stethoscope",
     "file": "stethoscope",
     "en": "stethoscope",
     "de": "Stethoskop",
-    "es": "estetoscopio"
+    "es": "estetoscopio",
+    "fr": "stéthoscope"
   },
   {
     "id": "stop sign",
     "file": "stop-sign",
     "en": "stop sign",
     "de": "Stoppschild",
-    "es": "señal de stop"
+    "es": "señal de stop",
+    "fr": "panneau stop"
   },
   {
     "id": "strawberry",
     "file": "strawberry",
     "en": "strawberry",
     "de": "Erdbeere",
-    "es": "fresa"
+    "es": "fresa",
+    "fr": "fraise"
   },
   {
     "id": "streetlight",
     "file": "streetlight",
     "en": "streetlight",
     "de": "Straßenlaterne",
-    "es": "farola"
+    "es": "farola",
+    "fr": "réverbère"
   },
   {
     "id": "string bean",
     "file": "string-bean",
     "en": "green bean",
     "de": "Bohne",
-    "es": "judía verde"
+    "es": "judía verde",
+    "fr": "haricot vert"
   },
   {
     "id": "submarine",
     "file": "submarine",
     "en": "submarine",
     "de": "U-Boot",
-    "es": "submarino"
+    "es": "submarino",
+    "fr": "sous-marin"
   },
   {
     "id": "suitcase",
     "file": "suitcase",
     "en": "suitcase",
     "de": "Koffer",
-    "es": "maleta"
+    "es": "maleta",
+    "fr": "valise"
   },
   {
     "id": "sun",
     "file": "sun",
     "en": "sun",
     "de": "Sonne",
-    "es": "sol"
+    "es": "sol",
+    "fr": "soleil"
   },
   {
     "id": "swan",
     "file": "swan",
     "en": "swan",
     "de": "Schwan",
-    "es": "cisne"
+    "es": "cisne",
+    "fr": "cygne"
   },
   {
     "id": "sweater",
     "file": "sweater",
     "en": "sweater",
     "de": "Pullover",
-    "es": "jersey"
+    "es": "jersey",
+    "fr": "pull"
   },
   {
     "id": "swing set",
     "file": "swing-set",
     "en": "swing",
     "de": "Schaukel",
-    "es": "columpio"
+    "es": "columpio",
+    "fr": "balançoire"
   },
   {
     "id": "sword",
     "file": "sword",
     "en": "sword",
     "de": "Schwert",
-    "es": "espada"
+    "es": "espada",
+    "fr": "épée"
   },
   {
     "id": "syringe",
     "file": "syringe",
     "en": "syringe",
     "de": "Spritze",
-    "es": "jeringa"
+    "es": "jeringa",
+    "fr": "seringue"
   },
   {
     "id": "table",
     "file": "table",
     "en": "table",
     "de": "Tisch",
-    "es": "mesa"
+    "es": "mesa",
+    "fr": "table"
   },
   {
     "id": "teapot",
     "file": "teapot",
     "en": "teapot",
     "de": "Teekanne",
-    "es": "tetera"
+    "es": "tetera",
+    "fr": "théière"
   },
   {
     "id": "teddy-bear",
     "file": "teddy-bear",
     "en": "teddy bear",
     "de": "Teddybär",
-    "es": "oso de peluche"
+    "es": "oso de peluche",
+    "fr": "ours en peluche"
   },
   {
     "id": "telephone",
     "file": "telephone",
     "en": "telephone",
     "de": "Telefon",
-    "es": "teléfono"
+    "es": "teléfono",
+    "fr": "téléphone"
   },
   {
     "id": "television",
     "file": "television",
     "en": "television",
     "de": "Fernseher",
-    "es": "televisor"
+    "es": "televisor",
+    "fr": "télévision"
   },
   {
     "id": "tennis racquet",
     "file": "tennis-racquet",
     "en": "tennis racket",
     "de": "Tennisschläger",
-    "es": "raqueta de tenis"
+    "es": "raqueta de tenis",
+    "fr": "raquette de tennis"
   },
   {
     "id": "tent",
     "file": "tent",
     "en": "tent",
     "de": "Zelt",
-    "es": "tienda de campaña"
+    "es": "tienda de campaña",
+    "fr": "tente"
   },
   {
     "id": "The Eiffel Tower",
     "file": "the-eiffel-tower",
     "en": "Eiffel Tower",
     "de": "Eiffelturm",
-    "es": "torre Eiffel"
+    "es": "torre Eiffel",
+    "fr": "tour Eiffel"
   },
   {
     "id": "The Great Wall of China",
     "file": "the-great-wall-of-china",
     "en": "Great Wall of China",
     "de": "Chinesische Mauer",
-    "es": "Gran Muralla China"
+    "es": "Gran Muralla China",
+    "fr": "Grande Muraille de Chine"
   },
   {
     "id": "tiger",
     "file": "tiger",
     "en": "tiger",
     "de": "Tiger",
-    "es": "tigre"
+    "es": "tigre",
+    "fr": "tigre"
   },
   {
     "id": "toaster",
     "file": "toaster",
     "en": "toaster",
     "de": "Toaster",
-    "es": "tostadora"
+    "es": "tostadora",
+    "fr": "grille-pain"
   },
   {
     "id": "toe",
     "file": "toe",
     "en": "toe",
     "de": "Zeh",
-    "es": "dedo del pie"
+    "es": "dedo del pie",
+    "fr": "orteil"
   },
   {
     "id": "toilet",
     "file": "toilet",
     "en": "toilet",
     "de": "Toilette",
-    "es": "inodoro"
+    "es": "inodoro",
+    "fr": "toilettes"
   },
   {
     "id": "tooth",
     "file": "tooth",
     "en": "tooth",
     "de": "Zahn",
-    "es": "diente"
+    "es": "diente",
+    "fr": "dent"
   },
   {
     "id": "toothbrush",
     "file": "toothbrush",
     "en": "toothbrush",
     "de": "Zahnbürste",
-    "es": "cepillo de dientes"
+    "es": "cepillo de dientes",
+    "fr": "brosse à dents"
   },
   {
     "id": "toothpaste",
     "file": "toothpaste",
     "en": "toothpaste",
     "de": "Zahnpasta",
-    "es": "pasta de dientes"
+    "es": "pasta de dientes",
+    "fr": "dentifrice"
   },
   {
     "id": "tornado",
     "file": "tornado",
     "en": "tornado",
     "de": "Tornado",
-    "es": "tornado"
+    "es": "tornado",
+    "fr": "tornade"
   },
   {
     "id": "tractor",
     "file": "tractor",
     "en": "tractor",
     "de": "Traktor",
-    "es": "tractor"
+    "es": "tractor",
+    "fr": "tracteur"
   },
   {
     "id": "traffic light",
     "file": "traffic-light",
     "en": "traffic light",
     "de": "Ampel",
-    "es": "semáforo"
+    "es": "semáforo",
+    "fr": "feu tricolore"
   },
   {
     "id": "train",
     "file": "train",
     "en": "train",
     "de": "Zug",
-    "es": "tren"
+    "es": "tren",
+    "fr": "train"
   },
   {
     "id": "tree",
     "file": "tree",
     "en": "tree",
     "de": "Baum",
-    "es": "árbol"
+    "es": "árbol",
+    "fr": "arbre"
   },
   {
     "id": "trombone",
     "file": "trombone",
     "en": "trombone",
     "de": "Posaune",
-    "es": "trombón"
+    "es": "trombón",
+    "fr": "trombone"
   },
   {
     "id": "truck",
     "file": "truck",
     "en": "truck",
     "de": "Lastwagen",
-    "es": "camión"
+    "es": "camión",
+    "fr": "camion"
   },
   {
     "id": "trumpet",
     "file": "trumpet",
     "en": "trumpet",
     "de": "Trompete",
-    "es": "trompeta"
+    "es": "trompeta",
+    "fr": "trompette"
   },
   {
     "id": "t-shirt",
     "file": "t-shirt",
     "en": "t-shirt",
     "de": "T-Shirt",
-    "es": "camiseta"
+    "es": "camiseta",
+    "fr": "t-shirt"
   },
   {
     "id": "umbrella",
     "file": "umbrella",
     "en": "umbrella",
     "de": "Regenschirm",
-    "es": "paraguas"
+    "es": "paraguas",
+    "fr": "parapluie"
   },
   {
     "id": "underwear",
     "file": "underwear",
     "en": "underwear",
     "de": "Unterhose",
-    "es": "calzoncillos"
+    "es": "calzoncillos",
+    "fr": "slip"
   },
   {
     "id": "van",
     "file": "van",
     "en": "van",
     "de": "Lieferwagen",
-    "es": "furgoneta"
+    "es": "furgoneta",
+    "fr": "camionnette"
   },
   {
     "id": "vase",
     "file": "vase",
     "en": "vase",
     "de": "Vase",
-    "es": "jarrón"
+    "es": "jarrón",
+    "fr": "vase"
   },
   {
     "id": "violin",
     "file": "violin",
     "en": "violin",
     "de": "Geige",
-    "es": "violín"
+    "es": "violín",
+    "fr": "violon"
   },
   {
     "id": "washing machine",
     "file": "washing-machine",
     "en": "washing machine",
     "de": "Waschmaschine",
-    "es": "lavadora"
+    "es": "lavadora",
+    "fr": "machine à laver"
   },
   {
     "id": "watermelon",
     "file": "watermelon",
     "en": "watermelon",
     "de": "Wassermelone",
-    "es": "sandía"
+    "es": "sandía",
+    "fr": "pastèque"
   },
   {
     "id": "waterslide",
     "file": "waterslide",
     "en": "water slide",
     "de": "Wasserrutsche",
-    "es": "tobogán acuático"
+    "es": "tobogán acuático",
+    "fr": "toboggan aquatique"
   },
   {
     "id": "whale",
     "file": "whale",
     "en": "whale",
     "de": "Wal",
-    "es": "ballena"
+    "es": "ballena",
+    "fr": "baleine"
   },
   {
     "id": "wheel",
     "file": "wheel",
     "en": "wheel",
     "de": "Rad",
-    "es": "rueda"
+    "es": "rueda",
+    "fr": "roue"
   },
   {
     "id": "windmill",
     "file": "windmill",
     "en": "windmill",
     "de": "Windmühle",
-    "es": "molino de viento"
+    "es": "molino de viento",
+    "fr": "moulin à vent"
   },
   {
     "id": "wine bottle",
     "file": "wine-bottle",
     "en": "wine bottle",
     "de": "Weinflasche",
-    "es": "botella de vino"
+    "es": "botella de vino",
+    "fr": "bouteille de vin"
   },
   {
     "id": "wine glass",
     "file": "wine-glass",
     "en": "wine glass",
     "de": "Weinglas",
-    "es": "copa de vino"
+    "es": "copa de vino",
+    "fr": "verre à vin"
   },
   {
     "id": "wristwatch",
     "file": "wristwatch",
     "en": "wristwatch",
     "de": "Armbanduhr",
-    "es": "reloj de pulsera"
+    "es": "reloj de pulsera",
+    "fr": "montre"
   },
   {
     "id": "yoga",
     "file": "yoga",
     "en": "yoga",
     "de": "Yoga",
-    "es": "yoga"
+    "es": "yoga",
+    "fr": "yoga"
   },
   {
     "id": "zebra",
     "file": "zebra",
     "en": "zebra",
     "de": "Zebra",
-    "es": "cebra"
+    "es": "cebra",
+    "fr": "zèbre"
   }
 ]

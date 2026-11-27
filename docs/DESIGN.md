@@ -18,7 +18,7 @@
 
 - **Name:** Kritzel (German for "scribble"). Always capitalised, never translated.
 - **Wordmark:** "Kritzel" set in the display typeface, weight 700, with a hand-drawn squiggle underline in the accent colour. The squiggle alone is the favicon and app icon.
-- **Voice:** short, warm, direct. Address the player informally (`du` in German, `tú` in Spanish). One exclamation mark per screen at most. System messages state facts: "Mara guessed the word", "Time's up — it was _lighthouse_".
+- **Voice:** short, warm, direct. Address the player informally (`du` in German, `tú` in Spanish, `tu` in French). One exclamation mark per screen at most. System messages state facts: "Mara guessed the word", "Time's up — it was _lighthouse_".
 
 ## 3. Colour
 
@@ -185,7 +185,7 @@ Same top bar and canvas as the game screen, a guess input instead of the chat, p
 
 ## 11. Copy and localisation
 
-- Strings are written in English first and translated to German and Spanish as natural phrases, not word for word.
+- Strings are written in English first and translated to German, Spanish and French as natural phrases, not word for word.
 - Layouts tolerate text 40 % longer than English; buttons wrap rather than truncate.
 - Numbers, plurals and ordinals use `Intl` APIs for the active language.
 - Words to draw are shown in the room's word language, independent of each player's interface language.

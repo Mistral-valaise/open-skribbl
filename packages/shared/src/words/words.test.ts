@@ -41,6 +41,16 @@ describe('matching (spec 004)', () => {
     expect(isCloseGuess('lighthxxxe', 'lighthouse')).toBe(false);
   });
 
+  it('AC-004-19: French accents, cedillas and ligatures are tolerated', () => {
+    expect(isCorrectGuess('coeur', 'cœur')).toBe(true);
+    expect(isCorrectGuess('CŒUR', 'cœur')).toBe(true);
+    expect(isCorrectGuess('garcon', 'garçon')).toBe(true);
+    expect(isCorrectGuess('arc en ciel', 'arc-en-ciel')).toBe(true);
+    expect(isCorrectGuess('feu dartifice', "feu d'artifice")).toBe(true);
+    expect(isCorrectGuess('ile', 'île')).toBe(true);
+    expect(isCorrectGuess('oeil', 'œil')).toBe(true);
+  });
+
   it('punctuation-only guesses match nothing', () => {
     expect(isCorrectGuess('!!!', 'cat')).toBe(false);
   });

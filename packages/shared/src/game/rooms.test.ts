@@ -70,7 +70,7 @@ describe('rooms and lobby (spec 001)', () => {
       { difficulty: 'extreme' },
       { maxPlayers: 13 },
       { unknownSetting: 1 },
-      { language: 'fr' },
+      { language: 'it' },
     ];
     for (const patch of invalid) {
       h.dispatch({ type: 'updateSettings', participantId: mara.id, patch });

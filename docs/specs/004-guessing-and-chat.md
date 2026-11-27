@@ -47,13 +47,14 @@ Both the word and the guess are **normalised**, then compared.
 
 1. Unicode NFKC, lower-cased.
 2. Every character that is not a letter or a digit is removed (spaces, hyphens, apostrophes, punctuation).
-3. Two foldings are produced:
-   - **plain:** diacritics removed (`é→e`, `ñ→n`, `ü→u`), `ß→ss`.
+3. Ligatures are written out: `œ→oe`, `æ→ae`.
+4. Two foldings are produced:
+   - **plain:** diacritics removed (`é→e`, `ñ→n`, `ü→u`, `ç→c`), `ß→ss`.
    - **digraph:** `ä→ae`, `ö→oe`, `ü→ue`, `ß→ss`, then remaining diacritics removed.
 
 A guess is **correct** when any folding of the guess equals any folding of the word.
 
-Examples: for the word "Tür", the guesses "tür", "TUR" and "tuer" are correct. For "ice cream", "icecream" and "Ice-Cream" are correct. For "niño", "nino" is correct.
+Examples: for the word "Tür", the guesses "tür", "TUR" and "tuer" are correct. For "ice cream", "icecream" and "Ice-Cream" are correct. For "niño", "nino" is correct. For "cœur", "coeur" is correct.
 
 ### Close guess
 
@@ -89,6 +90,7 @@ System messages carry an i18n key and parameters, so each participant reads them
 - **AC-004-16** A message containing `<b>hi</b>` is displayed literally as text.
 - **AC-004-17** A sixth message within one second from the same participant is dropped with `rate_limited`.
 - **AC-004-18** For a guesser in the drawing phase the chat input is focused when the phase starts, and Enter sends the message and keeps focus.
+- **AC-004-19** For the word "cœur", "coeur" and "CŒUR" are correct; for "garçon", "garcon" is correct; for "arc-en-ciel", "arc en ciel" is correct; for "feu d'artifice", "feu dartifice" is correct.
 
 ## Out of scope
 

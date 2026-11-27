@@ -39,5 +39,6 @@ describe('word lists (spec 006)', () => {
     expect(lists.get('de', 'mixed')).toEqual(union);
     expect(lists.get('de', 'easy')).toContain('Tür');
     expect(lists.get('es', 'easy')).toContain('pingüino');
+    expect(lists.get('fr', 'easy')).toContain('cœur');
   });
 });

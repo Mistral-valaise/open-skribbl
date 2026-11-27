@@ -235,6 +235,12 @@ export const es: Messages = {
   'theme.toDark': 'Cambiar al tema oscuro',
   'sound.mute': 'Silenciar los sonidos',
 
+  'measurements.title': 'Mediciones del navegador',
+  'measurements.explanation':
+    'Es opcional. Si lo activas, tu navegador comparte los tiempos de carga y de reacción, el número de errores y cuánto tardaste en unirte con quien gestiona este servidor de Kritzel. Nunca comparte nombres, chat, dibujos ni palabras.',
+  'measurements.switch': 'Compartir mediciones del navegador',
+  'measurements.close': 'Cerrar',
+
   'announce.yourTurn': 'Te toca. Elige una palabra.',
   'announce.draw': 'Dibuja: {word}',
   'announce.guess': '{name} está dibujando. Adivina la palabra. Letras por palabra: {counts}',

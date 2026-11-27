@@ -8,6 +8,19 @@ export interface RoomConnectionOptions {
   onMessage: (message: ServerMessage) => void;
   /** The socket closed or could not open; another attempt is scheduled. */
   onLost: () => void;
+  /**
+   * Called when a socket is opened, to time the attempt (spec 015). The first
+   * connection is a `join`; an attempt after a seat was held is a `reconnect`.
+   */
+  measureAttempt?: (name: 'join' | 'reconnect') => AttemptTiming | null;
+}
+
+/** The measurement of one attempt, from opening the socket to `joined`. */
+export interface AttemptTiming {
+  /** Sent with the `join` message, so the server's span joins the browser's trace. */
+  readonly traceparent: string;
+  /** Only the first call counts. */
+  settle(outcome: 'ok' | 'failed'): void;
 }
 
 /** The server's messages are trusted to match the protocol; only the envelope is checked. */
@@ -31,23 +44,34 @@ export class RoomConnection {
   private retryTimer: number | undefined;
   private attempt = 0;
   private stopped = false;
+  private everJoined = false;
 
   constructor(private readonly options: RoomConnectionOptions) {}
 
   start(): void {
     if (this.stopped || this.socket) return;
+    const timing = this.options.measureAttempt?.(this.everJoined ? 'reconnect' : 'join') ?? null;
     const socket = new WebSocket(this.options.url);
     this.socket = socket;
 
     socket.addEventListener('open', () => {
-      if (this.socket === socket) socket.send(JSON.stringify(this.options.buildJoin()));
+      if (this.socket !== socket) return;
+      const join = this.options.buildJoin();
+      socket.send(JSON.stringify(timing ? { ...join, traceparent: timing.traceparent } : join));
     });
     socket.addEventListener('message', (event) => {
       if (this.socket !== socket) return;
       const message = parseServerMessage(event.data);
-      if (message) this.options.onMessage(message);
+      if (!message) return;
+      if (message.type === 'joined') {
+        this.everJoined = true;
+        timing?.settle('ok');
+      }
+      this.options.onMessage(message);
     });
     socket.addEventListener('close', () => {
+      // Closed before `joined`, by either side: the attempt failed.
+      timing?.settle('failed');
       if (this.socket !== socket) return;
       this.socket = null;
       if (this.stopped) return;

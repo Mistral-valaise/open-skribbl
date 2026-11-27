@@ -237,6 +237,12 @@ export const de: Messages = {
   'theme.toDark': 'Zum dunklen Design wechseln',
   'sound.mute': 'Töne stummschalten',
 
+  'measurements.title': 'Browser-Messwerte',
+  'measurements.explanation':
+    'Das ist freiwillig. Wenn du es einschaltest, teilt dein Browser Lade- und Reaktionszeiten, die Anzahl der Fehler und die Dauer des Beitritts mit denen, die diesen Kritzel-Server betreiben. Namen, Chat, Zeichnungen und Wörter teilt er nie.',
+  'measurements.switch': 'Browser-Messwerte teilen',
+  'measurements.close': 'Schließen',
+
   'announce.yourTurn': 'Du bist dran. Such dir ein Wort aus.',
   'announce.draw': 'Zeichne: {word}',
   'announce.guess': '{name} zeichnet. Rate das Wort. Buchstaben pro Wort: {counts}',

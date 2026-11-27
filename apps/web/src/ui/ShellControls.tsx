@@ -5,6 +5,7 @@ import { otherTheme, setTheme, useThemeStore } from '../theme/theme.js';
 import { cx } from './cx.js';
 import { IconButton, ICON } from './IconButton.js';
 import { LanguageSwitch } from './LanguageSwitch.js';
+import { MeasurementsControl } from './MeasurementsControl.js';
 
 /** Switches between the dark and the light theme; its name says where it leads (spec 011). */
 export function ThemeToggle() {
@@ -35,13 +36,17 @@ export function MuteToggle() {
   );
 }
 
-/** Language, theme and sound: the controls every screen offers. */
+/**
+ * Language, theme and sound: the controls every screen offers. Where the
+ * server offers browser measurements, their control joins them (spec 015).
+ */
 export function ShellControls({ className }: { className?: string }) {
   return (
     <div className={cx('flex shrink-0 items-center gap-1', className)}>
       <LanguageSwitch className="mr-1" />
       <ThemeToggle />
       <MuteToggle />
+      <MeasurementsControl />
     </div>
   );
 }

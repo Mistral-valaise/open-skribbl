@@ -1,15 +1,21 @@
+import { isIP } from 'node:net';
+
 /** Environment configuration (specs 012 and 015). Every variable is optional. */
 export interface Config {
   port: number;
   host: string;
   maxRooms: number;
-  trustProxy: boolean;
+  /** `true` believes every forwarded address; a list only those sent by these proxies. */
+  trustProxy: ProxyTrust;
   logLevel: 'debug' | 'info' | 'warn' | 'error';
   /** Null when telemetry is off, which is the default (spec 015). */
   telemetry: TelemetrySettings | null;
   /** Browser measurements are offered; only ever true when telemetry is on. */
   rum: boolean;
 }
+
+/** What Fastify's `trustProxy` accepts, narrowed to what `TRUST_PROXY` can express (spec 012). */
+export type ProxyTrust = boolean | string[];
 
 export const OTLP_PROTOCOLS = ['http/protobuf', 'http/json'] as const;
 const SAMPLERS = [
@@ -55,6 +61,35 @@ function oneOf<T extends string>(
     throw new ConfigError(`${name} must be one of ${allowed.join(', ')}, got "${raw}"`);
   }
   return raw as T;
+}
+
+/** `10.128.0.0/14`, `fd00::/8` or a single address. */
+function isNetwork(value: string): boolean {
+  const [address, prefix, ...rest] = value.split('/');
+  const family = isIP(address ?? '');
+  if (family === 0 || rest.length > 0) return false;
+  if (prefix === undefined) return true;
+  return /^\d{1,3}$/.test(prefix) && Number(prefix) <= (family === 4 ? 32 : 128);
+}
+
+/**
+ * Spec 012, "Configuration": `true`, `false`, or a comma-separated list of
+ * proxy addresses and networks. With a list, forwarded addresses are believed
+ * only when the connection comes from one of those proxies, and the address
+ * the proxy appended counts, whatever the client wrote into the header.
+ *
+ * A bare hop count is not offered: it cannot tell a proxy from a client that
+ * connects directly, and Fastify refuses it for that reason.
+ */
+function proxyTrust(env: NodeJS.ProcessEnv): ProxyTrust {
+  const raw = (env.TRUST_PROXY ?? '').trim();
+  if (raw === '' || raw === 'false') return false;
+  if (raw === 'true') return true;
+  const networks = raw.split(',').map((entry) => entry.trim());
+  if (networks.every(isNetwork)) return networks;
+  throw new ConfigError(
+    `TRUST_PROXY must be true, false, or a comma-separated list of proxy addresses and networks such as 10.128.0.0/14, got "${raw}"`,
+  );
 }
 
 function ratio(env: NodeJS.ProcessEnv, name: string, fallback: number): number {
@@ -117,7 +152,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
     port: integer(env, 'PORT', 3000, 0, 65535),
     host: env.HOST || '0.0.0.0',
     maxRooms: integer(env, 'MAX_ROOMS', 500, 1, 100_000),
-    trustProxy: oneOf(env, 'TRUST_PROXY', 'false', ['true', 'false']) === 'true',
+    trustProxy: proxyTrust(env),
     logLevel: oneOf(env, 'LOG_LEVEL', 'info', ['debug', 'info', 'warn', 'error']),
     telemetry,
     rum: oneOf(env, 'RUM_ENABLED', 'false', ['true', 'false']) === 'true' && telemetry !== null,

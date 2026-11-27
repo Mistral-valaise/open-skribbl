@@ -1,5 +1,5 @@
 import { fillServer, playGame } from './play.js';
-import { planGame } from './plan.js';
+import { planGame, withReconnect } from './plan.js';
 
 /**
  * Traffic generator (spec 015, "Synthetic traffic"): plays complete games
@@ -7,8 +7,9 @@ import { planGame } from './plan.js';
  *
  *   node traffic.js --url http://kritzel:3000 [--rooms 2] [--players 3]
  *                   [--seed 1] [--games 0] [--pace 400] [--scenario play|server-full]
- *                   [--seconds 300]
+ *                   [--seconds 300] [--reconnect true]
  *
+ * `--reconnect true` makes every game drop and resume one connection.
  * `--games 0` plays until stopped. With `--games N` it exits 0 only when
  * every game reached the results screen, which makes it a smoke test.
  * Progress is written as JSON lines; the generator exports no telemetry.
@@ -33,6 +34,7 @@ const seed = number('seed', 1);
 const games = number('games', 0);
 const paceMs = number('pace', 400);
 const scenario = args.get('scenario') ?? process.env.TRAFFIC_SCENARIO ?? 'play';
+const reconnect = (args.get('reconnect') ?? process.env.TRAFFIC_RECONNECT) === 'true';
 
 const log = (event: string, context: Record<string, unknown> = {}) =>
   console.log(
@@ -63,7 +65,8 @@ let played = 0;
 /** One lane plays games one after another; lanes run side by side. */
 async function lane(index: number): Promise<void> {
   for (let game = 0; !stopping && (games === 0 || game < games); game += 1) {
-    const plan = planGame(seed + index * 1000 + game, players);
+    const planned = planGame(seed + index * 1000 + game, players);
+    const plan = reconnect ? withReconnect(planned) : planned;
     try {
       const result = await playGame(plan, { url, paceMs, log });
       played += 1;

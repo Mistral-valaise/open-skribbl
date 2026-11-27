@@ -106,3 +106,14 @@ export function guessText(kind: GuessPlan['kind'], word: string): string {
   const last = word.at(-1) === 'x' ? 'y' : 'x';
   return `${word.slice(0, -1)}${last}`;
 }
+
+/**
+ * The same plan with a reconnect in its first turn. A deployment check uses
+ * it to be sure that losing and resuming a connection works through the
+ * proxy in front of the game (spec 016).
+ */
+export function withReconnect(plan: GamePlan): GamePlan {
+  const [first, ...rest] = plan.turns;
+  if (!first || first.reconnect) return plan;
+  return { ...plan, turns: [{ ...first, reconnect: { guesser: 0, awayMs: 800 } }, ...rest] };
+}

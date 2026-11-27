@@ -106,6 +106,8 @@ pnpm obs:up
 
 Grafana is then on <http://127.0.0.1:3001> (user `admin`, generated password in `.env.observability`). Exported telemetry contains counts and durations, never nicknames, chat, words, drawings or room codes. [`docs/OBSERVABILITY.md`](docs/OBSERVABILITY.md) lists everything that is exported; [`docs/RUNBOOK.md`](docs/RUNBOOK.md) explains the alerts.
 
+Kritzel can also run on a cluster: a Helm chart installs the game alone or together with this stack, and a workflow keeps a demo on the OpenShift Developer Sandbox. See [docs/DEPLOYMENT-OPENSHIFT.md](docs/DEPLOYMENT-OPENSHIFT.md).
+
 ## Contributing
 
 Read [`AGENTS.md`](AGENTS.md) first; it applies to human contributors too. Word lists and translations are especially welcome: the interface dictionaries are in `apps/web/src/i18n/`, the word lists in `packages/content/words/`.

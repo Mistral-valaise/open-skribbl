@@ -1,0 +1,16 @@
+apiVersion: v2
+name: kritzel
+description: Kritzel, a self-hosted draw-and-guess party game, optionally with its observability stack
+type: application
+# Version of the chart. Raise it when the chart changes.
+version: 0.1.0
+# Version of the game this chart was written for. The image tag or digest is set in values.
+appVersion: '0.0.0'
+home: https://github.com/Mistral-valaise/open-skribbl
+sources:
+  - https://github.com/Mistral-valaise/open-skribbl
+keywords:
+  - game
+  - websocket
+  - opentelemetry
+kubeVersion: '>=1.27.0-0'

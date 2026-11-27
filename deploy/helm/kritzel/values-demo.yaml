@@ -1,0 +1,51 @@
+# Demo profile (spec 016): the game with telemetry, the whole observability
+# stack and synthetic traffic, sized for the Red Hat OpenShift Developer
+# Sandbox. Everything is ephemeral and nothing is highly available.
+#
+# Still to be given on the command line or by the workflow:
+#   --set image.digest=sha256:...           the game image to run
+#   --set grafana.existingSecret=<name>     Secret with the key admin-password
+
+requireImageDigest: true
+environment: demo
+
+game:
+  # A small ceiling: the demo is public, and a full server is how the
+  # API availability objective can be shown burning.
+  maxRooms: 50
+  # The ingress router lives in the cluster's pod network; only it is believed.
+  trustProxy: '10.128.0.0/14'
+  browserMeasurements: true
+
+telemetry:
+  sampler: parentbased_traceidratio
+  samplerArg: '1'
+
+route:
+  enabled: true
+
+networkPolicy:
+  ingressFrom:
+    - namespaceSelector:
+        matchLabels:
+          network.openshift.io/policy-group: ingress
+
+observability:
+  enabled: true
+
+prometheus:
+  retention: 24h
+  retentionSize: 1GB
+loki:
+  retention: 24h
+tempo:
+  retention: 24h
+
+grafana:
+  route:
+    enabled: true
+
+traffic:
+  enabled: true
+  rooms: 2
+  players: 3

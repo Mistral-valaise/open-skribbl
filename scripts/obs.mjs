@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Starts, stops and wipes the local observability stack (spec 015).
 //
-// Usage: node scripts/obs.mjs up | down | reset | status
+// Usage: node scripts/obs.mjs up | down | reset | status | traffic
 //
 // `up` creates .env.observability with a random Grafana admin password on
 // first use (the file is ignored by git and never printed), starts the game
@@ -90,15 +90,19 @@ if (command === 'up') {
   console.log(`Grafana: ${GRAFANA} (user admin, password in .env.observability)`);
 } else if (command === 'down') {
   ensureEnvFile();
-  compose('down');
+  compose('--profile', 'traffic', 'down');
 } else if (command === 'reset') {
   ensureEnvFile();
-  compose('down', '--volumes');
+  compose('--profile', 'traffic', 'down', '--volumes');
+} else if (command === 'traffic') {
+  ensureEnvFile();
+  compose('--profile', 'traffic', 'up', '-d', '--build', 'traffic');
+  console.log('Synthetic games are being played. Stop them with: pnpm obs:down');
 } else if (command === 'status') {
   ensureEnvFile();
   compose('ps');
   console.log(await health());
 } else {
-  console.error('Usage: node scripts/obs.mjs up | down | reset | status');
+  console.error('Usage: node scripts/obs.mjs up | down | reset | status | traffic');
   process.exit(2);
 }

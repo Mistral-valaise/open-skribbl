@@ -113,6 +113,28 @@ services:
     security_opt: ['no-new-privileges:true']
     mem_limit: 384m
 
+  # Synthetic traffic, so the dashboards and objectives have something to show:
+  #   pnpm obs:traffic
+  traffic:
+    profiles: [traffic]
+    build: .
+    command: ['node', 'traffic.js']
+    # The image's health check asks a server on this container; there is none here.
+    healthcheck:
+      disable: true
+    environment:
+      TRAFFIC_URL: http://kritzel:3000
+      TRAFFIC_ROOMS: ${TRAFFIC_ROOMS:-2}
+      TRAFFIC_PLAYERS: ${TRAFFIC_PLAYERS:-3}
+      TRAFFIC_SEED: ${TRAFFIC_SEED:-1}
+    depends_on:
+      - kritzel
+    restart: unless-stopped
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ['no-new-privileges:true']
+    mem_limit: 128m
+
 volumes:
   prometheus-data:
   loki-data:

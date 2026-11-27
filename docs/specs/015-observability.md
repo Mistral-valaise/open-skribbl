@@ -70,6 +70,7 @@ The resource carries `service.name` (default `kritzel`), `service.version`, `ser
 - Services: OpenTelemetry Collector (contrib), Prometheus, Loki and Tempo in single-binary mode, Grafana. Images are pinned by digest. Only Grafana (`127.0.0.1:3001`) is published, with a login; every other port stays inside the Compose network.
 - Data source UIDs are `prometheus`, `loki` and `tempo`.
 - Five dashboards: Global Overview (`kritzel-overview`), Game Analytics (`kritzel-game`), WebSocket & Reliability (`kritzel-websocket`), Runtime & Infrastructure (`kritzel-runtime`), Security & Abuse (`kritzel-security`).
+- Service level objectives are written once, in `deploy/observability/slo/kritzel.slo.yaml`, and [Sloth](https://github.com/slok/sloth) generates the recording rules and multi-window burn-rate alerts from it (`pnpm slo:generate`). Prometheus evaluates them; the stack has no Alertmanager, so alerts are shown in Grafana and delivered nowhere. Sloth's two dashboards are provisioned next to the five above.
 - Correlation: histogram exemplars open the trace in Tempo; a trace opens its logs in Loki; a log line opens its trace; a span opens the matching metric query in Prometheus. Exemplars come from the collector's span metrics, because the JavaScript SDK does not export them (ADR 0006).
 - Retention is 24 h for every backend by default.
 - `pnpm obs:up`, `pnpm obs:down`, `pnpm obs:reset` and `pnpm obs:traffic` start, stop, wipe and exercise the stack.
@@ -125,6 +126,8 @@ Measured with the spec 012 load test (30 rooms of 8 players, 1 CPU, 512 MB), tel
 - **AC-015-39** Two runs of the traffic generator with the same seed plan the same actions, and a run completes a full game.
 - **AC-015-40** The load test with telemetry enabled stays within the overhead budget, and the measured values are recorded in `docs/OBSERVABILITY.md`.
 - **AC-015-41** `docs/OBSERVABILITY.md` lists every metric and span of the contract, and `docs/RUNBOOK.md` has a section for every alert.
+- **AC-015-42** The committed SLO rules are exactly what Sloth generates from `deploy/observability/slo/kritzel.slo.yaml`, which declares join success 99.9 %, WebSocket processing within 100 ms 99 %, reconnect within 5 s 99 % and API availability 99.9 %.
+- **AC-015-43** The Sloth dashboards "SLO / Detail" and "High level Sloth SLOs" are provisioned, and after the synthetic scenario Prometheus holds `sloth_slo_info` and an error ratio for every objective that had traffic.
 
 ## Out of scope
 

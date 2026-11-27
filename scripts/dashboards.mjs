@@ -448,8 +448,8 @@ function overview() {
       'Games per minute',
       [
         target(`60 * ${rate('kritzel_games_started_total')}`, 'started'),
-        target(`60 * ${rate('kritzel_games_completed_total')}`, 'completed'),
-        target(`60 * ${rate('kritzel_games_aborted_total')}`, 'aborted'),
+        target(orZero(`60 * ${rate('kritzel_games_completed_total')}`), 'completed'),
+        target(orZero(`60 * ${rate('kritzel_games_aborted_total')}`), 'aborted'),
       ],
       { description: 'Counted once per game, when the room state changes.' },
     ),
@@ -577,8 +577,8 @@ function game() {
   l.add(
     timeseries('Games per minute', [
       target(`60 * ${rate('kritzel_games_started_total')}`, 'started'),
-      target(`60 * ${rate('kritzel_games_completed_total')}`, 'completed'),
-      target(`60 * ${rate('kritzel_games_aborted_total')}`, 'aborted'),
+      target(orZero(`60 * ${rate('kritzel_games_completed_total')}`), 'completed'),
+      target(orZero(`60 * ${rate('kritzel_games_aborted_total')}`), 'aborted'),
     ]),
     8,
     8,

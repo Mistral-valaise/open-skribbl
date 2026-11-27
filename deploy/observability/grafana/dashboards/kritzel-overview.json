@@ -947,7 +947,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "60 * sum (rate(kritzel_games_completed_total{service_name=~\"$service\", deployment_environment_name=~\"$env\"}[$__rate_interval]))",
+          "expr": "(60 * sum (rate(kritzel_games_completed_total{service_name=~\"$service\", deployment_environment_name=~\"$env\"}[$__rate_interval]))) or vector(0)",
           "legendFormat": "completed",
           "range": true,
           "editorMode": "code"
@@ -957,7 +957,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "60 * sum (rate(kritzel_games_aborted_total{service_name=~\"$service\", deployment_environment_name=~\"$env\"}[$__rate_interval]))",
+          "expr": "(60 * sum (rate(kritzel_games_aborted_total{service_name=~\"$service\", deployment_environment_name=~\"$env\"}[$__rate_interval]))) or vector(0)",
           "legendFormat": "aborted",
           "range": true,
           "editorMode": "code"

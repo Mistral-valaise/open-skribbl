@@ -19,12 +19,15 @@ slos:
       host's doing and is not counted.
     sli:
       events:
-        error_query: sum(rate(kritzel_join_attempts_total{kritzel_validity="valid",kritzel_outcome="rejected"}[{{.window}}]))
+        # Without a single failure the error series does not exist; `or vector(0)`
+        # makes that a ratio of zero instead of no data.
+        error_query: (sum(rate(kritzel_join_attempts_total{kritzel_validity="valid",kritzel_outcome="rejected"}[{{.window}}])) or vector(0))
         total_query: sum(rate(kritzel_join_attempts_total{kritzel_validity="valid"}[{{.window}}]))
     alerting:
       name: KritzelJoinSuccessBurn
       labels:
         category: availability
+        owner: operator
       annotations:
         summary: Valid joins are failing faster than the error budget allows
         runbook_url: https://github.com/Mistral-valaise/open-skribbl/blob/main/docs/RUNBOOK.md#kritzeljoinsuccessburn
@@ -51,6 +54,7 @@ slos:
       name: KritzelWsLatencyBurn
       labels:
         category: latency
+        owner: operator
       annotations:
         summary: WebSocket messages are processed too slowly
         runbook_url: https://github.com/Mistral-valaise/open-skribbl/blob/main/docs/RUNBOOK.md#kritzelwslatencyburn
@@ -78,6 +82,7 @@ slos:
       name: KritzelReconnectLatencyBurn
       labels:
         category: latency
+        owner: operator
       annotations:
         summary: Reconnecting seats stay away longer than five seconds
         runbook_url: https://github.com/Mistral-valaise/open-skribbl/blob/main/docs/RUNBOOK.md#kritzelreconnectlatencyburn
@@ -94,12 +99,13 @@ slos:
       server (503) counts as an error; a rate limit or an unknown room does not.
     sli:
       events:
-        error_query: sum(rate(http_server_request_duration_seconds_count{http_route=~"/api/.*",http_response_status_code=~"5.."}[{{.window}}]))
+        error_query: (sum(rate(http_server_request_duration_seconds_count{http_route=~"/api/.*",http_response_status_code=~"5.."}[{{.window}}])) or vector(0))
         total_query: sum(rate(http_server_request_duration_seconds_count{http_route=~"/api/.*"}[{{.window}}]))
     alerting:
       name: KritzelApiAvailabilityBurn
       labels:
         category: availability
+        owner: operator
       annotations:
         summary: The HTTP API answers with server errors
         runbook_url: https://github.com/Mistral-valaise/open-skribbl/blob/main/docs/RUNBOOK.md#kritzelapiavailabilityburn

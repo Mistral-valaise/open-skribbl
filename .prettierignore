@@ -6,3 +6,4 @@ packages/content/solo/drawings
 # Generated: pnpm dashboards:generate and pnpm slo:generate
 deploy/observability/grafana/dashboards/*.json
 deploy/observability/prometheus/rules/sloth-kritzel.yaml
+deploy/observability/grafana/dashboards/sloth-*.json

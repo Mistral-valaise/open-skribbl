@@ -25,7 +25,9 @@
     "obs:down": "node scripts/obs.mjs down",
     "obs:reset": "node scripts/obs.mjs reset",
     "obs:status": "node scripts/obs.mjs status",
-    "dashboards:generate": "node scripts/dashboards.mjs"
+    "dashboards:generate": "node scripts/dashboards.mjs",
+    "slo:generate": "node scripts/slo.mjs",
+    "obs:traffic": "node scripts/obs.mjs traffic"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.14.1",
@@ -36,6 +38,7 @@
     "prettier": "^3.10.1",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.74.0",
-    "vitest": "^5.1.2"
+    "vitest": "^5.1.2",
+    "yaml": "^2.9.1"
   }
 }

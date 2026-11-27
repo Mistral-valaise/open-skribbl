@@ -1,0 +1,179 @@
+# Unit tests for Kritzel's alert rules (spec 015, AC-015-36):
+#
+#   promtool test rules deploy/observability/prometheus/tests/alerts.test.yaml
+#
+# They cover the no-data behaviour, the minimum-volume guards and one
+# Sloth-generated burn-rate alert end to end.
+rule_files:
+  - ../rules/kritzel-alerts.yaml
+  - ../rules/sloth-kritzel.yaml
+
+evaluation_interval: 30s
+
+tests:
+  # No metrics at all: the no-data alert fires, and nothing that needs traffic does.
+  - name: no data
+    interval: 30s
+    input_series: []
+    alert_rule_test:
+      - eval_time: 4m
+        alertname: KritzelTelemetryMissing
+        exp_alerts: []
+      - eval_time: 6m
+        alertname: KritzelTelemetryMissing
+        exp_alerts:
+          - exp_labels:
+              severity: warning
+              owner: operator
+            exp_annotations:
+              summary: Kritzel has not reported metrics for five minutes
+              description: Either the game is down, telemetry is switched off, or the path game -> collector -> Prometheus is broken. Players may be unaffected.
+              runbook_url: https://github.com/Mistral-valaise/open-skribbl/blob/main/docs/RUNBOOK.md#kritzeltelemetrymissing
+      - eval_time: 30m
+        alertname: KritzelRejectedMessageSurge
+        exp_alerts: []
+      - eval_time: 30m
+        alertname: KritzelServerFull
+        exp_alerts: []
+      - eval_time: 30m
+        alertname: KritzelApiAvailabilityBurn
+        exp_alerts: []
+      - eval_time: 30m
+        alertname: KritzelJoinSuccessBurn
+        exp_alerts: []
+      - eval_time: 30m
+        alertname: KritzelWsLatencyBurn
+        exp_alerts: []
+
+  # An idle but healthy instance is not an incident.
+  - name: idle instance
+    interval: 30s
+    input_series:
+      - series: kritzel_rooms_active{service_name="kritzel"}
+        values: '0x60'
+      - series: nodejs_eventloop_delay_p99_seconds{service_name="kritzel"}
+        values: '0.002x60'
+      - series: v8js_memory_heap_used_bytes{service_name="kritzel"}
+        values: '40000000x60'
+      - series: v8js_memory_heap_limit_bytes{service_name="kritzel"}
+        values: '500000000x60'
+    alert_rule_test:
+      - eval_time: 30m
+        alertname: KritzelTelemetryMissing
+        exp_alerts: []
+      - eval_time: 30m
+        alertname: KritzelEventLoopLag
+        exp_alerts: []
+      - eval_time: 30m
+        alertname: KritzelHeapNearLimit
+        exp_alerts: []
+
+  # A few rejected messages on a quiet instance stay below the volume guard.
+  - name: rejected messages, low volume
+    interval: 30s
+    input_series:
+      - series: kritzel_rooms_active{service_name="kritzel"}
+        values: '1x60'
+      - series: kritzel_ws_messages_total{kritzel_outcome="rejected", kritzel_ws_message_type="draw.op"}
+        values: '0+3x60'
+      - series: kritzel_ws_messages_total{kritzel_outcome="accepted", kritzel_ws_message_type="draw.op"}
+        values: '0+3x60'
+    alert_rule_test:
+      - eval_time: 30m
+        alertname: KritzelRejectedMessageSurge
+        exp_alerts: []
+
+  # Half of a busy stream is refused for more than ten minutes.
+  - name: rejected messages, high volume
+    interval: 30s
+    input_series:
+      - series: kritzel_rooms_active{service_name="kritzel"}
+        values: '1x60'
+      - series: kritzel_ws_messages_total{kritzel_outcome="rejected", kritzel_ws_message_type="draw.op"}
+        values: '0+300x60'
+      - series: kritzel_ws_messages_total{kritzel_outcome="accepted", kritzel_ws_message_type="draw.op"}
+        values: '0+300x60'
+    alert_rule_test:
+      - eval_time: 9m
+        alertname: KritzelRejectedMessageSurge
+        exp_alerts: []
+      - eval_time: 20m
+        alertname: KritzelRejectedMessageSurge
+        exp_alerts:
+          - exp_labels:
+              severity: info
+              owner: operator
+            exp_annotations:
+              summary: An unusual share of WebSocket messages is being rejected
+              description: 50% of inbound messages were refused over five minutes.
+              runbook_url: https://github.com/Mistral-valaise/open-skribbl/blob/main/docs/RUNBOOK.md#kritzelrejectedmessagesurge
+
+  # A full server refuses room creations: the threshold alert and, because a
+  # 503 counts against API availability, the Sloth page alert both fire.
+  - name: server full burns the API availability budget
+    interval: 30s
+    input_series:
+      - series: kritzel_rooms_active{service_name="kritzel"}
+        values: '20x240'
+      - series: kritzel_rooms_create_attempts_total{kritzel_outcome="rejected", kritzel_reason="server_full"}
+        values: '0+5x240'
+      - series: http_server_request_duration_seconds_count{http_route="/api/rooms", http_request_method="POST", http_response_status_code="503"}
+        values: '0+5x240'
+      - series: http_server_request_duration_seconds_count{http_route="/api/rooms/:code", http_request_method="GET", http_response_status_code="200"}
+        values: '0+5x240'
+    alert_rule_test:
+      - eval_time: 15m
+        alertname: KritzelServerFull
+        exp_alerts:
+          - exp_labels:
+              severity: warning
+              owner: operator
+            exp_annotations:
+              summary: Room creation is refused because MAX_ROOMS is reached
+              description: 100 room creations were refused in the last ten minutes.
+              runbook_url: https://github.com/Mistral-valaise/open-skribbl/blob/main/docs/RUNBOOK.md#kritzelserverfull
+      - eval_time: 90m
+        alertname: KritzelApiAvailabilityBurn
+        exp_alerts:
+          - exp_labels:
+              severity: critical
+              category: availability
+              owner: operator
+              repo: open-skribbl
+              sloth_severity: page
+              sloth_service: kritzel
+              sloth_slo: api-availability
+              sloth_id: kritzel-api-availability
+            exp_annotations:
+              summary: The HTTP API answers with server errors
+              title: (page) kritzel api-availability SLO error budget burn rate is too fast.
+              runbook_url: https://github.com/Mistral-valaise/open-skribbl/blob/main/docs/RUNBOOK.md#kritzelapiavailabilityburn
+          # The slower windows have caught up too: the ticket alert fires alongside.
+          - exp_labels:
+              severity: warning
+              category: availability
+              owner: operator
+              repo: open-skribbl
+              sloth_severity: ticket
+              sloth_service: kritzel
+              sloth_slo: api-availability
+              sloth_id: kritzel-api-availability
+            exp_annotations:
+              summary: The HTTP API answers with server errors
+              title: (ticket) kritzel api-availability SLO error budget burn rate is too fast.
+              runbook_url: https://github.com/Mistral-valaise/open-skribbl/blob/main/docs/RUNBOOK.md#kritzelapiavailabilityburn
+
+  # Server errors on a route outside the API, and rate limits, do not count.
+  - name: only API server errors count against availability
+    interval: 30s
+    input_series:
+      - series: http_server_request_duration_seconds_count{http_route="/api/rooms", http_request_method="POST", http_response_status_code="429"}
+        values: '0+5x240'
+      - series: http_server_request_duration_seconds_count{http_route="/api/rooms", http_request_method="POST", http_response_status_code="201"}
+        values: '0+5x240'
+      - series: http_server_request_duration_seconds_count{http_route="/api/rooms/:code", http_request_method="GET", http_response_status_code="404"}
+        values: '0+5x240'
+    alert_rule_test:
+      - eval_time: 90m
+        alertname: KritzelApiAvailabilityBurn
+        exp_alerts: []

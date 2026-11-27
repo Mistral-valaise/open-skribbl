@@ -1,6 +1,9 @@
 @import 'tailwindcss';
 @import './tokens.css';
 
+/* The phone layout while the on-screen keyboard is open (spec 011): `typing:hidden`. */
+@custom-variant typing (&:where([data-viewport='typing'], [data-viewport='typing'] *));
+
 /*
  * Tailwind theme bound to the design tokens. The default palette, type scale,
  * radii and shadows are removed so that only values from docs/DESIGN.md exist.
@@ -243,6 +246,42 @@
     .stage-width {
       width: min(100%, max(20rem, calc((100dvh - 15.5rem) * 4 / 3)));
     }
+  }
+
+  /*
+   * The game and solo screens fill the height that is visible. Normally that
+   * is the dynamic viewport. While the on-screen keyboard is open it is what
+   * the visual viewport reports (`useVisibleViewport`), and the screen is
+   * pinned there, because browsers that keep the layout height scroll the
+   * page to reveal the input and would take the canvas out of view.
+   */
+  .play-screen {
+    height: 100dvh;
+  }
+  .play-screen[data-viewport='typing'] {
+    position: fixed;
+    inset-inline: 0;
+    top: var(--app-top, 0px);
+    height: var(--app-height, 100dvh);
+    overflow: hidden;
+  }
+  /* While typing, the stage takes the height that is left and the canvas the largest 4:3 box in it. */
+  [data-viewport='typing'] .stage {
+    flex: 1 1 0;
+    min-height: 0;
+    width: 100%;
+    container-type: size;
+    justify-content: center;
+  }
+  [data-viewport='typing'] .stage.stage-width {
+    width: 100%;
+  }
+  [data-viewport='typing'] .stage-width:not(.stage),
+  [data-viewport='typing'] .stage-fit {
+    width: min(100cqw, 100cqh * 4 / 3);
+  }
+  .stage-fit {
+    width: 100%;
   }
 
   /* Thin scrollbars that stay out of the way of the chat and the toolbar. */

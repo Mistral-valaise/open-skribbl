@@ -23,7 +23,8 @@ export function WordMask({ mask, className }: WordMaskProps) {
         // Read as the letter counts, then the mask letter by letter with its hints.
         role="img"
         aria-label={`${t('game.letterCount', { counts })}. ${Array.from(mask).join(' ')}`}
-        className="font-mono text-subheading font-semibold whitespace-pre-wrap text-fg sm:text-heading"
+        // Smaller while the on-screen keyboard is open, so even the longest word leaves room for the canvas.
+        className="font-mono text-subheading font-semibold whitespace-pre-wrap text-fg typing:text-label typing:font-semibold sm:text-heading"
       >
         {Array.from(mask, (char, index) =>
           char === ' ' ? (
@@ -47,7 +48,8 @@ export function WordMask({ mask, className }: WordMaskProps) {
       <span
         aria-hidden
         data-testid="letter-counts"
-        className="rounded-full border border-line px-2 py-0.5 font-mono text-caption text-fg-secondary"
+        // The counts repeat what the mask shows; while typing the mask gets their room.
+        className="rounded-full border border-line px-2 py-0.5 font-mono text-caption text-fg-secondary typing:hidden"
       >
         {counts}
       </span>

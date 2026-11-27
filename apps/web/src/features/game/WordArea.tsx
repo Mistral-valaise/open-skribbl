@@ -4,9 +4,10 @@ import { WordMask } from '../../ui/WordMask.js';
 
 /**
  * The centre of the top bar: the word for those who know it, the mask for
- * guessers, and who is choosing during the choosing phase (DESIGN §9).
+ * guessers, and who is choosing during the choosing phase (DESIGN §9). The
+ * compact form, used while the on-screen keyboard is open, leaves the caption out.
  */
-export function WordArea({ view }: { view: RoomView }) {
+export function WordArea({ view, compact = false }: { view: RoomView; compact?: boolean }) {
   const isDrawer = view.drawerId === view.you.id;
   const drawerName = view.participants.find((entry) => entry.id === view.drawerId)?.nickname ?? '';
 
@@ -54,7 +55,9 @@ export function WordArea({ view }: { view: RoomView }) {
 
   return (
     <div className="flex min-w-0 flex-col items-center text-center">
-      {label ? <span className="text-caption text-fg-muted uppercase">{label}</span> : null}
+      {label && !compact ? (
+        <span className="text-caption text-fg-muted uppercase">{label}</span>
+      ) : null}
       {content}
     </div>
   );

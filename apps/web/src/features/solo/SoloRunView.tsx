@@ -7,8 +7,10 @@ import { Button } from '../../ui/Button.js';
 import { cx } from '../../ui/cx.js';
 import { IconButton, ICON } from '../../ui/IconButton.js';
 import { Panel } from '../../ui/Panel.js';
+import { CompactPlayBar, CompactProgress } from '../../ui/CompactPlayBar.js';
 import { PlayTopBar, ProgressIndicator } from '../../ui/PlayTopBar.js';
 import { TimerRing } from '../../ui/TimerRing.js';
+import { useVisibleViewport } from '../../ui/useVisibleViewport.js';
 import { WordMask } from '../../ui/WordMask.js';
 import { SoloCanvas } from './SoloCanvas.js';
 import { SoloCredit } from './SoloCredit.js';
@@ -121,6 +123,17 @@ function GuessPanel({ guesses, open, drawing, onGuess }: GuessPanelProps) {
     if (list) list.scrollTop = list.scrollHeight;
   }, [guesses]);
 
+  // The list shrinks to its latest line while the on-screen keyboard is open (spec 011).
+  useEffect(() => {
+    const list = listRef.current;
+    if (!list || typeof ResizeObserver === 'undefined') return;
+    const observer = new ResizeObserver(() => {
+      list.scrollTop = list.scrollHeight;
+    });
+    observer.observe(list);
+    return () => observer.disconnect();
+  }, []);
+
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
     if (!open || text.trim().length === 0) return;
@@ -131,7 +144,7 @@ function GuessPanel({ guesses, open, drawing, onGuess }: GuessPanelProps) {
   return (
     <Panel
       aria-label={t('solo.guesses')}
-      className="mx-2 flex min-h-44 flex-1 flex-col overflow-hidden sm:mx-0 sm:min-h-0"
+      className="mx-2 flex min-h-44 flex-1 flex-col overflow-hidden typing:mx-1 typing:min-h-0 typing:flex-none sm:mx-0 sm:min-h-0"
     >
       <h2 className="hidden px-4 pt-3 pb-1 text-label text-fg-secondary sm:block">
         {t('solo.guesses')}
@@ -142,7 +155,7 @@ function GuessPanel({ guesses, open, drawing, onGuess }: GuessPanelProps) {
         aria-live="polite"
         aria-label={t('solo.guesses')}
         tabIndex={0}
-        className="scroll-quiet flex min-h-0 flex-1 flex-col overflow-y-auto px-2 py-2"
+        className="scroll-quiet flex min-h-0 flex-1 flex-col overflow-y-auto px-2 py-2 typing:max-h-7 typing:flex-none typing:overflow-hidden typing:py-0.5"
       >
         <ul className="flex min-h-full flex-col gap-0.5">
           {guesses.length === 0 ? (
@@ -173,7 +186,10 @@ function GuessPanel({ guesses, open, drawing, onGuess }: GuessPanelProps) {
           ))}
         </ul>
       </div>
-      <form onSubmit={handleSubmit} className="flex items-center gap-2 border-t border-line p-2">
+      <form
+        onSubmit={handleSubmit}
+        className="flex items-center gap-2 border-t border-line p-2 typing:p-1"
+      >
         <input
           ref={inputRef}
           data-testid="solo-guess-input"
@@ -212,6 +228,7 @@ interface SoloRunViewProps {
 
 /** A solo run in progress: the replay, the mask and timer, the guesses (spec 009). */
 export function SoloRunView({ run, now, dispatch, onLeave }: SoloRunViewProps) {
+  const viewport = useVisibleViewport();
   const round = currentRound(run);
   if (!round) return null;
   const revealing = run.phase === 'reveal';
@@ -223,46 +240,79 @@ export function SoloRunView({ run, now, dispatch, onLeave }: SoloRunViewProps) {
     <div
       data-testid="solo"
       data-phase={run.phase}
-      className="flex h-dvh flex-col overflow-y-auto xl:overflow-hidden"
+      data-viewport={viewport.typing ? 'typing' : 'full'}
+      style={viewport.style}
+      className="play-screen flex flex-col overflow-y-auto xl:overflow-hidden"
     >
-      <PlayTopBar
-        progress={
-          <ProgressIndicator
-            caption={t('solo.drawing')}
-            value={t('solo.progress', progress)}
-            label={t('solo.progressLabel', progress)}
-            testId="solo-progress"
-            data={{ 'data-index': progress.index, 'data-total': progress.total }}
-          />
-        }
-        word={
-          <div className="flex min-w-0 flex-col items-center text-center">
-            <span className="text-caption text-fg-muted uppercase">
-              {revealing ? t('game.theWordWas') : t('game.guessThis')}
-            </span>
-            {revealing ? (
-              <span className="font-mono text-subheading font-semibold break-words text-fg sm:text-heading">
+      {viewport.typing ? (
+        // The on-screen keyboard is open: one row, the canvas and the input (spec 011).
+        <CompactPlayBar
+          progress={
+            <CompactProgress
+              value={t('solo.progress', progress)}
+              label={t('solo.progressLabel', progress)}
+              testId="solo-progress"
+              data={{ 'data-index': progress.index, 'data-total': progress.total }}
+            />
+          }
+          word={
+            revealing ? (
+              <span className="font-mono text-subheading font-semibold break-words text-fg">
                 {round.word}
               </span>
             ) : (
               <WordMask mask={maskOf(run)} />
-            )}
-          </div>
-        }
-        timer={
-          <TimerRing
-            seconds={secondsLeft(remaining)}
-            fraction={remaining / SOLO.timePerDrawingMs}
-            warn
-          />
-        }
-        leaveLabel={t('solo.end')}
-        onLeave={onLeave}
-      />
-      <main className="flex min-h-0 flex-1 flex-col gap-2 pb-2 sm:grid sm:grid-rows-[auto_minmax(13rem,1fr)] sm:gap-4 sm:p-4 xl:grid-cols-[minmax(0,1fr)_20rem] xl:grid-rows-[minmax(0,1fr)]">
+            )
+          }
+          timer={
+            <TimerRing
+              seconds={secondsLeft(remaining)}
+              fraction={remaining / SOLO.timePerDrawingMs}
+              warn
+              compact
+            />
+          }
+        />
+      ) : (
+        <PlayTopBar
+          progress={
+            <ProgressIndicator
+              caption={t('solo.drawing')}
+              value={t('solo.progress', progress)}
+              label={t('solo.progressLabel', progress)}
+              testId="solo-progress"
+              data={{ 'data-index': progress.index, 'data-total': progress.total }}
+            />
+          }
+          word={
+            <div className="flex min-w-0 flex-col items-center text-center">
+              <span className="text-caption text-fg-muted uppercase">
+                {revealing ? t('game.theWordWas') : t('game.guessThis')}
+              </span>
+              {revealing ? (
+                <span className="font-mono text-subheading font-semibold break-words text-fg sm:text-heading">
+                  {round.word}
+                </span>
+              ) : (
+                <WordMask mask={maskOf(run)} />
+              )}
+            </div>
+          }
+          timer={
+            <TimerRing
+              seconds={secondsLeft(remaining)}
+              fraction={remaining / SOLO.timePerDrawingMs}
+              warn
+            />
+          }
+          leaveLabel={t('solo.end')}
+          onLeave={onLeave}
+        />
+      )}
+      <main className="flex min-h-0 flex-1 flex-col gap-2 pb-2 typing:gap-1 typing:pb-1 sm:grid sm:grid-rows-[auto_minmax(13rem,1fr)] sm:gap-4 sm:p-4 xl:grid-cols-[minmax(0,1fr)_20rem] xl:grid-rows-[minmax(0,1fr)]">
         <h1 className="sr-only">{t('solo.title')}</h1>
-        <section className="stage-width flex min-w-0 flex-col gap-1 justify-self-center sm:gap-3">
-          <div className="stage-frame relative w-full shrink-0 overflow-hidden bg-paper shadow-lg ring-1 ring-line sm:rounded-lg">
+        <section className="stage stage-width flex min-w-0 flex-col items-center gap-1 justify-self-center sm:gap-3">
+          <div className="stage-frame stage-fit relative shrink-0 overflow-hidden bg-paper shadow-lg ring-1 ring-line sm:rounded-lg">
             <SoloCanvas
               // A new drawing gets a new canvas, so nothing of the last one can show through.
               key={run.index}
@@ -272,7 +322,7 @@ export function SoloRunView({ run, now, dispatch, onLeave }: SoloRunViewProps) {
             />
             {revealing && lastResult ? <Reveal result={lastResult} /> : null}
           </div>
-          <div className="flex min-h-11 w-full items-center justify-between gap-3 px-3 sm:px-0">
+          <div className="flex min-h-11 w-full items-center justify-between gap-3 px-3 typing:hidden sm:px-0">
             <ProgressDots run={run} />
             <span className="flex items-baseline gap-2 text-caption text-fg-secondary">
               {t('solo.score')}

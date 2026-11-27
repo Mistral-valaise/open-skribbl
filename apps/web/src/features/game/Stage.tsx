@@ -108,14 +108,17 @@ export function Stage({ view, className }: { view: RoomView; className?: string 
   }
 
   return (
-    <section className={cx('flex min-w-0 flex-col items-center gap-1 sm:gap-3', className)}>
+    <section className={cx('stage flex min-w-0 flex-col items-center gap-1 sm:gap-3', className)}>
       {/* A ring instead of a border: the frame's box, and with it the canvas, stays exactly 4:3. */}
       <div className="stage-width stage-frame relative shrink-0 overflow-hidden bg-paper shadow-lg ring-1 ring-line sm:rounded-lg">
         <DrawingCanvas interactive={canDraw} />
         <ReactionLayer />
         {overlay}
       </div>
-      {canDraw ? <Toolbar /> : <StageFooter view={view} drawer={drawer} />}
+      {/* Tools, reactions and likes wait while the on-screen keyboard is open (spec 011). */}
+      <div className="contents typing:hidden">
+        {canDraw ? <Toolbar /> : <StageFooter view={view} drawer={drawer} />}
+      </div>
     </section>
   );
 }

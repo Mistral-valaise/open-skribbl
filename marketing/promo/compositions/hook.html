@@ -1,0 +1,171 @@
+<template>
+  <style>
+    @font-face {
+      font-family: 'Bricolage Grotesque';
+      src: url('assets/fonts/bricolage-grotesque.woff2') format('woff2');
+      font-weight: 200 800;
+    }
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: #ffffff;
+      color: #14151c;
+      font-family: Inter, sans-serif;
+    }
+    #hook-canvas {
+      position: absolute;
+      left: 329px;
+      top: 0;
+      width: 1591px;
+      height: 1080px;
+      overflow: hidden;
+    }
+    #hook-footage {
+      position: absolute;
+      left: -734.4px;
+      top: -299.2px;
+      width: 3264px;
+      height: 1836px;
+    }
+    #hook-label {
+      position: absolute;
+      left: 100px;
+      top: 64px;
+      font-size: 40px;
+      font-weight: 700;
+      color: #4c5166;
+    }
+    .hook-guess {
+      position: absolute;
+      left: 100px;
+      width: 660px;
+    }
+    .hook-line {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .hook-who {
+      font-size: 34px;
+      font-weight: 700;
+      color: #4c5166;
+    }
+    .hook-text {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 84px;
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: -0.02em;
+    }
+    .hook-close {
+      margin-left: 22px;
+      font-family: Inter, sans-serif;
+      font-size: 34px;
+      font-weight: 700;
+      letter-spacing: 0;
+      color: #9c4708;
+    }
+  </style>
+  <div id="root" data-composition-id="hook" data-width="1920" data-height="1080">
+    <div id="hook-canvas" data-layout-allow-overflow>
+      <video
+        id="hook-footage"
+        class="clip"
+        data-start="0"
+        data-duration="5.4"
+        data-media-start="2.43"
+        data-playback-rate="2.81"
+        data-track-index="1"
+        src="assets/clips/draw.mp4"
+        muted
+        playsinline
+      ></video>
+    </div>
+    <div id="hook-label" class="clip" data-start="0" data-duration="5.4" data-track-index="2">
+      <span id="hook-label-text">Mara is drawing</span>
+    </div>
+    <div
+      id="hook-guess-1"
+      class="clip hook-guess"
+      data-start="0.5"
+      data-duration="4.9"
+      data-track-index="3"
+      style="top: 150px"
+    >
+      <div class="hook-line">
+        <span class="hook-who">Jules</span><span class="hook-text">a tower?</span>
+      </div>
+    </div>
+    <div
+      id="hook-guess-2"
+      class="clip hook-guess"
+      data-start="1.2"
+      data-duration="4.2"
+      data-track-index="4"
+      style="top: 280px"
+    >
+      <div class="hook-line">
+        <span class="hook-who">Aiko</span><span class="hook-text">candle</span>
+      </div>
+    </div>
+    <div
+      id="hook-guess-3"
+      class="clip hook-guess"
+      data-start="1.9"
+      data-duration="3.5"
+      data-track-index="5"
+      style="top: 410px"
+    >
+      <div class="hook-line">
+        <span class="hook-who">Noa</span><span class="hook-text">rocket!</span>
+      </div>
+    </div>
+    <div
+      id="hook-guess-4"
+      class="clip hook-guess"
+      data-start="2.7"
+      data-duration="2.7"
+      data-track-index="6"
+      style="top: 540px"
+    >
+      <div class="hook-line">
+        <span class="hook-who">Jules</span><span class="hook-text">windmill</span>
+      </div>
+    </div>
+    <div
+      id="hook-guess-5"
+      class="clip hook-guess"
+      data-start="3.9"
+      data-duration="1.5"
+      data-track-index="7"
+      style="top: 670px"
+    >
+      <div class="hook-line">
+        <span class="hook-who">Aiko</span
+        ><span class="hook-text">lighthose<span class="hook-close">close</span></span>
+      </div>
+    </div>
+  </div>
+  <script>
+    (() => {
+      const tl = gsap.timeline({ paused: true });
+      [0.5, 1.2, 1.9, 2.7, 3.9].forEach((at, index) => {
+        const line = `#hook-guess-${index + 1} .hook-line`;
+        tl.fromTo(
+          line,
+          { opacity: 0, x: -36, filter: 'blur(8px)' },
+          { opacity: 1, x: 0, filter: 'blur(0px)', duration: 0.32, ease: 'power4.out' },
+          at,
+        );
+        tl.to(
+          line,
+          { opacity: 0, filter: 'blur(8px)', duration: 0.2, ease: 'power2.in' },
+          5.12 + index * 0.015,
+        );
+      });
+      tl.to('#hook-label-text', { opacity: 0, duration: 0.2, ease: 'power2.in' }, 5.12);
+      window.__timelines['hook'] = tl;
+    })();
+  </script>
+</template>

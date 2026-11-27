@@ -1,0 +1,95 @@
+<template>
+  <style>
+    @font-face {
+      font-family: 'Bricolage Grotesque';
+      src: url('assets/fonts/bricolage-grotesque.woff2') format('woff2');
+      font-weight: 200 800;
+    }
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: #ffffff;
+      color: #14151c;
+      font-family: Inter, sans-serif;
+    }
+    #result-move,
+    #result-card {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1920px;
+      height: 1080px;
+    }
+    #result-a,
+    #result-b {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1920px;
+      height: 1080px;
+    }
+  </style>
+  <div id="root" data-composition-id="result" data-width="1920" data-height="1080">
+    <div id="result-move" data-layout-allow-overflow>
+      <video
+        id="result-a"
+        class="clip"
+        data-start="0"
+        data-duration="2.2"
+        data-media-start="17.58"
+        data-playback-rate="1.78"
+        data-track-index="1"
+        src="assets/clips/draw.mp4"
+        muted
+        playsinline
+      ></video>
+    </div>
+    <div id="result-card" data-layout-allow-overflow>
+      <video
+        id="result-b"
+        class="clip"
+        data-start="2.2"
+        data-duration="2.2"
+        data-media-start="26.43"
+        data-track-index="2"
+        src="assets/clips/draw.mp4"
+        muted
+        playsinline
+      ></video>
+    </div>
+  </div>
+  <script>
+    (() => {
+      const tl = gsap.timeline({ paused: true });
+      // The paper opens around the canvas until the whole interface is in the frame.
+      tl.fromTo(
+        '#result-move',
+        {
+          scale: 1.7,
+          x: -405.4,
+          y: -299.2,
+          transformOrigin: '0px 0px',
+          clipPath: 'inset(176px 552px 269px 432px round 16px)',
+        },
+        {
+          scale: 1,
+          x: 0,
+          y: 0,
+          clipPath: 'inset(0px 0px 0px 0px round 0px)',
+          duration: 0.85,
+          ease: 'power2.inOut',
+        },
+        0,
+      );
+      // The turn-end card, a little large at first.
+      tl.fromTo(
+        '#result-card',
+        { scale: 1.56, x: 60, y: 67, transformOrigin: '900px 473px' },
+        { scale: 1.45, duration: 0.6, ease: 'expo.out' },
+        2.2,
+      );
+      window.__timelines['result'] = tl;
+    })();
+  </script>
+</template>

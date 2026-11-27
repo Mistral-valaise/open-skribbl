@@ -19,6 +19,7 @@ export function Chat({ view, className }: { view: RoomView; className?: string }
   const inputRef = useRef<HTMLInputElement>(null);
   const logRef = useRef<HTMLDivElement>(null);
   const following = useRef(true);
+  const measuredHeight = useRef(0);
 
   const me = view.participants.find((entry) => entry.id === view.you.id);
   const isGuesser =
@@ -43,7 +44,9 @@ export function Chat({ view, className }: { view: RoomView; className?: string }
   useEffect(() => {
     const log = logRef.current;
     if (!log || typeof ResizeObserver === 'undefined') return;
+    measuredHeight.current = log.clientHeight;
     const observer = new ResizeObserver(() => {
+      measuredHeight.current = log.clientHeight;
       if (following.current) log.scrollTop = log.scrollHeight;
     });
     observer.observe(log);
@@ -53,6 +56,9 @@ export function Chat({ view, className }: { view: RoomView; className?: string }
   const handleScroll = () => {
     const log = logRef.current;
     if (!log) return;
+    // A scroll event that arrives while the log is changing size comes from
+    // the layout, not from the reader: it must not end the following.
+    if (log.clientHeight !== measuredHeight.current) return;
     following.current = log.scrollHeight - log.scrollTop - log.clientHeight < FOLLOW_THRESHOLD_PX;
   };
 

@@ -14,6 +14,8 @@ Bundled with the web app from milestone M1, each under the SIL Open Font License
 - Bricolage Grotesque
 - JetBrains Mono
 
+Bricolage Grotesque is also in `marketing/promo/assets/fonts/`, where the promo film uses it.
+
 ## Icons
 
 - Lucide, ISC License.
@@ -22,3 +24,4 @@ Bundled with the web app from milestone M1, each under the SIL Open Font License
 
 - **Sloth SLO dashboards** by Xabier Larrakoetxea: "SLO / Detail" (grafana.com dashboard 14348, revision 5) and "High level Sloth SLOs" (grafana.com dashboard 14643, revision 2), from the [Sloth](https://github.com/slok/sloth) project, which is licensed under the Apache License 2.0. The dashboard files carry no licence statement of their own. They are redistributed in `deploy/helm/kritzel/files/grafana/dashboards/sloth-*.json`, changed only so that Grafana can provision them from a file: the data source input is replaced by the data source UID `prometheus` and the import metadata is removed.
 - **Sloth** generates `deploy/helm/kritzel/files/prometheus/rules/sloth-kritzel.yaml` from `deploy/helm/kritzel/files/slo/kritzel.slo.yaml`. It is a build-time tool and is not part of the image.
+- **HyperFrames** by HeyGen renders the promo film in `marketing/promo/` from HTML, and **GSAP** animates it; the compositions load GSAP from a CDN at render time. Both are used only to produce the film and are not part of the game or its image.

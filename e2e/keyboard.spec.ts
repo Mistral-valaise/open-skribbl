@@ -75,9 +75,18 @@ test('AC-011-17, AC-011-19: a guesser keeps seeing the drawing while the keyboar
   await expect(guest.getByTestId('game')).toHaveAttribute('data-viewport', 'full');
   await expect(guest.getByTestId('reaction-bar')).toBeVisible();
 
+  // Guesses were made before the keyboard opens; the last line is the one that matters.
+  for (const text of ['a tower', 'a candle', 'a rocket', 'the newest line']) {
+    await sendChat(guest, text);
+  }
+  await expect(guest.getByTestId('chat-log')).toContainText('the newest line');
+
   // The keyboard opens: 410 px of the height are gone.
   await guest.setViewportSize(KEYBOARD_OPEN);
   await expect(guest.getByTestId('game')).toHaveAttribute('data-viewport', 'typing');
+  await expect(guest.getByTestId('chat-log').getByText('the newest line')).toBeInViewport({
+    ratio: 1,
+  });
   await expectOnScreen(
     guest,
     ['word-mask', 'timer', 'round-indicator', 'canvas', 'chat-input'],

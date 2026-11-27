@@ -39,8 +39,9 @@ export function JoinForm({ code, error, onJoin }: JoinFormProps) {
   return (
     <CenteredPage>
       <header className="flex flex-col items-center gap-6 text-center">
-        <Link href="/" aria-label={t('room.backHome')} className="rounded-sm">
+        <Link href="/" className="rounded-sm">
           <Wordmark size="sm" />
+          <span className="sr-only">{t('room.backHome')}</span>
         </Link>
         <div className="flex flex-col gap-1">
           <h1 className="font-display text-title text-fg">{t('join.title')}</h1>

@@ -52,16 +52,36 @@ const WIDTHS = [320, 375, 768, 1024, 1440];
 async function expectNoHorizontalScroll(page: Page, where: string): Promise<void> {
   for (const width of WIDTHS) {
     await page.setViewportSize({ width, height: 800 });
-    const overflow = await page.evaluate(
-      () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
-    );
-    expect(overflow, `${where} at ${width}px`).toBeLessThanOrEqual(0);
+    // Polled: the layout settles a frame or two after the viewport changes.
+    await expect
+      .poll(
+        () =>
+          page.evaluate(
+            () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+          ),
+        { message: `${where} at ${width}px`, timeout: 3_000 },
+      )
+      .toBeLessThanOrEqual(0);
   }
   await page.setViewportSize({ width: 1280, height: 800 });
 }
 
+/** Waits until entrance animations are over, so colours are final when scanned. */
+async function settled(page: Page): Promise<void> {
+  await page.evaluate(async () => {
+    const finite = document
+      .getAnimations()
+      .filter((animation) => animation.effect?.getComputedTiming().iterations !== Infinity);
+    await Promise.race([
+      Promise.allSettled(finite.map((animation) => animation.finished)),
+      new Promise((resolve) => setTimeout(resolve, 2_000)),
+    ]);
+  });
+}
+
 async function expectAccessible(page: Page, where: string): Promise<void> {
   for (const mode of ['first', 'second']) {
+    await settled(page);
     const { violations } = await new AxeBuilder({ page }).analyze();
     const serious = violations
       .filter((violation) => violation.impact === 'serious' || violation.impact === 'critical')

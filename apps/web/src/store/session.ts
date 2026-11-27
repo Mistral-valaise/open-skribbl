@@ -9,6 +9,8 @@ import {
   type Role,
   type ServerMessage,
 } from '@kritzel/shared';
+import { playSound } from '../audio/index.js';
+import { soundEventsFor } from '../audio/roomSounds.js';
 import { RoomConnection, webSocketUrl } from '../connection/roomConnection.js';
 import {
   clearSession,
@@ -42,6 +44,7 @@ function receive(room: ActiveRoom, message: ServerMessage): void {
   const before = useRoomStore.getState();
   const { data, error } = reduceServerMessage(before, message, Date.now());
   useRoomStore.setState(data, true);
+  for (const sound of soundEventsFor(before, data, message)) playSound(sound);
 
   if (message.type === 'joined') {
     saveSession(room.code, { token: message.sessionToken, role: message.state.you.role });

@@ -20,7 +20,9 @@ export function WordMask({ mask, className }: WordMaskProps) {
       <span
         data-testid="word-mask"
         data-mask={mask}
-        aria-label={t('game.letterCount', { counts })}
+        // Read as the letter counts, then the mask letter by letter with its hints.
+        role="img"
+        aria-label={`${t('game.letterCount', { counts })}. ${Array.from(mask).join(' ')}`}
         className="font-mono text-subheading font-semibold whitespace-pre-wrap text-fg sm:text-heading"
       >
         {Array.from(mask, (char, index) =>

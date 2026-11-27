@@ -10,10 +10,44 @@ import { SETTING_VALUES } from './settingValues.js';
 
 type NumericSetting = 'rounds' | 'drawTime' | 'wordChoices' | 'hints' | 'maxPlayers';
 
-/** How long a clicked checkbox keeps its new state while the server has not answered. */
+/** How long a changed control keeps its new value while the server has not confirmed it. */
 const PENDING_MS = 1500;
 
-const update = (patch: Partial<Settings>) => send({ type: 'settings.update', settings: patch });
+/** The settings with a single value each; custom words have their own field. */
+type ScalarSettings = Omit<Settings, 'customWords'>;
+
+/**
+ * Settings as the host's controls show them: a change is visible at once and
+ * sent to the server, whose next snapshot confirms it. A change the server
+ * does not confirm in time (it was rejected) falls back to the server's value.
+ */
+function usePendingSettings(settings: Settings) {
+  const [pending, setPending] = useState<Partial<ScalarSettings>>({});
+
+  // A confirmed value is no longer pending.
+  useEffect(() => {
+    setPending((current) => {
+      const open = Object.entries(current).filter(
+        ([name, value]) => settings[name as keyof ScalarSettings] !== value,
+      );
+      return open.length === Object.keys(current).length
+        ? current
+        : (Object.fromEntries(open) as Partial<ScalarSettings>);
+    });
+  }, [settings]);
+
+  useEffect(() => {
+    if (Object.keys(pending).length === 0) return;
+    const timer = window.setTimeout(() => setPending({}), PENDING_MS);
+    return () => window.clearTimeout(timer);
+  }, [pending]);
+
+  const update = (patch: Partial<ScalarSettings>) => {
+    setPending((current) => ({ ...current, ...patch }));
+    send({ type: 'settings.update', settings: patch });
+  };
+  return { shown: { ...settings, ...pending }, update };
+}
 
 interface SettingsPanelProps {
   view: RoomView;
@@ -22,18 +56,10 @@ interface SettingsPanelProps {
 
 /** The rules of the next game: editable for the host, read-only for everyone else (spec 001). */
 export function SettingsPanel({ view, editable }: SettingsPanelProps) {
-  const { settings } = view;
+  const { shown: settings, update } = usePendingSettings(view.settings);
   const playerCount = view.participants.filter((entry) => entry.role === 'player').length;
   // "Use only custom words" needs enough custom words (spec 006, AC-006-09).
   const onlyAllowed = editable && view.customWordCount >= CUSTOM_WORDS_ONLY_MIN;
-  // The box shows the host's click at once; the next snapshot, or a rejection, settles it.
-  const [pendingOnly, setPendingOnly] = useState<boolean | null>(null);
-  useEffect(() => {
-    if (pendingOnly === null) return;
-    const timer = window.setTimeout(() => setPendingOnly(null), PENDING_MS);
-    return () => window.clearTimeout(timer);
-  }, [pendingOnly]);
-  useEffect(() => setPendingOnly(null), [settings.customWordsOnly]);
 
   const numeric = (
     name: NumericSetting,
@@ -130,12 +156,9 @@ export function SettingsPanel({ view, editable }: SettingsPanelProps) {
             type="checkbox"
             data-testid="setting-customWordsOnly"
             name="customWordsOnly"
-            checked={pendingOnly ?? settings.customWordsOnly}
+            checked={settings.customWordsOnly}
             disabled={!onlyAllowed}
-            onChange={(event) => {
-              setPendingOnly(event.target.checked);
-              update({ customWordsOnly: event.target.checked });
-            }}
+            onChange={(event) => update({ customWordsOnly: event.target.checked })}
             className="mt-0.5 size-5 shrink-0 accent-accent disabled:cursor-not-allowed"
           />
           <span className="flex flex-col">

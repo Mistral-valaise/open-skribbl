@@ -1,6 +1,7 @@
 import { MIN_PLAYERS_TO_START, type RoomView } from '@kritzel/shared';
 import { Play } from 'lucide-react';
 import { t } from '../../i18n/index.js';
+import { useRoomStore } from '../../store/roomStore.js';
 import { send } from '../../store/session.js';
 import { Button } from '../../ui/Button.js';
 import { ICON } from '../../ui/IconButton.js';
@@ -22,6 +23,8 @@ export function LobbyScreen({ view, onLeave }: LobbyScreenProps) {
     (entry) => entry.role === 'player' && entry.connected,
   ).length;
   const canStart = connectedPlayers >= MIN_PLAYERS_TO_START;
+  // Controls that need the server rest while the client is reconnecting (spec 011).
+  const connected = useRoomStore((state) => state.status === 'joined');
 
   return (
     <div
@@ -29,8 +32,8 @@ export function LobbyScreen({ view, onLeave }: LobbyScreenProps) {
       className="mx-auto flex min-h-dvh w-full max-w-6xl flex-col gap-6 p-4 sm:p-6"
     >
       <RoomHeader onLeave={onLeave} />
-      <h1 className="sr-only">{t('lobby.title')}</h1>
       <main className="grid items-start gap-4 sm:gap-6 lg:grid-cols-[minmax(0,1fr)_22.5rem]">
+        <h1 className="sr-only">{t('lobby.title')}</h1>
         <div className="flex min-w-0 flex-col gap-4 sm:gap-6">
           <InviteCard code={view.code} />
           <PlayerGrid view={view} />
@@ -44,7 +47,7 @@ export function LobbyScreen({ view, onLeave }: LobbyScreenProps) {
                   variant="primary"
                   size="lg"
                   block
-                  disabled={!canStart}
+                  disabled={!canStart || !connected}
                   aria-describedby={canStart ? undefined : 'start-reason'}
                   icon={<Play {...ICON} />}
                   onClick={() => send({ type: 'game.start' })}

@@ -1,6 +1,7 @@
 import type { RoomView } from '@kritzel/shared';
 import { RotateCcw } from 'lucide-react';
 import { t } from '../../i18n/index.js';
+import { useRoomStore } from '../../store/roomStore.js';
 import { send } from '../../store/session.js';
 import { Avatar } from '../../ui/Avatar.js';
 import { Button } from '../../ui/Button.js';
@@ -9,6 +10,7 @@ import { ICON } from '../../ui/IconButton.js';
 import { Panel } from '../../ui/Panel.js';
 import { RoomHeader } from '../../ui/RoomHeader.js';
 import { Spinner } from '../../ui/Spinner.js';
+import { Confetti } from './Confetti.js';
 import { Gallery } from './Gallery.js';
 import { Podium } from './Podium.js';
 
@@ -23,6 +25,7 @@ export function ResultsScreen({ view, onLeave }: ResultsScreenProps) {
   const gallery = view.results?.gallery ?? [];
   const favorite = view.results?.favorite ?? null;
   const isHost = view.hostId === view.you.id;
+  const connected = useRoomStore((state) => state.status === 'joined');
   const winners = ranking.filter((entry) => entry.rank === 1 && entry.score > 0);
 
   return (
@@ -30,6 +33,7 @@ export function ResultsScreen({ view, onLeave }: ResultsScreenProps) {
       data-testid="results"
       className="mx-auto flex min-h-dvh w-full max-w-6xl flex-col gap-6 p-4 sm:p-6"
     >
+      <Confetti />
       <RoomHeader onLeave={onLeave} />
       <main className="flex flex-col gap-8 pb-8">
         <div className="flex flex-col items-center gap-1 text-center">
@@ -64,6 +68,7 @@ export function ResultsScreen({ view, onLeave }: ResultsScreenProps) {
                     )}
                   >
                     <span
+                      role="img"
                       aria-label={t('results.place', { rank: entry.rank })}
                       className={cx(
                         'w-6 shrink-0 text-center font-mono text-label tabular-nums',
@@ -109,6 +114,7 @@ export function ResultsScreen({ view, onLeave }: ResultsScreenProps) {
                 size="lg"
                 className="w-full sm:w-auto sm:min-w-56"
                 icon={<RotateCcw {...ICON} />}
+                disabled={!connected}
                 onClick={() => send({ type: 'game.playAgain' })}
                 data-testid="play-again"
               >

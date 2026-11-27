@@ -1,17 +1,34 @@
 import { TIMING } from '@kritzel/shared';
+import { useEffect, useRef } from 'react';
 import { t } from '../../i18n/index.js';
+import { useRoomStore } from '../../store/roomStore.js';
 import { send } from '../../store/session.js';
 import { useRemaining } from './useRemaining.js';
 
 /** The drawer's word choices: large buttons and a countdown bar (DESIGN §9). */
 export function WordChoiceOverlay({ words }: { words: readonly string[] }) {
+  const panelRef = useRef<HTMLDivElement>(null);
+  const connected = useRoomStore((state) => state.status === 'joined');
+
+  // Keyboard users continue from the choices: the next Tab lands on the first word. The panel
+  // itself takes the focus, not a word, so a key meant for the chat cannot pick one by accident;
+  // and a message that is being typed keeps the focus.
+  useEffect(() => {
+    const focused = document.activeElement;
+    const typing =
+      (focused instanceof HTMLInputElement || focused instanceof HTMLTextAreaElement) &&
+      focused.value.length > 0;
+    if (!typing) panelRef.current?.focus();
+  }, []);
   const remaining = useRemaining();
   const share = Math.min(1, remaining / TIMING.choosingMs);
 
   return (
     <div className="absolute inset-0 grid animate-fade-in place-items-center overflow-y-auto bg-scrim p-3 backdrop-blur-sm">
       <div
-        role="dialog"
+        ref={panelRef}
+        role="group"
+        tabIndex={-1}
         aria-label={t('game.chooseWord')}
         className="flex w-full max-w-lg animate-overlay flex-col gap-3 rounded-xl border border-line bg-surface-raised p-4 shadow-lg sm:gap-4 sm:p-6"
       >
@@ -29,6 +46,7 @@ export function WordChoiceOverlay({ words }: { words: readonly string[] }) {
               key={word}
               type="button"
               data-testid="word-choice"
+              disabled={!connected}
               onClick={() => send({ type: 'word.choose', index })}
               className="min-h-11 flex-1 basis-32 rounded-md border border-line bg-surface-overlay px-4 py-2 text-body font-semibold text-fg transition-colors motion-fast hover:border-accent hover:bg-accent hover:text-on-accent sm:min-h-14 sm:text-subheading"
             >

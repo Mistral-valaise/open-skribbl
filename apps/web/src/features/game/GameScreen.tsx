@@ -1,8 +1,10 @@
 import type { RoomView } from '@kritzel/shared';
+import { t } from '../../i18n/index.js';
 import { Chat } from './Chat.js';
 import { Scoreboard } from './Scoreboard.js';
 import { Stage } from './Stage.js';
 import { TopBar } from './TopBar.js';
+import { useTurnCues } from './useTurnCues.js';
 
 interface GameScreenProps {
   view: RoomView;
@@ -17,6 +19,7 @@ interface GameScreenProps {
  * - From 1280 px: scoreboard, canvas and chat in three columns.
  */
 export function GameScreen({ view, onLeave }: GameScreenProps) {
+  useTurnCues(view);
   const me = view.participants.find((entry) => entry.id === view.you.id);
   // What this participant is in the current turn, for styling hooks and tests.
   const presence =
@@ -36,6 +39,7 @@ export function GameScreen({ view, onLeave }: GameScreenProps) {
     >
       <TopBar view={view} onLeave={onLeave} />
       <main className="flex min-h-0 flex-1 flex-col gap-2 pb-2 sm:grid sm:grid-cols-2 sm:grid-rows-[auto_minmax(13rem,1fr)] sm:gap-4 sm:p-4 xl:grid-cols-[15rem_minmax(0,1fr)_20rem] xl:grid-rows-[minmax(0,1fr)]">
+        <h1 className="sr-only">{t('app.name')}</h1>
         <Stage view={view} className="sm:col-span-2 xl:col-span-1 xl:col-start-2 xl:row-start-1" />
         <Scoreboard view={view} className="xl:col-start-1 xl:row-start-1" />
         <Chat

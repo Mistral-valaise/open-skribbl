@@ -1,13 +1,14 @@
 import { cleanNickname, ROOM_CODE_LENGTH } from '@kritzel/shared';
-import { ArrowRight, Plus } from 'lucide-react';
+import { ArrowRight, Bot, Plus } from 'lucide-react';
 import { useState, type FormEvent } from 'react';
-import { useLocation } from 'wouter';
+import { Link, useLocation } from 'wouter';
 import { createRoom } from '../../connection/api.js';
 import { t, useLanguageStore, type MessageKey } from '../../i18n/index.js';
 import { loadNickname, saveNickname } from '../../store/identity.js';
 import { isRoomCodeShaped, normalizeRoomCode } from '../../store/roomCode.js';
 import { requestAutoJoin } from '../../store/session.js';
-import { Button } from '../../ui/Button.js';
+import { Button, buttonClass } from '../../ui/Button.js';
+import { cx } from '../../ui/cx.js';
 import { CenteredPage } from '../../ui/CenteredPage.js';
 import { TextField } from '../../ui/Field.js';
 import { ICON } from '../../ui/IconButton.js';
@@ -159,6 +160,14 @@ export function HomeScreen() {
           </Button>
         </div>
       </form>
+      <Link
+        href="/solo"
+        data-testid="play-solo"
+        className={cx(buttonClass('secondary', 'lg'), 'w-full')}
+      >
+        <Bot {...ICON} />
+        {t('home.playSolo')}
+      </Link>
     </CenteredPage>
   );
 }

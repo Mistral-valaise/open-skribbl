@@ -2,7 +2,7 @@
 
 **Draw. Guess. No ads.** Kritzel is an open-source draw-and-guess party game you host yourself and play with your team: private rooms, no accounts, no tracking, no third-party requests. English, German, Spanish and French, with a solo mode against the computer.
 
-> **Status: milestone M0 (foundation).** The specifications and the workspace are in place; the game itself is built in milestones M1–M4. See the [roadmap](docs/ROADMAP.md).
+> **Status: version 1 is implemented.** All twelve feature specs are covered by tests; see the [roadmap](docs/ROADMAP.md) for what comes next (bots, team mode).
 
 🇩🇪 Kritzel ist ein quelloffenes Zeichnen-und-Raten-Spiel zum Selbsthosten: private Räume fürs Team, ohne Werbung, ohne Konten, ohne Tracking. Auf Deutsch, Englisch, Spanisch und Französisch, mit Solo-Modus gegen den Computer.
 
@@ -10,7 +10,7 @@
 
 🇫🇷 Kritzel est un jeu de dessin et de devinettes open source à héberger soi-même : des salons privés pour ton équipe, sans publicité, sans compte et sans pistage. En français, anglais, allemand et espagnol, avec un mode solo contre l'ordinateur.
 
-## What you get in v1
+## What you get
 
 - Private rooms by link or six-character code, 2–12 players plus spectators
 - Brush, eraser, fill, undo and redo, on mouse, touch and stylus
@@ -89,7 +89,7 @@ Then open <http://localhost:3000>. No database and no configuration are needed. 
 
 ## Contributing
 
-Read [`AGENTS.md`](AGENTS.md) first; it applies to human contributors too. Word lists and translations are especially welcome once milestone M2 has landed.
+Read [`AGENTS.md`](AGENTS.md) first; it applies to human contributors too. Word lists and translations are especially welcome: the interface dictionaries are in `apps/web/src/i18n/`, the word lists in `packages/content/words/`.
 
 ## Licence
 

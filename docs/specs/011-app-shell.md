@@ -1,9 +1,9 @@
 # 011 — App shell
 
-|           |          |
-| --------- | -------- |
-| Status    | Proposed |
-| Milestone | M4       |
+|           |             |
+| --------- | ----------- |
+| Status    | Implemented |
+| Milestone | M4          |
 
 ## Intent
 
@@ -26,7 +26,7 @@ The shell is everything around the game that makes Kritzel feel finished: themes
 
 ### Sound
 
-- Effects: join, your turn, your correct guess, another player's correct guess, tick (each of the last 10 s of the drawing phase), turn end, win.
+- Effects: join (any participant joins, yourself included), your turn, your correct guess, another player's correct guess, tick (each of the last 10 s of the drawing phase), turn end, win (for everyone when the results appear).
 - Synthesised with the Web Audio API; no audio files. Audio starts only after the first user interaction.
 - Muted state is stored; default is unmuted.
 

@@ -83,6 +83,8 @@ export const SOLO = {
   strokePauseMs: 150,
   revealMs: 2_500,
   hints: 2,
+  /** Run totals kept per language next to the personal best. */
+  recentRuns: 5,
   /** Free space kept around a replayed drawing, as a fraction of the canvas. */
   margin: 0.1,
   /** Coordinate range of the dataset drawings. */

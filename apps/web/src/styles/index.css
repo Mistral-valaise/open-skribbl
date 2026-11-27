@@ -76,6 +76,8 @@
   --animate-pulse-soft: pulse-soft 1s ease-in-out infinite;
   /* The duration comes from the component that also removes the reaction. */
   --animate-float-up: float-up var(--easing-out) both;
+  /* Duration and delay are set per piece. */
+  --animate-confetti: confetti-fall linear both;
 
   @keyframes spin {
     to {
@@ -132,6 +134,20 @@
       opacity: 0;
     }
   }
+  @keyframes confetti-fall {
+    from {
+      translate: 0 0;
+      opacity: 1;
+    }
+    85% {
+      opacity: 1;
+    }
+    to {
+      translate: 0 105dvh;
+      rotate: 540deg;
+      opacity: 0;
+    }
+  }
   /* The static equivalent of a floating reaction for reduced motion. */
   @keyframes appear-in-place {
     from,
@@ -173,6 +189,7 @@
 
   body {
     min-height: 100dvh;
+    background-color: var(--bg-base);
   }
 
   button,
@@ -206,22 +223,24 @@
 @layer components {
   /*
    * The canvas frame keeps 4:3 at every size. From tablet width the screen
-   * does not scroll, so the frame also has to fit the viewport height: next
-   * to the top bar, the toolbar and (until the three-column layout at
-   * 1280 px) the scoreboard and chat below it. It never gets narrower than
-   * 20rem, however short the window is.
+   * does not scroll, so the stage also has to fit the viewport height: next
+   * to the top bar, the toolbar and (until the wide layout at 1280 px) the
+   * panels below it. It never gets narrower than 20rem, however short the
+   * window is.
    */
   .stage-frame {
-    width: 100%;
     aspect-ratio: 4 / 3;
   }
+  .stage-width {
+    width: 100%;
+  }
   @media (min-width: 40rem) {
-    .stage-frame {
+    .stage-width {
       width: min(100%, max(20rem, calc((100dvh - 29rem) * 4 / 3)));
     }
   }
   @media (min-width: 80rem) {
-    .stage-frame {
+    .stage-width {
       width: min(100%, max(20rem, calc((100dvh - 15.5rem) * 4 / 3)));
     }
   }
@@ -237,6 +256,14 @@
   .scroll-hidden::-webkit-scrollbar {
     display: none;
   }
+}
+
+/* While the theme changes, nothing animates between the two sets of colours. */
+.theme-switching,
+.theme-switching *,
+.theme-switching ::before,
+.theme-switching ::after {
+  transition: none !important;
 }
 
 /* DESIGN §6: with reduced motion everything becomes a short opacity fade. */

@@ -2,7 +2,7 @@
 
 |                |                                                                   |
 | -------------- | ----------------------------------------------------------------- |
-| Status         | Proposed (awaiting owner review)                                  |
+| Status         | Approved; implemented in version 1                                |
 | Direction      | "Studio": calm, dark-first, professional surface; playful moments |
 | Implemented by | `apps/web/src/ui` and the Tailwind theme                          |
 
@@ -35,24 +35,24 @@ Tokens are CSS custom properties defined once and exposed to Tailwind. Component
 | `--border`         | `#2A2E3F` | `#E1E3EC` | Dividers, outlines             |
 | `--text-primary`   | `#F2F3F7` | `#14151C` | Body and headings              |
 | `--text-secondary` | `#A6ABBD` | `#4C5166` | Labels, metadata               |
-| `--text-muted`     | `#6E748A` | `#7A8096` | Placeholders, disabled         |
+| `--text-muted`     | `#8A91A8` | `#646A80` | Placeholders, disabled         |
 
 ### Accent and semantics
 
 | Token            | Dark      | Light     | Use                                         |
 | ---------------- | --------- | --------- | ------------------------------------------- |
 | `--accent`       | `#6A5AF9` | `#6A5AF9` | Primary buttons, focus ring, selected state |
-| `--accent-hover` | `#7D6FFA` | `#5546E0` |                                             |
+| `--accent-hover` | `#5B4BEF` | `#5546E0` |                                             |
 | `--accent-text`  | `#A99FFF` | `#5546E0` | Accent-coloured text and icons on surfaces  |
 | `--on-accent`    | `#FFFFFF` | `#FFFFFF` | Text on accent fills                        |
-| `--success`      | `#34D17A` | `#15803D` | Correct guess, "guessed" state              |
-| `--warning`      | `#F5B041` | `#B45309` | Close guess, last ten seconds               |
+| `--success`      | `#34D17A` | `#126F34` | Correct guess, "guessed" state              |
+| `--warning`      | `#F5B041` | `#9C4708` | Close guess, last ten seconds               |
 | `--danger`       | `#F26D6D` | `#B91C1C` | Errors, kick, time up                       |
 | `--info`         | `#5CC3F5` | `#0369A1` | Neutral system notices                      |
 
 Rules:
 
-- Text and icon colours meet WCAG 2.1 AA against the surface they sit on (4.5:1 for body text, 3:1 for large text and UI glyphs). An automated check enforces this (spec 011).
+- Text and icon colours meet WCAG 2.1 AA against the surface they sit on (4.5:1 for body text, 3:1 for large text and UI glyphs). `apps/web/src/styles/contrast.test.ts` enforces this for every pair the components use; `apps/web/src/styles/tokens.css` holds the values, and this table mirrors it.
 - Semantic colour always comes with an icon or text. A guessed player has a check mark, not only a green name.
 - Accent is for one primary action per view and for selection. It is never a background for large areas.
 
@@ -118,7 +118,7 @@ The mask uses mono at `heading` size with 0.3 em letter spacing; word gaps are r
 
 ## 7. Sound
 
-Seven short effects, synthesised with the Web Audio API (no audio files): join, your turn, correct guess (yours), correct guess (someone else), tick for each of the last ten seconds, turn end, win. Default volume is moderate; a single mute toggle in the top bar is remembered. Sound never carries information that is not also visible.
+Seven short effects, synthesised with the Web Audio API (no audio files): join, your turn, correct guess (yours), correct guess (someone else), tick for each of the last ten seconds, turn end, win. Join plays for every participant who joins, your own join included; win plays for everyone when the results appear. Default volume is moderate; a single mute toggle in the top bar is remembered. Sound never carries information that is not also visible.
 
 ## 8. Components
 

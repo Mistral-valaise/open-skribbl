@@ -78,7 +78,8 @@ function ScoreRow({ view, player }: { view: RoomView; player: ParticipantView })
       )}
     >
       <span
-        aria-label={player.rank === null ? undefined : t('scoreboard.rank', { rank: player.rank })}
+        role="img"
+        aria-label={t('scoreboard.rank', { rank: player.rank ?? 0 })}
         className="w-5 shrink-0 text-center font-mono text-label text-fg-muted tabular-nums"
       >
         {player.rank}
@@ -97,6 +98,7 @@ function ScoreRow({ view, player }: { view: RoomView; player: ParticipantView })
           ) : null}
         </span>
         <span
+          role="img"
           aria-label={t('scoreboard.points', { score: player.score })}
           className="font-mono text-caption text-fg-secondary tabular-nums"
         >

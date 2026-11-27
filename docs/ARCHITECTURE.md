@@ -1,10 +1,10 @@
 # Kritzel — Architecture Guideline
 
-|            |                                  |
-| ---------- | -------------------------------- |
-| Status     | Proposed (awaiting owner review) |
-| Vocabulary | [`CONTEXT.md`](../CONTEXT.md)    |
-| Decisions  | [`docs/adr/`](adr/)              |
+|            |                                    |
+| ---------- | ---------------------------------- |
+| Status     | Approved; implemented in version 1 |
+| Vocabulary | [`CONTEXT.md`](../CONTEXT.md)      |
+| Decisions  | [`docs/adr/`](adr/)                |
 
 This document describes the shape of the system and the rules every change follows. Behaviour lives in the specs; this document says where that behaviour is implemented and how the parts talk to each other.
 

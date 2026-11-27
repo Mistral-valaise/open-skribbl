@@ -27,14 +27,20 @@ interface Painted {
 
 const drawnLength = (item: DrawItem) => (item.kind === 'stroke' ? item.points.length : 0);
 
-/** Whether `item` is what `painted` shows, possibly with more stroke points added since. */
+/**
+ * Whether `item` is what `painted` shows, possibly with more stroke points added
+ * since. The part already on the canvas has to be unchanged: a replay moves the
+ * last point of the stroke it is drawing, and then the stroke is drawn afresh.
+ */
 function continues(painted: Painted, item: DrawItem): boolean {
   if (painted.item === item) return true;
+  if (painted.item.kind !== 'stroke' || item.kind !== 'stroke') return false;
+  if (painted.item.id !== item.id || item.points.length < painted.drawn) return false;
+  const last = painted.drawn - 2;
   return (
-    painted.item.kind === 'stroke' &&
-    item.kind === 'stroke' &&
-    painted.item.id === item.id &&
-    item.points.length >= painted.drawn
+    last < 0 ||
+    (painted.item.points[last] === item.points[last] &&
+      painted.item.points[last + 1] === item.points[last + 1])
   );
 }
 

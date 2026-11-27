@@ -1,10 +1,10 @@
 # Kritzel — Product Requirements Document
 
-|            |                                  |
-| ---------- | -------------------------------- |
-| Status     | Proposed (awaiting owner review) |
-| Version    | 1.0 scope                        |
-| Vocabulary | [`CONTEXT.md`](../CONTEXT.md)    |
+|            |                                 |
+| ---------- | ------------------------------- |
+| Status     | Approved; version 1 implemented |
+| Version    | 1.0 scope                       |
+| Vocabulary | [`CONTEXT.md`](../CONTEXT.md)   |
 
 ## 1. Summary
 

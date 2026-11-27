@@ -1,9 +1,9 @@
 # 009 — Solo mode
 
-|           |          |
-| --------- | -------- |
-| Status    | Proposed |
-| Milestone | M3       |
+|           |             |
+| --------- | ----------- |
+| Status    | Implemented |
+| Milestone | M3          |
 
 ## Intent
 

@@ -5,12 +5,14 @@ import { cx } from '../../ui/cx.js';
 import { PHONE_QUERY, useMediaQuery } from '../../ui/useMediaQuery.js';
 import { useCountUp } from './useCountUp.js';
 
-/** Step height and place in the row by position: the winner stands in the middle, highest. */
-const STEPS = [
-  { step: 'h-24 sm:h-32', order: 'order-2', delay: '300ms' },
-  { step: 'h-16 sm:h-24', order: 'order-1', delay: '150ms' },
-  { step: 'h-12 sm:h-16', order: 'order-3', delay: '0ms' },
+/** Where each of the three stands in the row: the first of the ranking in the middle. */
+const SPOTS = [
+  { order: 'order-2', delay: '300ms' },
+  { order: 'order-1', delay: '150ms' },
+  { order: 'order-3', delay: '0ms' },
 ] as const;
+/** The height of a step follows the rank, so players who share a rank stand equally high. */
+const STEP_HEIGHTS = ['h-24 sm:h-32', 'h-16 sm:h-24', 'h-12 sm:h-16'] as const;
 
 function Place({
   entry,
@@ -23,7 +25,8 @@ function Place({
 }) {
   const isPhone = useMediaQuery(PHONE_QUERY);
   const score = useCountUp(entry.score);
-  const { step, order, delay } = STEPS[position]!;
+  const { order, delay } = SPOTS[position]!;
+  const step = STEP_HEIGHTS[Math.min(entry.rank, STEP_HEIGHTS.length) - 1]!;
   return (
     <li
       data-testid="podium-place"
@@ -49,12 +52,14 @@ function Place({
       </span>
       {entry.left ? <span className="text-caption text-fg-muted">{t('results.left')}</span> : null}
       <span
+        role="img"
         aria-label={t('scoreboard.points', { score: entry.score })}
         className="font-mono text-label text-fg-secondary tabular-nums"
       >
         {score}
       </span>
       <div
+        role="img"
         aria-label={t('results.place', { rank: entry.rank })}
         className={cx(
           'mt-2 grid w-full place-items-center rounded-t-lg border border-b-0 border-line bg-surface-raised',
@@ -85,7 +90,7 @@ interface PodiumProps {
  * rank order; only its appearance puts the winner in the middle.
  */
 export function Podium({ ranking, youId }: PodiumProps) {
-  const top = ranking.slice(0, STEPS.length);
+  const top = ranking.slice(0, SPOTS.length);
   if (top.length === 0) return null;
   return (
     <ol

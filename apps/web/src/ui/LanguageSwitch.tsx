@@ -23,18 +23,19 @@ export function LanguageSwitch({ className }: { className?: string }) {
           type="button"
           data-testid={`language-${language}`}
           lang={language}
-          aria-label={t(`language.${language}`)}
           title={t(`language.${language}`)}
           aria-pressed={language === active}
           onClick={() => setLanguage(language)}
           className={cx(
-            'min-h-8 min-w-9 rounded-sm px-2 text-caption uppercase transition-colors motion-fast',
+            'min-h-8 min-w-8 rounded-sm px-1.5 text-caption uppercase transition-colors motion-fast sm:min-w-9 sm:px-2',
             language === active
               ? 'bg-accent text-on-accent'
               : 'text-fg-secondary hover:bg-surface-hover hover:text-fg',
           )}
         >
-          {language}
+          {/* Seen as the code, read as the language's own name. */}
+          <span aria-hidden>{language}</span>
+          <span className="sr-only">{t(`language.${language}`)}</span>
         </button>
       ))}
     </div>

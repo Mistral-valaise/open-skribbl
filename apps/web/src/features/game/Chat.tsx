@@ -17,7 +17,7 @@ export function Chat({ view, className }: { view: RoomView; className?: string }
   const chat = useRoomStore((state) => state.chat);
   const [text, setText] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
-  const logRef = useRef<HTMLUListElement>(null);
+  const logRef = useRef<HTMLDivElement>(null);
   const following = useRef(true);
 
   const me = view.participants.find((entry) => entry.id === view.you.id);
@@ -63,25 +63,28 @@ export function Chat({ view, className }: { view: RoomView; className?: string }
       <h2 className="hidden px-4 pt-3 pb-1 text-label text-fg-secondary sm:block">
         {t('chat.title')}
       </h2>
-      <ul
+      <div
         ref={logRef}
         data-testid="chat-log"
         role="log"
         aria-live="polite"
         aria-relevant="additions"
+        aria-label={t('chat.title')}
         tabIndex={0}
         onScroll={handleScroll}
-        className="scroll-quiet flex min-h-0 flex-1 flex-col gap-0.5 overflow-y-auto px-2 py-2"
+        className="scroll-quiet flex min-h-0 flex-1 flex-col overflow-y-auto px-2 py-2"
       >
-        {chat.length === 0 ? (
-          <li aria-hidden className="m-auto px-4 text-center text-caption text-fg-muted">
-            {t('chat.empty')}
-          </li>
-        ) : null}
-        {chat.map((entry) => (
-          <ChatLine key={entry.key} entry={entry} youId={view.you.id} />
-        ))}
-      </ul>
+        <ul className="flex min-h-full flex-col gap-0.5">
+          {chat.length === 0 ? (
+            <li aria-hidden className="m-auto px-4 text-center text-caption text-fg-muted">
+              {t('chat.empty')}
+            </li>
+          ) : null}
+          {chat.map((entry) => (
+            <ChatLine key={entry.key} entry={entry} youId={view.you.id} />
+          ))}
+        </ul>
+      </div>
       <form onSubmit={handleSubmit} className="flex items-center gap-2 border-t border-line p-2">
         <input
           ref={inputRef}

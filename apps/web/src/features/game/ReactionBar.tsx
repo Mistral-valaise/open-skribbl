@@ -34,7 +34,7 @@ export function ReactionBar() {
           onClick={() => {
             if (send({ type: 'reaction.send', emoji })) setResting(true);
           }}
-          className="grid h-10 w-10 place-items-center rounded-full text-subheading leading-none transition-[transform,opacity] motion-fast hover:scale-125 active:scale-95 disabled:opacity-40 disabled:hover:scale-100 pointer-coarse:h-11"
+          className="grid h-10 w-10 place-items-center rounded-full text-subheading leading-none transition-[transform,opacity] motion-fast hover:scale-110 active:scale-95 disabled:opacity-40 disabled:hover:scale-100 pointer-coarse:h-11"
         >
           <span aria-hidden>{emoji}</span>
         </button>

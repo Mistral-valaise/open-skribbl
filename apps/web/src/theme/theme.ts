@@ -49,7 +49,13 @@ export function setTheme(theme: Theme): void {
   } catch {
     // The choice then lasts for this visit only.
   }
+  // Colours switch in one step; transitions would show a mix of both themes for a moment.
+  const root = document.documentElement;
+  root.classList.add('theme-switching');
   applyDocumentTheme();
+  window.requestAnimationFrame(() =>
+    window.requestAnimationFrame(() => root.classList.remove('theme-switching')),
+  );
 }
 
 export const otherTheme = (theme: Theme): Theme => (theme === 'dark' ? 'light' : 'dark');

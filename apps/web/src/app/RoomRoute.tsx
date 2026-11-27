@@ -35,8 +35,9 @@ function StatusPage({ children }: { children: ReactNode }) {
   return (
     <CenteredPage>
       <div className="flex justify-center">
-        <Link href="/" aria-label={t('room.backHome')} className="rounded-sm">
+        <Link href="/" className="rounded-sm">
           <Wordmark size="sm" />
+          <span className="sr-only">{t('room.backHome')}</span>
         </Link>
       </div>
       {children}

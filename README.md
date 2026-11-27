@@ -70,7 +70,7 @@ pnpm dev
 pnpm check
 ```
 
-`pnpm dev` starts the server and the web client in watch mode. `pnpm check` runs lint, formatting, type check, tests and spec coverage; CI runs the same command. `pnpm spec:coverage` alone prints the coverage table.
+`pnpm dev` starts the server on port 3000 and the web client on port 5173 in watch mode; open the web client's address. `pnpm check` runs lint, formatting, type check, tests and spec coverage; CI runs the same command. `pnpm spec:coverage` alone prints the coverage table. `pnpm e2e` plays full games in a real browser (it needs Chromium: `pnpm exec playwright install chromium`).
 
 ## Hosting
 

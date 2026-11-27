@@ -1,0 +1,234 @@
+# Kritzel word list: Spanish, medium
+# Activities, places and less common objects. One word per line; see docs/specs/006-words-and-languages.md.
+aeropuerto
+ancla
+mochila
+panadería
+barbacoa
+bañera
+estantería
+bolos
+hoguera
+castillo
+cactus
+calendario
+cámara
+canoa
+carrusel
+chimenea
+brújula
+corona
+desierto
+dinosaurio
+buceo
+delfín
+dragón
+terremoto
+escalera mecánica
+fuegos artificiales
+pesca
+linterna
+fuente
+jardín
+corte de pelo
+hamaca
+apretón de manos
+auriculares
+helicóptero
+senderismo
+hospital
+iceberg
+isla
+medusa
+selva
+canguro
+teclado
+faro
+relámpago
+imán
+buzón
+sirena
+micrófono
+espejo
+museo
+collar
+orquesta
+cuadro
+paracaídas
+loro
+pavo real
+pícnic
+pirata
+parque infantil
+palomitas
+postal
+pirámide
+reciclaje
+montaña rusa
+velero
+castillo de arena
+saxofón
+espantapájaros
+monopatín
+rascacielos
+saco de dormir
+esnórquel
+nave espacial
+estadio
+submarino
+girasol
+amanecer
+surf
+piscina
+telescopio
+tienda de campaña
+tormenta
+tostadora
+tornado
+tractor
+semáforo
+tesoro
+trofeo
+túnel
+unicornio
+aspiradora
+volcán
+cascada
+sandía
+boda
+carretilla
+molino de viento
+mago
+yoga
+cremallera
+cebra
+maleta
+cortacésped
+parada de autobús
+camping
+snowboard
+pez dorado
+bocadillo
+tortita
+acordeón
+despertador
+ambulancia
+acuario
+sillón
+aguacate
+balcón
+ballet
+venda
+granero
+sótano
+pila
+prismáticos
+batidora
+bumerán
+pulsera
+brócoli
+excavadora
+litera
+teleférico
+cafetería
+caramelo
+alfombra
+cueva
+camaleón
+ajedrez
+palillos
+circo
+acantilado
+payaso
+coco
+vaquero
+grúa
+cocodrilo
+crucigrama
+crucero
+armario
+cortina
+dentista
+lavavajillas
+caseta del perro
+timbre
+libélula
+puente levadizo
+pesa
+eclipse
+ascensor
+granjero
+ferri
+camión de bomberos
+flamenco
+chanclas
+niebla
+bosque
+nevera
+garaje
+gimnasia
+secador
+puerto
+arpa
+erizo
+globo aerostático
+reloj de arena
+iglú
+tabla de planchar
+malabarista
+kárate
+caballero
+mariquita
+farol
+lazo
+bote salvavidas
+langosta
+equipaje
+laberinto
+meteorito
+mosquito
+moto
+bigote
+ninja
+oasis
+avestruz
+remo
+palmera
+panda
+pelícano
+piano
+pelea de almohadas
+rosquilla
+charco
+marioneta
+mapache
+balsa
+árbitro
+rinoceronte
+safari
+patinete
+caballito de mar
+balancín
+naufragio
+carrito de la compra
+esqueleto
+telesilla
+perezoso
+copo de nieve
+foco
+calamar
+estetoscopio
+columpio
+pandereta
+taxi
+tucán
+trampolín
+casa del árbol
+trompeta
+vampiro
+camarero
+morsa
+silla de ruedas
+pájaro carpintero
+radiografía
+yate

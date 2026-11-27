@@ -1,5 +1,5 @@
-# Kritzel word list — English, hard
-# Abstract ideas, compound concepts and professions.
+# Kritzel word list: English, hard
+# Abstract ideas, compound concepts and professions. One word per line; see docs/specs/006-words-and-languages.md.
 alarm
 allergy
 applause
@@ -110,3 +110,131 @@ video call
 lunch break
 birthday
 passport
+accident
+advice
+ambition
+anniversary
+apology
+appetite
+argument
+auction
+autograph
+bankrupt
+bargain
+beginner
+betrayal
+blackout
+blindfold
+budget
+bureaucracy
+burnout
+carpool
+censorship
+charity
+checkmate
+childhood
+climate change
+coincidence
+commute
+competition
+conscience
+countdown
+crisis
+criticism
+delay
+diplomat
+discount
+download
+drought
+economy
+election
+embarrassment
+encore
+energy
+envy
+equality
+eternity
+exaggeration
+excuse
+expedition
+fame
+fatigue
+firewall
+first aid
+flashback
+forgery
+fortune
+generation
+gossip
+gratitude
+hibernation
+hiccup
+hindsight
+homesick
+horizon
+hypnosis
+impatience
+inheritance
+instinct
+intermission
+irony
+jet lag
+justice
+karaoke
+landlord
+leadership
+loophole
+loyalty
+majority
+meditation
+migration
+motivation
+negotiation
+nostalgia
+obstacle
+opinion
+overtime
+paradox
+paycheck
+peace
+peer pressure
+perfume
+permission
+phobia
+podcast
+poverty
+prediction
+procrastination
+promotion
+protest
+quarantine
+rebellion
+recession
+reflection
+refund
+revenge
+routine
+sabotage
+sarcasm
+scapegoat
+second chance
+shortage
+side effect
+small talk
+stage fright
+stereotype
+subscription
+superstition
+suspicion
+sympathy
+tax
+temptation
+tradition
+trust
+typo
+upgrade
+vertigo
+volunteer
+warranty
+willpower
+zero gravity

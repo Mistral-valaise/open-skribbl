@@ -1,5 +1,5 @@
-# Kritzel word list — English, medium
-# Activities, places and less common objects.
+# Kritzel word list: English, medium
+# Activities, places and less common objects. One word per line; see docs/specs/006-words-and-languages.md.
 airport
 anchor
 backpack
@@ -110,3 +110,127 @@ snowboard
 goldfish
 sandwich
 pancake
+accordion
+alarm clock
+ambulance
+aquarium
+armchair
+avocado
+balcony
+ballet
+bandage
+barn
+baseball
+basement
+battery
+binoculars
+blender
+boomerang
+bracelet
+broccoli
+bulldozer
+bunk bed
+cable car
+cafe
+candy
+carpet
+cave
+chameleon
+chess
+chopsticks
+circus
+cliff
+clown
+coconut
+cowboy
+crane
+crocodile
+crossword
+cruise ship
+cupboard
+curtain
+dentist
+dishwasher
+doghouse
+doorbell
+dragonfly
+drawbridge
+dumbbell
+eclipse
+elevator
+farmer
+ferry
+fire truck
+fireplace
+flamingo
+flip flops
+fog
+forest
+fridge
+garage
+gymnastics
+hairdryer
+harbor
+harp
+hedgehog
+hot air balloon
+hourglass
+igloo
+ironing board
+juggler
+karate
+knight
+ladybug
+lantern
+lasso
+lifeboat
+lobster
+luggage
+maze
+meteor
+mosquito
+motorcycle
+moustache
+ninja
+oasis
+ostrich
+paddle
+palm tree
+panda
+pelican
+piano
+pillow fight
+pretzel
+puddle
+puppet
+raccoon
+raft
+referee
+rhinoceros
+safari
+scooter
+seahorse
+seesaw
+shipwreck
+shopping cart
+skeleton
+ski lift
+sloth
+snowflake
+spotlight
+squid
+stethoscope
+swing
+tambourine
+taxi
+toucan
+trampoline
+treehouse
+trumpet
+vampire
+waiter
+walrus
+wheelchair
+woodpecker
+x-ray
+yacht

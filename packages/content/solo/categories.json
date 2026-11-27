@@ -1,0 +1,2235 @@
+[
+  {
+    "id": "aircraft carrier",
+    "file": "aircraft-carrier",
+    "en": "aircraft carrier",
+    "de": "Flugzeugträger",
+    "es": "portaaviones"
+  },
+  {
+    "id": "airplane",
+    "file": "airplane",
+    "en": "airplane",
+    "de": "Flugzeug",
+    "es": "avión"
+  },
+  {
+    "id": "alarm clock",
+    "file": "alarm-clock",
+    "en": "alarm clock",
+    "de": "Wecker",
+    "es": "despertador"
+  },
+  {
+    "id": "ambulance",
+    "file": "ambulance",
+    "en": "ambulance",
+    "de": "Krankenwagen",
+    "es": "ambulancia"
+  },
+  {
+    "id": "angel",
+    "file": "angel",
+    "en": "angel",
+    "de": "Engel",
+    "es": "ángel"
+  },
+  {
+    "id": "ant",
+    "file": "ant",
+    "en": "ant",
+    "de": "Ameise",
+    "es": "hormiga"
+  },
+  {
+    "id": "anvil",
+    "file": "anvil",
+    "en": "anvil",
+    "de": "Amboss",
+    "es": "yunque"
+  },
+  {
+    "id": "apple",
+    "file": "apple",
+    "en": "apple",
+    "de": "Apfel",
+    "es": "manzana"
+  },
+  {
+    "id": "arm",
+    "file": "arm",
+    "en": "arm",
+    "de": "Arm",
+    "es": "brazo"
+  },
+  {
+    "id": "asparagus",
+    "file": "asparagus",
+    "en": "asparagus",
+    "de": "Spargel",
+    "es": "espárrago"
+  },
+  {
+    "id": "axe",
+    "file": "axe",
+    "en": "axe",
+    "de": "Axt",
+    "es": "hacha"
+  },
+  {
+    "id": "backpack",
+    "file": "backpack",
+    "en": "backpack",
+    "de": "Rucksack",
+    "es": "mochila"
+  },
+  {
+    "id": "banana",
+    "file": "banana",
+    "en": "banana",
+    "de": "Banane",
+    "es": "plátano"
+  },
+  {
+    "id": "bandage",
+    "file": "bandage",
+    "en": "bandage",
+    "de": "Pflaster",
+    "es": "tirita"
+  },
+  {
+    "id": "barn",
+    "file": "barn",
+    "en": "barn",
+    "de": "Scheune",
+    "es": "granero"
+  },
+  {
+    "id": "baseball",
+    "file": "baseball",
+    "en": "baseball",
+    "de": "Baseball",
+    "es": "pelota de béisbol"
+  },
+  {
+    "id": "baseball bat",
+    "file": "baseball-bat",
+    "en": "baseball bat",
+    "de": "Baseballschläger",
+    "es": "bate de béisbol"
+  },
+  {
+    "id": "basket",
+    "file": "basket",
+    "en": "basket",
+    "de": "Korb",
+    "es": "cesta"
+  },
+  {
+    "id": "basketball",
+    "file": "basketball",
+    "en": "basketball",
+    "de": "Basketball",
+    "es": "balón de baloncesto"
+  },
+  {
+    "id": "bat",
+    "file": "bat",
+    "en": "bat",
+    "de": "Fledermaus",
+    "es": "murciélago"
+  },
+  {
+    "id": "bathtub",
+    "file": "bathtub",
+    "en": "bathtub",
+    "de": "Badewanne",
+    "es": "bañera"
+  },
+  {
+    "id": "beach",
+    "file": "beach",
+    "en": "beach",
+    "de": "Strand",
+    "es": "playa"
+  },
+  {
+    "id": "bear",
+    "file": "bear",
+    "en": "bear",
+    "de": "Bär",
+    "es": "oso"
+  },
+  {
+    "id": "beard",
+    "file": "beard",
+    "en": "beard",
+    "de": "Bart",
+    "es": "barba"
+  },
+  {
+    "id": "bed",
+    "file": "bed",
+    "en": "bed",
+    "de": "Bett",
+    "es": "cama"
+  },
+  {
+    "id": "bee",
+    "file": "bee",
+    "en": "bee",
+    "de": "Biene",
+    "es": "abeja"
+  },
+  {
+    "id": "belt",
+    "file": "belt",
+    "en": "belt",
+    "de": "Gürtel",
+    "es": "cinturón"
+  },
+  {
+    "id": "bench",
+    "file": "bench",
+    "en": "bench",
+    "de": "Bank",
+    "es": "banco"
+  },
+  {
+    "id": "bicycle",
+    "file": "bicycle",
+    "en": "bicycle",
+    "de": "Fahrrad",
+    "es": "bicicleta"
+  },
+  {
+    "id": "binoculars",
+    "file": "binoculars",
+    "en": "binoculars",
+    "de": "Fernglas",
+    "es": "prismáticos"
+  },
+  {
+    "id": "bird",
+    "file": "bird",
+    "en": "bird",
+    "de": "Vogel",
+    "es": "pájaro"
+  },
+  {
+    "id": "birthday cake",
+    "file": "birthday-cake",
+    "en": "birthday cake",
+    "de": "Geburtstagstorte",
+    "es": "tarta de cumpleaños"
+  },
+  {
+    "id": "blackberry",
+    "file": "blackberry",
+    "en": "blackberry",
+    "de": "Brombeere",
+    "es": "mora"
+  },
+  {
+    "id": "blueberry",
+    "file": "blueberry",
+    "en": "blueberry",
+    "de": "Heidelbeere",
+    "es": "arándano"
+  },
+  {
+    "id": "book",
+    "file": "book",
+    "en": "book",
+    "de": "Buch",
+    "es": "libro"
+  },
+  {
+    "id": "boomerang",
+    "file": "boomerang",
+    "en": "boomerang",
+    "de": "Bumerang",
+    "es": "bumerán"
+  },
+  {
+    "id": "bottlecap",
+    "file": "bottlecap",
+    "en": "bottle cap",
+    "de": "Kronkorken",
+    "es": "chapa"
+  },
+  {
+    "id": "bowtie",
+    "file": "bowtie",
+    "en": "bow tie",
+    "de": "Fliege",
+    "es": "pajarita"
+  },
+  {
+    "id": "bracelet",
+    "file": "bracelet",
+    "en": "bracelet",
+    "de": "Armband",
+    "es": "pulsera"
+  },
+  {
+    "id": "brain",
+    "file": "brain",
+    "en": "brain",
+    "de": "Gehirn",
+    "es": "cerebro"
+  },
+  {
+    "id": "bread",
+    "file": "bread",
+    "en": "bread",
+    "de": "Brot",
+    "es": "pan"
+  },
+  {
+    "id": "bridge",
+    "file": "bridge",
+    "en": "bridge",
+    "de": "Brücke",
+    "es": "puente"
+  },
+  {
+    "id": "broccoli",
+    "file": "broccoli",
+    "en": "broccoli",
+    "de": "Brokkoli",
+    "es": "brócoli"
+  },
+  {
+    "id": "broom",
+    "file": "broom",
+    "en": "broom",
+    "de": "Besen",
+    "es": "escoba"
+  },
+  {
+    "id": "bucket",
+    "file": "bucket",
+    "en": "bucket",
+    "de": "Eimer",
+    "es": "cubo"
+  },
+  {
+    "id": "bulldozer",
+    "file": "bulldozer",
+    "en": "bulldozer",
+    "de": "Planierraupe",
+    "es": "excavadora"
+  },
+  {
+    "id": "bus",
+    "file": "bus",
+    "en": "bus",
+    "de": "Bus",
+    "es": "autobús"
+  },
+  {
+    "id": "bush",
+    "file": "bush",
+    "en": "bush",
+    "de": "Busch",
+    "es": "arbusto"
+  },
+  {
+    "id": "butterfly",
+    "file": "butterfly",
+    "en": "butterfly",
+    "de": "Schmetterling",
+    "es": "mariposa"
+  },
+  {
+    "id": "cactus",
+    "file": "cactus",
+    "en": "cactus",
+    "de": "Kaktus",
+    "es": "cactus"
+  },
+  {
+    "id": "cake",
+    "file": "cake",
+    "en": "cake",
+    "de": "Kuchen",
+    "es": "pastel"
+  },
+  {
+    "id": "calculator",
+    "file": "calculator",
+    "en": "calculator",
+    "de": "Taschenrechner",
+    "es": "calculadora"
+  },
+  {
+    "id": "calendar",
+    "file": "calendar",
+    "en": "calendar",
+    "de": "Kalender",
+    "es": "calendario"
+  },
+  {
+    "id": "camel",
+    "file": "camel",
+    "en": "camel",
+    "de": "Kamel",
+    "es": "camello"
+  },
+  {
+    "id": "camera",
+    "file": "camera",
+    "en": "camera",
+    "de": "Kamera",
+    "es": "cámara"
+  },
+  {
+    "id": "campfire",
+    "file": "campfire",
+    "en": "campfire",
+    "de": "Lagerfeuer",
+    "es": "hoguera"
+  },
+  {
+    "id": "candle",
+    "file": "candle",
+    "en": "candle",
+    "de": "Kerze",
+    "es": "vela"
+  },
+  {
+    "id": "cannon",
+    "file": "cannon",
+    "en": "cannon",
+    "de": "Kanone",
+    "es": "cañón"
+  },
+  {
+    "id": "canoe",
+    "file": "canoe",
+    "en": "canoe",
+    "de": "Kanu",
+    "es": "canoa"
+  },
+  {
+    "id": "car",
+    "file": "car",
+    "en": "car",
+    "de": "Auto",
+    "es": "coche"
+  },
+  {
+    "id": "carrot",
+    "file": "carrot",
+    "en": "carrot",
+    "de": "Karotte",
+    "es": "zanahoria"
+  },
+  {
+    "id": "castle",
+    "file": "castle",
+    "en": "castle",
+    "de": "Burg",
+    "es": "castillo"
+  },
+  {
+    "id": "cat",
+    "file": "cat",
+    "en": "cat",
+    "de": "Katze",
+    "es": "gato"
+  },
+  {
+    "id": "ceiling fan",
+    "file": "ceiling-fan",
+    "en": "ceiling fan",
+    "de": "Deckenventilator",
+    "es": "ventilador de techo"
+  },
+  {
+    "id": "cello",
+    "file": "cello",
+    "en": "cello",
+    "de": "Cello",
+    "es": "violonchelo"
+  },
+  {
+    "id": "cell phone",
+    "file": "cell-phone",
+    "en": "cell phone",
+    "de": "Handy",
+    "es": "móvil"
+  },
+  {
+    "id": "chair",
+    "file": "chair",
+    "en": "chair",
+    "de": "Stuhl",
+    "es": "silla"
+  },
+  {
+    "id": "chandelier",
+    "file": "chandelier",
+    "en": "chandelier",
+    "de": "Kronleuchter",
+    "es": "candelabro"
+  },
+  {
+    "id": "church",
+    "file": "church",
+    "en": "church",
+    "de": "Kirche",
+    "es": "iglesia"
+  },
+  {
+    "id": "clarinet",
+    "file": "clarinet",
+    "en": "clarinet",
+    "de": "Klarinette",
+    "es": "clarinete"
+  },
+  {
+    "id": "clock",
+    "file": "clock",
+    "en": "clock",
+    "de": "Uhr",
+    "es": "reloj"
+  },
+  {
+    "id": "cloud",
+    "file": "cloud",
+    "en": "cloud",
+    "de": "Wolke",
+    "es": "nube"
+  },
+  {
+    "id": "coffee cup",
+    "file": "coffee-cup",
+    "en": "coffee cup",
+    "de": "Kaffeetasse",
+    "es": "taza de café"
+  },
+  {
+    "id": "compass",
+    "file": "compass",
+    "en": "compass",
+    "de": "Kompass",
+    "es": "brújula"
+  },
+  {
+    "id": "computer",
+    "file": "computer",
+    "en": "computer",
+    "de": "Computer",
+    "es": "ordenador"
+  },
+  {
+    "id": "cookie",
+    "file": "cookie",
+    "en": "cookie",
+    "de": "Keks",
+    "es": "galleta"
+  },
+  {
+    "id": "couch",
+    "file": "couch",
+    "en": "couch",
+    "de": "Sofa",
+    "es": "sofá"
+  },
+  {
+    "id": "cow",
+    "file": "cow",
+    "en": "cow",
+    "de": "Kuh",
+    "es": "vaca"
+  },
+  {
+    "id": "crab",
+    "file": "crab",
+    "en": "crab",
+    "de": "Krabbe",
+    "es": "cangrejo"
+  },
+  {
+    "id": "crocodile",
+    "file": "crocodile",
+    "en": "crocodile",
+    "de": "Krokodil",
+    "es": "cocodrilo"
+  },
+  {
+    "id": "crown",
+    "file": "crown",
+    "en": "crown",
+    "de": "Krone",
+    "es": "corona"
+  },
+  {
+    "id": "cruise ship",
+    "file": "cruise-ship",
+    "en": "cruise ship",
+    "de": "Kreuzfahrtschiff",
+    "es": "crucero"
+  },
+  {
+    "id": "cup",
+    "file": "cup",
+    "en": "cup",
+    "de": "Tasse",
+    "es": "taza"
+  },
+  {
+    "id": "diamond",
+    "file": "diamond",
+    "en": "diamond",
+    "de": "Diamant",
+    "es": "diamante"
+  },
+  {
+    "id": "dishwasher",
+    "file": "dishwasher",
+    "en": "dishwasher",
+    "de": "Spülmaschine",
+    "es": "lavavajillas"
+  },
+  {
+    "id": "diving board",
+    "file": "diving-board",
+    "en": "diving board",
+    "de": "Sprungbrett",
+    "es": "trampolín"
+  },
+  {
+    "id": "dog",
+    "file": "dog",
+    "en": "dog",
+    "de": "Hund",
+    "es": "perro"
+  },
+  {
+    "id": "dolphin",
+    "file": "dolphin",
+    "en": "dolphin",
+    "de": "Delfin",
+    "es": "delfín"
+  },
+  {
+    "id": "donut",
+    "file": "donut",
+    "en": "donut",
+    "de": "Donut",
+    "es": "rosquilla"
+  },
+  {
+    "id": "door",
+    "file": "door",
+    "en": "door",
+    "de": "Tür",
+    "es": "puerta"
+  },
+  {
+    "id": "dragon",
+    "file": "dragon",
+    "en": "dragon",
+    "de": "Drache",
+    "es": "dragón"
+  },
+  {
+    "id": "dresser",
+    "file": "dresser",
+    "en": "dresser",
+    "de": "Kommode",
+    "es": "cómoda"
+  },
+  {
+    "id": "drill",
+    "file": "drill",
+    "en": "drill",
+    "de": "Bohrmaschine",
+    "es": "taladro"
+  },
+  {
+    "id": "drums",
+    "file": "drums",
+    "en": "drums",
+    "de": "Schlagzeug",
+    "es": "batería"
+  },
+  {
+    "id": "duck",
+    "file": "duck",
+    "en": "duck",
+    "de": "Ente",
+    "es": "pato"
+  },
+  {
+    "id": "dumbbell",
+    "file": "dumbbell",
+    "en": "dumbbell",
+    "de": "Hantel",
+    "es": "pesa"
+  },
+  {
+    "id": "ear",
+    "file": "ear",
+    "en": "ear",
+    "de": "Ohr",
+    "es": "oreja"
+  },
+  {
+    "id": "elbow",
+    "file": "elbow",
+    "en": "elbow",
+    "de": "Ellbogen",
+    "es": "codo"
+  },
+  {
+    "id": "elephant",
+    "file": "elephant",
+    "en": "elephant",
+    "de": "Elefant",
+    "es": "elefante"
+  },
+  {
+    "id": "envelope",
+    "file": "envelope",
+    "en": "envelope",
+    "de": "Briefumschlag",
+    "es": "sobre"
+  },
+  {
+    "id": "eraser",
+    "file": "eraser",
+    "en": "eraser",
+    "de": "Radiergummi",
+    "es": "goma de borrar"
+  },
+  {
+    "id": "eye",
+    "file": "eye",
+    "en": "eye",
+    "de": "Auge",
+    "es": "ojo"
+  },
+  {
+    "id": "eyeglasses",
+    "file": "eyeglasses",
+    "en": "glasses",
+    "de": "Brille",
+    "es": "gafas"
+  },
+  {
+    "id": "face",
+    "file": "face",
+    "en": "face",
+    "de": "Gesicht",
+    "es": "cara"
+  },
+  {
+    "id": "fan",
+    "file": "fan",
+    "en": "fan",
+    "de": "Ventilator",
+    "es": "ventilador"
+  },
+  {
+    "id": "feather",
+    "file": "feather",
+    "en": "feather",
+    "de": "Feder",
+    "es": "pluma"
+  },
+  {
+    "id": "fence",
+    "file": "fence",
+    "en": "fence",
+    "de": "Zaun",
+    "es": "valla"
+  },
+  {
+    "id": "finger",
+    "file": "finger",
+    "en": "finger",
+    "de": "Finger",
+    "es": "dedo"
+  },
+  {
+    "id": "fire hydrant",
+    "file": "fire-hydrant",
+    "en": "fire hydrant",
+    "de": "Hydrant",
+    "es": "boca de incendios"
+  },
+  {
+    "id": "fireplace",
+    "file": "fireplace",
+    "en": "fireplace",
+    "de": "Kamin",
+    "es": "chimenea"
+  },
+  {
+    "id": "firetruck",
+    "file": "firetruck",
+    "en": "fire truck",
+    "de": "Feuerwehrauto",
+    "es": "camión de bomberos"
+  },
+  {
+    "id": "fish",
+    "file": "fish",
+    "en": "fish",
+    "de": "Fisch",
+    "es": "pez"
+  },
+  {
+    "id": "flamingo",
+    "file": "flamingo",
+    "en": "flamingo",
+    "de": "Flamingo",
+    "es": "flamenco"
+  },
+  {
+    "id": "flashlight",
+    "file": "flashlight",
+    "en": "flashlight",
+    "de": "Taschenlampe",
+    "es": "linterna"
+  },
+  {
+    "id": "flip flops",
+    "file": "flip-flops",
+    "en": "flip flops",
+    "de": "Flipflops",
+    "es": "chanclas"
+  },
+  {
+    "id": "floor lamp",
+    "file": "floor-lamp",
+    "en": "floor lamp",
+    "de": "Stehlampe",
+    "es": "lámpara de pie"
+  },
+  {
+    "id": "flower",
+    "file": "flower",
+    "en": "flower",
+    "de": "Blume",
+    "es": "flor"
+  },
+  {
+    "id": "flying saucer",
+    "file": "flying-saucer",
+    "en": "flying saucer",
+    "de": "Ufo",
+    "es": "ovni"
+  },
+  {
+    "id": "foot",
+    "file": "foot",
+    "en": "foot",
+    "de": "Fuß",
+    "es": "pie"
+  },
+  {
+    "id": "fork",
+    "file": "fork",
+    "en": "fork",
+    "de": "Gabel",
+    "es": "tenedor"
+  },
+  {
+    "id": "frog",
+    "file": "frog",
+    "en": "frog",
+    "de": "Frosch",
+    "es": "rana"
+  },
+  {
+    "id": "frying pan",
+    "file": "frying-pan",
+    "en": "frying pan",
+    "de": "Bratpfanne",
+    "es": "sartén"
+  },
+  {
+    "id": "garden hose",
+    "file": "garden-hose",
+    "en": "garden hose",
+    "de": "Gartenschlauch",
+    "es": "manguera"
+  },
+  {
+    "id": "giraffe",
+    "file": "giraffe",
+    "en": "giraffe",
+    "de": "Giraffe",
+    "es": "jirafa"
+  },
+  {
+    "id": "goatee",
+    "file": "goatee",
+    "en": "goatee",
+    "de": "Ziegenbart",
+    "es": "perilla"
+  },
+  {
+    "id": "golf club",
+    "file": "golf-club",
+    "en": "golf club",
+    "de": "Golfschläger",
+    "es": "palo de golf"
+  },
+  {
+    "id": "grapes",
+    "file": "grapes",
+    "en": "grapes",
+    "de": "Trauben",
+    "es": "uvas"
+  },
+  {
+    "id": "grass",
+    "file": "grass",
+    "en": "grass",
+    "de": "Gras",
+    "es": "hierba"
+  },
+  {
+    "id": "guitar",
+    "file": "guitar",
+    "en": "guitar",
+    "de": "Gitarre",
+    "es": "guitarra"
+  },
+  {
+    "id": "hamburger",
+    "file": "hamburger",
+    "en": "hamburger",
+    "de": "Hamburger",
+    "es": "hamburguesa"
+  },
+  {
+    "id": "hammer",
+    "file": "hammer",
+    "en": "hammer",
+    "de": "Hammer",
+    "es": "martillo"
+  },
+  {
+    "id": "hand",
+    "file": "hand",
+    "en": "hand",
+    "de": "Hand",
+    "es": "mano"
+  },
+  {
+    "id": "harp",
+    "file": "harp",
+    "en": "harp",
+    "de": "Harfe",
+    "es": "arpa"
+  },
+  {
+    "id": "hat",
+    "file": "hat",
+    "en": "hat",
+    "de": "Hut",
+    "es": "sombrero"
+  },
+  {
+    "id": "headphones",
+    "file": "headphones",
+    "en": "headphones",
+    "de": "Kopfhörer",
+    "es": "auriculares"
+  },
+  {
+    "id": "hedgehog",
+    "file": "hedgehog",
+    "en": "hedgehog",
+    "de": "Igel",
+    "es": "erizo"
+  },
+  {
+    "id": "helicopter",
+    "file": "helicopter",
+    "en": "helicopter",
+    "de": "Hubschrauber",
+    "es": "helicóptero"
+  },
+  {
+    "id": "helmet",
+    "file": "helmet",
+    "en": "helmet",
+    "de": "Helm",
+    "es": "casco"
+  },
+  {
+    "id": "hockey puck",
+    "file": "hockey-puck",
+    "en": "hockey puck",
+    "de": "Puck",
+    "es": "disco de hockey"
+  },
+  {
+    "id": "hockey stick",
+    "file": "hockey-stick",
+    "en": "hockey stick",
+    "de": "Hockeyschläger",
+    "es": "palo de hockey"
+  },
+  {
+    "id": "horse",
+    "file": "horse",
+    "en": "horse",
+    "de": "Pferd",
+    "es": "caballo"
+  },
+  {
+    "id": "hospital",
+    "file": "hospital",
+    "en": "hospital",
+    "de": "Krankenhaus",
+    "es": "hospital"
+  },
+  {
+    "id": "hot air balloon",
+    "file": "hot-air-balloon",
+    "en": "hot air balloon",
+    "de": "Heißluftballon",
+    "es": "globo aerostático"
+  },
+  {
+    "id": "hot dog",
+    "file": "hot-dog",
+    "en": "hot dog",
+    "de": "Hotdog",
+    "es": "perrito caliente"
+  },
+  {
+    "id": "hourglass",
+    "file": "hourglass",
+    "en": "hourglass",
+    "de": "Sanduhr",
+    "es": "reloj de arena"
+  },
+  {
+    "id": "house",
+    "file": "house",
+    "en": "house",
+    "de": "Haus",
+    "es": "casa"
+  },
+  {
+    "id": "house plant",
+    "file": "house-plant",
+    "en": "house plant",
+    "de": "Zimmerpflanze",
+    "es": "planta de interior"
+  },
+  {
+    "id": "ice cream",
+    "file": "ice-cream",
+    "en": "ice cream",
+    "de": "Eis",
+    "es": "helado"
+  },
+  {
+    "id": "jacket",
+    "file": "jacket",
+    "en": "jacket",
+    "de": "Jacke",
+    "es": "chaqueta"
+  },
+  {
+    "id": "jail",
+    "file": "jail",
+    "en": "jail",
+    "de": "Gefängnis",
+    "es": "cárcel"
+  },
+  {
+    "id": "kangaroo",
+    "file": "kangaroo",
+    "en": "kangaroo",
+    "de": "Känguru",
+    "es": "canguro"
+  },
+  {
+    "id": "key",
+    "file": "key",
+    "en": "key",
+    "de": "Schlüssel",
+    "es": "llave"
+  },
+  {
+    "id": "keyboard",
+    "file": "keyboard",
+    "en": "keyboard",
+    "de": "Tastatur",
+    "es": "teclado"
+  },
+  {
+    "id": "knee",
+    "file": "knee",
+    "en": "knee",
+    "de": "Knie",
+    "es": "rodilla"
+  },
+  {
+    "id": "knife",
+    "file": "knife",
+    "en": "knife",
+    "de": "Messer",
+    "es": "cuchillo"
+  },
+  {
+    "id": "ladder",
+    "file": "ladder",
+    "en": "ladder",
+    "de": "Leiter",
+    "es": "escalera"
+  },
+  {
+    "id": "lantern",
+    "file": "lantern",
+    "en": "lantern",
+    "de": "Laterne",
+    "es": "farol"
+  },
+  {
+    "id": "laptop",
+    "file": "laptop",
+    "en": "laptop",
+    "de": "Laptop",
+    "es": "portátil"
+  },
+  {
+    "id": "leaf",
+    "file": "leaf",
+    "en": "leaf",
+    "de": "Blatt",
+    "es": "hoja"
+  },
+  {
+    "id": "leg",
+    "file": "leg",
+    "en": "leg",
+    "de": "Bein",
+    "es": "pierna"
+  },
+  {
+    "id": "light bulb",
+    "file": "light-bulb",
+    "en": "light bulb",
+    "de": "Glühbirne",
+    "es": "bombilla"
+  },
+  {
+    "id": "lighter",
+    "file": "lighter",
+    "en": "lighter",
+    "de": "Feuerzeug",
+    "es": "mechero"
+  },
+  {
+    "id": "lighthouse",
+    "file": "lighthouse",
+    "en": "lighthouse",
+    "de": "Leuchtturm",
+    "es": "faro"
+  },
+  {
+    "id": "lightning",
+    "file": "lightning",
+    "en": "lightning",
+    "de": "Blitz",
+    "es": "rayo"
+  },
+  {
+    "id": "lion",
+    "file": "lion",
+    "en": "lion",
+    "de": "Löwe",
+    "es": "león"
+  },
+  {
+    "id": "lipstick",
+    "file": "lipstick",
+    "en": "lipstick",
+    "de": "Lippenstift",
+    "es": "pintalabios"
+  },
+  {
+    "id": "lobster",
+    "file": "lobster",
+    "en": "lobster",
+    "de": "Hummer",
+    "es": "langosta"
+  },
+  {
+    "id": "lollipop",
+    "file": "lollipop",
+    "en": "lollipop",
+    "de": "Lutscher",
+    "es": "piruleta"
+  },
+  {
+    "id": "mailbox",
+    "file": "mailbox",
+    "en": "mailbox",
+    "de": "Briefkasten",
+    "es": "buzón"
+  },
+  {
+    "id": "map",
+    "file": "map",
+    "en": "map",
+    "de": "Landkarte",
+    "es": "mapa"
+  },
+  {
+    "id": "matches",
+    "file": "matches",
+    "en": "matches",
+    "de": "Streichhölzer",
+    "es": "cerillas"
+  },
+  {
+    "id": "megaphone",
+    "file": "megaphone",
+    "en": "megaphone",
+    "de": "Megafon",
+    "es": "megáfono"
+  },
+  {
+    "id": "mermaid",
+    "file": "mermaid",
+    "en": "mermaid",
+    "de": "Meerjungfrau",
+    "es": "sirena"
+  },
+  {
+    "id": "microphone",
+    "file": "microphone",
+    "en": "microphone",
+    "de": "Mikrofon",
+    "es": "micrófono"
+  },
+  {
+    "id": "microwave",
+    "file": "microwave",
+    "en": "microwave",
+    "de": "Mikrowelle",
+    "es": "microondas"
+  },
+  {
+    "id": "monkey",
+    "file": "monkey",
+    "en": "monkey",
+    "de": "Affe",
+    "es": "mono"
+  },
+  {
+    "id": "moon",
+    "file": "moon",
+    "en": "moon",
+    "de": "Mond",
+    "es": "luna"
+  },
+  {
+    "id": "mosquito",
+    "file": "mosquito",
+    "en": "mosquito",
+    "de": "Mücke",
+    "es": "mosquito"
+  },
+  {
+    "id": "motorbike",
+    "file": "motorbike",
+    "en": "motorbike",
+    "de": "Motorrad",
+    "es": "moto"
+  },
+  {
+    "id": "mountain",
+    "file": "mountain",
+    "en": "mountain",
+    "de": "Berg",
+    "es": "montaña"
+  },
+  {
+    "id": "mouse",
+    "file": "mouse",
+    "en": "mouse",
+    "de": "Maus",
+    "es": "ratón"
+  },
+  {
+    "id": "moustache",
+    "file": "moustache",
+    "en": "moustache",
+    "de": "Schnurrbart",
+    "es": "bigote"
+  },
+  {
+    "id": "mouth",
+    "file": "mouth",
+    "en": "mouth",
+    "de": "Mund",
+    "es": "boca"
+  },
+  {
+    "id": "mug",
+    "file": "mug",
+    "en": "mug",
+    "de": "Becher",
+    "es": "jarra"
+  },
+  {
+    "id": "mushroom",
+    "file": "mushroom",
+    "en": "mushroom",
+    "de": "Pilz",
+    "es": "seta"
+  },
+  {
+    "id": "nail",
+    "file": "nail",
+    "en": "nail",
+    "de": "Nagel",
+    "es": "clavo"
+  },
+  {
+    "id": "necklace",
+    "file": "necklace",
+    "en": "necklace",
+    "de": "Halskette",
+    "es": "collar"
+  },
+  {
+    "id": "nose",
+    "file": "nose",
+    "en": "nose",
+    "de": "Nase",
+    "es": "nariz"
+  },
+  {
+    "id": "octopus",
+    "file": "octopus",
+    "en": "octopus",
+    "de": "Krake",
+    "es": "pulpo"
+  },
+  {
+    "id": "onion",
+    "file": "onion",
+    "en": "onion",
+    "de": "Zwiebel",
+    "es": "cebolla"
+  },
+  {
+    "id": "oven",
+    "file": "oven",
+    "en": "oven",
+    "de": "Ofen",
+    "es": "horno"
+  },
+  {
+    "id": "owl",
+    "file": "owl",
+    "en": "owl",
+    "de": "Eule",
+    "es": "búho"
+  },
+  {
+    "id": "paintbrush",
+    "file": "paintbrush",
+    "en": "paintbrush",
+    "de": "Pinsel",
+    "es": "pincel"
+  },
+  {
+    "id": "paint can",
+    "file": "paint-can",
+    "en": "paint can",
+    "de": "Farbeimer",
+    "es": "bote de pintura"
+  },
+  {
+    "id": "palm tree",
+    "file": "palm-tree",
+    "en": "palm tree",
+    "de": "Palme",
+    "es": "palmera"
+  },
+  {
+    "id": "panda",
+    "file": "panda",
+    "en": "panda",
+    "de": "Panda",
+    "es": "panda"
+  },
+  {
+    "id": "pants",
+    "file": "pants",
+    "en": "pants",
+    "de": "Hose",
+    "es": "pantalón"
+  },
+  {
+    "id": "paper clip",
+    "file": "paper-clip",
+    "en": "paper clip",
+    "de": "Büroklammer",
+    "es": "clip"
+  },
+  {
+    "id": "parachute",
+    "file": "parachute",
+    "en": "parachute",
+    "de": "Fallschirm",
+    "es": "paracaídas"
+  },
+  {
+    "id": "parrot",
+    "file": "parrot",
+    "en": "parrot",
+    "de": "Papagei",
+    "es": "loro"
+  },
+  {
+    "id": "passport",
+    "file": "passport",
+    "en": "passport",
+    "de": "Reisepass",
+    "es": "pasaporte"
+  },
+  {
+    "id": "peanut",
+    "file": "peanut",
+    "en": "peanut",
+    "de": "Erdnuss",
+    "es": "cacahuete"
+  },
+  {
+    "id": "pear",
+    "file": "pear",
+    "en": "pear",
+    "de": "Birne",
+    "es": "pera"
+  },
+  {
+    "id": "peas",
+    "file": "peas",
+    "en": "peas",
+    "de": "Erbsen",
+    "es": "guisantes"
+  },
+  {
+    "id": "pencil",
+    "file": "pencil",
+    "en": "pencil",
+    "de": "Bleistift",
+    "es": "lápiz"
+  },
+  {
+    "id": "penguin",
+    "file": "penguin",
+    "en": "penguin",
+    "de": "Pinguin",
+    "es": "pingüino"
+  },
+  {
+    "id": "piano",
+    "file": "piano",
+    "en": "piano",
+    "de": "Klavier",
+    "es": "piano"
+  },
+  {
+    "id": "pickup truck",
+    "file": "pickup-truck",
+    "en": "pickup truck",
+    "de": "Pick-up",
+    "es": "camioneta"
+  },
+  {
+    "id": "picture frame",
+    "file": "picture-frame",
+    "en": "picture frame",
+    "de": "Bilderrahmen",
+    "es": "marco"
+  },
+  {
+    "id": "pig",
+    "file": "pig",
+    "en": "pig",
+    "de": "Schwein",
+    "es": "cerdo"
+  },
+  {
+    "id": "pillow",
+    "file": "pillow",
+    "en": "pillow",
+    "de": "Kissen",
+    "es": "almohada"
+  },
+  {
+    "id": "pineapple",
+    "file": "pineapple",
+    "en": "pineapple",
+    "de": "Ananas",
+    "es": "piña"
+  },
+  {
+    "id": "pizza",
+    "file": "pizza",
+    "en": "pizza",
+    "de": "Pizza",
+    "es": "pizza"
+  },
+  {
+    "id": "pliers",
+    "file": "pliers",
+    "en": "pliers",
+    "de": "Zange",
+    "es": "alicates"
+  },
+  {
+    "id": "police car",
+    "file": "police-car",
+    "en": "police car",
+    "de": "Polizeiauto",
+    "es": "coche de policía"
+  },
+  {
+    "id": "postcard",
+    "file": "postcard",
+    "en": "postcard",
+    "de": "Postkarte",
+    "es": "postal"
+  },
+  {
+    "id": "potato",
+    "file": "potato",
+    "en": "potato",
+    "de": "Kartoffel",
+    "es": "patata"
+  },
+  {
+    "id": "power outlet",
+    "file": "power-outlet",
+    "en": "power outlet",
+    "de": "Steckdose",
+    "es": "enchufe"
+  },
+  {
+    "id": "purse",
+    "file": "purse",
+    "en": "purse",
+    "de": "Handtasche",
+    "es": "bolso"
+  },
+  {
+    "id": "rabbit",
+    "file": "rabbit",
+    "en": "rabbit",
+    "de": "Hase",
+    "es": "conejo"
+  },
+  {
+    "id": "raccoon",
+    "file": "raccoon",
+    "en": "raccoon",
+    "de": "Waschbär",
+    "es": "mapache"
+  },
+  {
+    "id": "radio",
+    "file": "radio",
+    "en": "radio",
+    "de": "Radio",
+    "es": "radio"
+  },
+  {
+    "id": "rain",
+    "file": "rain",
+    "en": "rain",
+    "de": "Regen",
+    "es": "lluvia"
+  },
+  {
+    "id": "rainbow",
+    "file": "rainbow",
+    "en": "rainbow",
+    "de": "Regenbogen",
+    "es": "arcoíris"
+  },
+  {
+    "id": "rake",
+    "file": "rake",
+    "en": "rake",
+    "de": "Rechen",
+    "es": "rastrillo"
+  },
+  {
+    "id": "remote control",
+    "file": "remote-control",
+    "en": "remote control",
+    "de": "Fernbedienung",
+    "es": "mando a distancia"
+  },
+  {
+    "id": "rhinoceros",
+    "file": "rhinoceros",
+    "en": "rhinoceros",
+    "de": "Nashorn",
+    "es": "rinoceronte"
+  },
+  {
+    "id": "river",
+    "file": "river",
+    "en": "river",
+    "de": "Fluss",
+    "es": "río"
+  },
+  {
+    "id": "roller coaster",
+    "file": "roller-coaster",
+    "en": "roller coaster",
+    "de": "Achterbahn",
+    "es": "montaña rusa"
+  },
+  {
+    "id": "rollerskates",
+    "file": "rollerskates",
+    "en": "roller skates",
+    "de": "Rollschuhe",
+    "es": "patines"
+  },
+  {
+    "id": "sailboat",
+    "file": "sailboat",
+    "en": "sailboat",
+    "de": "Segelboot",
+    "es": "velero"
+  },
+  {
+    "id": "sandwich",
+    "file": "sandwich",
+    "en": "sandwich",
+    "de": "Sandwich",
+    "es": "sándwich"
+  },
+  {
+    "id": "saw",
+    "file": "saw",
+    "en": "saw",
+    "de": "Säge",
+    "es": "sierra"
+  },
+  {
+    "id": "saxophone",
+    "file": "saxophone",
+    "en": "saxophone",
+    "de": "Saxofon",
+    "es": "saxofón"
+  },
+  {
+    "id": "school bus",
+    "file": "school-bus",
+    "en": "school bus",
+    "de": "Schulbus",
+    "es": "autobús escolar"
+  },
+  {
+    "id": "scissors",
+    "file": "scissors",
+    "en": "scissors",
+    "de": "Schere",
+    "es": "tijeras"
+  },
+  {
+    "id": "scorpion",
+    "file": "scorpion",
+    "en": "scorpion",
+    "de": "Skorpion",
+    "es": "escorpión"
+  },
+  {
+    "id": "screwdriver",
+    "file": "screwdriver",
+    "en": "screwdriver",
+    "de": "Schraubenzieher",
+    "es": "destornillador"
+  },
+  {
+    "id": "sea turtle",
+    "file": "sea-turtle",
+    "en": "sea turtle",
+    "de": "Meeresschildkröte",
+    "es": "tortuga marina"
+  },
+  {
+    "id": "see saw",
+    "file": "see-saw",
+    "en": "seesaw",
+    "de": "Wippe",
+    "es": "balancín"
+  },
+  {
+    "id": "shark",
+    "file": "shark",
+    "en": "shark",
+    "de": "Hai",
+    "es": "tiburón"
+  },
+  {
+    "id": "sheep",
+    "file": "sheep",
+    "en": "sheep",
+    "de": "Schaf",
+    "es": "oveja"
+  },
+  {
+    "id": "shoe",
+    "file": "shoe",
+    "en": "shoe",
+    "de": "Schuh",
+    "es": "zapato"
+  },
+  {
+    "id": "shorts",
+    "file": "shorts",
+    "en": "shorts",
+    "de": "Shorts",
+    "es": "pantalón corto"
+  },
+  {
+    "id": "shovel",
+    "file": "shovel",
+    "en": "shovel",
+    "de": "Schaufel",
+    "es": "pala"
+  },
+  {
+    "id": "sink",
+    "file": "sink",
+    "en": "sink",
+    "de": "Waschbecken",
+    "es": "lavabo"
+  },
+  {
+    "id": "skateboard",
+    "file": "skateboard",
+    "en": "skateboard",
+    "de": "Skateboard",
+    "es": "monopatín"
+  },
+  {
+    "id": "skull",
+    "file": "skull",
+    "en": "skull",
+    "de": "Totenkopf",
+    "es": "calavera"
+  },
+  {
+    "id": "skyscraper",
+    "file": "skyscraper",
+    "en": "skyscraper",
+    "de": "Wolkenkratzer",
+    "es": "rascacielos"
+  },
+  {
+    "id": "sleeping bag",
+    "file": "sleeping-bag",
+    "en": "sleeping bag",
+    "de": "Schlafsack",
+    "es": "saco de dormir"
+  },
+  {
+    "id": "smiley face",
+    "file": "smiley-face",
+    "en": "smiley face",
+    "de": "Smiley",
+    "es": "cara sonriente"
+  },
+  {
+    "id": "snail",
+    "file": "snail",
+    "en": "snail",
+    "de": "Schnecke",
+    "es": "caracol"
+  },
+  {
+    "id": "snake",
+    "file": "snake",
+    "en": "snake",
+    "de": "Schlange",
+    "es": "serpiente"
+  },
+  {
+    "id": "snorkel",
+    "file": "snorkel",
+    "en": "snorkel",
+    "de": "Schnorchel",
+    "es": "esnórquel"
+  },
+  {
+    "id": "snowflake",
+    "file": "snowflake",
+    "en": "snowflake",
+    "de": "Schneeflocke",
+    "es": "copo de nieve"
+  },
+  {
+    "id": "snowman",
+    "file": "snowman",
+    "en": "snowman",
+    "de": "Schneemann",
+    "es": "muñeco de nieve"
+  },
+  {
+    "id": "soccer ball",
+    "file": "soccer-ball",
+    "en": "soccer ball",
+    "de": "Fußball",
+    "es": "balón de fútbol"
+  },
+  {
+    "id": "sock",
+    "file": "sock",
+    "en": "sock",
+    "de": "Socke",
+    "es": "calcetín"
+  },
+  {
+    "id": "speedboat",
+    "file": "speedboat",
+    "en": "speedboat",
+    "de": "Schnellboot",
+    "es": "lancha"
+  },
+  {
+    "id": "spider",
+    "file": "spider",
+    "en": "spider",
+    "de": "Spinne",
+    "es": "araña"
+  },
+  {
+    "id": "spoon",
+    "file": "spoon",
+    "en": "spoon",
+    "de": "Löffel",
+    "es": "cuchara"
+  },
+  {
+    "id": "squirrel",
+    "file": "squirrel",
+    "en": "squirrel",
+    "de": "Eichhörnchen",
+    "es": "ardilla"
+  },
+  {
+    "id": "stairs",
+    "file": "stairs",
+    "en": "stairs",
+    "de": "Treppe",
+    "es": "escaleras"
+  },
+  {
+    "id": "star",
+    "file": "star",
+    "en": "star",
+    "de": "Stern",
+    "es": "estrella"
+  },
+  {
+    "id": "steak",
+    "file": "steak",
+    "en": "steak",
+    "de": "Steak",
+    "es": "filete"
+  },
+  {
+    "id": "stethoscope",
+    "file": "stethoscope",
+    "en": "stethoscope",
+    "de": "Stethoskop",
+    "es": "estetoscopio"
+  },
+  {
+    "id": "stop sign",
+    "file": "stop-sign",
+    "en": "stop sign",
+    "de": "Stoppschild",
+    "es": "señal de stop"
+  },
+  {
+    "id": "strawberry",
+    "file": "strawberry",
+    "en": "strawberry",
+    "de": "Erdbeere",
+    "es": "fresa"
+  },
+  {
+    "id": "streetlight",
+    "file": "streetlight",
+    "en": "streetlight",
+    "de": "Straßenlaterne",
+    "es": "farola"
+  },
+  {
+    "id": "string bean",
+    "file": "string-bean",
+    "en": "green bean",
+    "de": "Bohne",
+    "es": "judía verde"
+  },
+  {
+    "id": "submarine",
+    "file": "submarine",
+    "en": "submarine",
+    "de": "U-Boot",
+    "es": "submarino"
+  },
+  {
+    "id": "suitcase",
+    "file": "suitcase",
+    "en": "suitcase",
+    "de": "Koffer",
+    "es": "maleta"
+  },
+  {
+    "id": "sun",
+    "file": "sun",
+    "en": "sun",
+    "de": "Sonne",
+    "es": "sol"
+  },
+  {
+    "id": "swan",
+    "file": "swan",
+    "en": "swan",
+    "de": "Schwan",
+    "es": "cisne"
+  },
+  {
+    "id": "sweater",
+    "file": "sweater",
+    "en": "sweater",
+    "de": "Pullover",
+    "es": "jersey"
+  },
+  {
+    "id": "swing set",
+    "file": "swing-set",
+    "en": "swing",
+    "de": "Schaukel",
+    "es": "columpio"
+  },
+  {
+    "id": "sword",
+    "file": "sword",
+    "en": "sword",
+    "de": "Schwert",
+    "es": "espada"
+  },
+  {
+    "id": "syringe",
+    "file": "syringe",
+    "en": "syringe",
+    "de": "Spritze",
+    "es": "jeringa"
+  },
+  {
+    "id": "table",
+    "file": "table",
+    "en": "table",
+    "de": "Tisch",
+    "es": "mesa"
+  },
+  {
+    "id": "teapot",
+    "file": "teapot",
+    "en": "teapot",
+    "de": "Teekanne",
+    "es": "tetera"
+  },
+  {
+    "id": "teddy-bear",
+    "file": "teddy-bear",
+    "en": "teddy bear",
+    "de": "Teddybär",
+    "es": "oso de peluche"
+  },
+  {
+    "id": "telephone",
+    "file": "telephone",
+    "en": "telephone",
+    "de": "Telefon",
+    "es": "teléfono"
+  },
+  {
+    "id": "television",
+    "file": "television",
+    "en": "television",
+    "de": "Fernseher",
+    "es": "televisor"
+  },
+  {
+    "id": "tennis racquet",
+    "file": "tennis-racquet",
+    "en": "tennis racket",
+    "de": "Tennisschläger",
+    "es": "raqueta de tenis"
+  },
+  {
+    "id": "tent",
+    "file": "tent",
+    "en": "tent",
+    "de": "Zelt",
+    "es": "tienda de campaña"
+  },
+  {
+    "id": "The Eiffel Tower",
+    "file": "the-eiffel-tower",
+    "en": "Eiffel Tower",
+    "de": "Eiffelturm",
+    "es": "torre Eiffel"
+  },
+  {
+    "id": "The Great Wall of China",
+    "file": "the-great-wall-of-china",
+    "en": "Great Wall of China",
+    "de": "Chinesische Mauer",
+    "es": "Gran Muralla China"
+  },
+  {
+    "id": "tiger",
+    "file": "tiger",
+    "en": "tiger",
+    "de": "Tiger",
+    "es": "tigre"
+  },
+  {
+    "id": "toaster",
+    "file": "toaster",
+    "en": "toaster",
+    "de": "Toaster",
+    "es": "tostadora"
+  },
+  {
+    "id": "toe",
+    "file": "toe",
+    "en": "toe",
+    "de": "Zeh",
+    "es": "dedo del pie"
+  },
+  {
+    "id": "toilet",
+    "file": "toilet",
+    "en": "toilet",
+    "de": "Toilette",
+    "es": "inodoro"
+  },
+  {
+    "id": "tooth",
+    "file": "tooth",
+    "en": "tooth",
+    "de": "Zahn",
+    "es": "diente"
+  },
+  {
+    "id": "toothbrush",
+    "file": "toothbrush",
+    "en": "toothbrush",
+    "de": "Zahnbürste",
+    "es": "cepillo de dientes"
+  },
+  {
+    "id": "toothpaste",
+    "file": "toothpaste",
+    "en": "toothpaste",
+    "de": "Zahnpasta",
+    "es": "pasta de dientes"
+  },
+  {
+    "id": "tornado",
+    "file": "tornado",
+    "en": "tornado",
+    "de": "Tornado",
+    "es": "tornado"
+  },
+  {
+    "id": "tractor",
+    "file": "tractor",
+    "en": "tractor",
+    "de": "Traktor",
+    "es": "tractor"
+  },
+  {
+    "id": "traffic light",
+    "file": "traffic-light",
+    "en": "traffic light",
+    "de": "Ampel",
+    "es": "semáforo"
+  },
+  {
+    "id": "train",
+    "file": "train",
+    "en": "train",
+    "de": "Zug",
+    "es": "tren"
+  },
+  {
+    "id": "tree",
+    "file": "tree",
+    "en": "tree",
+    "de": "Baum",
+    "es": "árbol"
+  },
+  {
+    "id": "trombone",
+    "file": "trombone",
+    "en": "trombone",
+    "de": "Posaune",
+    "es": "trombón"
+  },
+  {
+    "id": "truck",
+    "file": "truck",
+    "en": "truck",
+    "de": "Lastwagen",
+    "es": "camión"
+  },
+  {
+    "id": "trumpet",
+    "file": "trumpet",
+    "en": "trumpet",
+    "de": "Trompete",
+    "es": "trompeta"
+  },
+  {
+    "id": "t-shirt",
+    "file": "t-shirt",
+    "en": "t-shirt",
+    "de": "T-Shirt",
+    "es": "camiseta"
+  },
+  {
+    "id": "umbrella",
+    "file": "umbrella",
+    "en": "umbrella",
+    "de": "Regenschirm",
+    "es": "paraguas"
+  },
+  {
+    "id": "underwear",
+    "file": "underwear",
+    "en": "underwear",
+    "de": "Unterhose",
+    "es": "calzoncillos"
+  },
+  {
+    "id": "van",
+    "file": "van",
+    "en": "van",
+    "de": "Lieferwagen",
+    "es": "furgoneta"
+  },
+  {
+    "id": "vase",
+    "file": "vase",
+    "en": "vase",
+    "de": "Vase",
+    "es": "jarrón"
+  },
+  {
+    "id": "violin",
+    "file": "violin",
+    "en": "violin",
+    "de": "Geige",
+    "es": "violín"
+  },
+  {
+    "id": "washing machine",
+    "file": "washing-machine",
+    "en": "washing machine",
+    "de": "Waschmaschine",
+    "es": "lavadora"
+  },
+  {
+    "id": "watermelon",
+    "file": "watermelon",
+    "en": "watermelon",
+    "de": "Wassermelone",
+    "es": "sandía"
+  },
+  {
+    "id": "waterslide",
+    "file": "waterslide",
+    "en": "water slide",
+    "de": "Wasserrutsche",
+    "es": "tobogán acuático"
+  },
+  {
+    "id": "whale",
+    "file": "whale",
+    "en": "whale",
+    "de": "Wal",
+    "es": "ballena"
+  },
+  {
+    "id": "wheel",
+    "file": "wheel",
+    "en": "wheel",
+    "de": "Rad",
+    "es": "rueda"
+  },
+  {
+    "id": "windmill",
+    "file": "windmill",
+    "en": "windmill",
+    "de": "Windmühle",
+    "es": "molino de viento"
+  },
+  {
+    "id": "wine bottle",
+    "file": "wine-bottle",
+    "en": "wine bottle",
+    "de": "Weinflasche",
+    "es": "botella de vino"
+  },
+  {
+    "id": "wine glass",
+    "file": "wine-glass",
+    "en": "wine glass",
+    "de": "Weinglas",
+    "es": "copa de vino"
+  },
+  {
+    "id": "wristwatch",
+    "file": "wristwatch",
+    "en": "wristwatch",
+    "de": "Armbanduhr",
+    "es": "reloj de pulsera"
+  },
+  {
+    "id": "yoga",
+    "file": "yoga",
+    "en": "yoga",
+    "de": "Yoga",
+    "es": "yoga"
+  },
+  {
+    "id": "zebra",
+    "file": "zebra",
+    "en": "zebra",
+    "de": "Zebra",
+    "es": "cebra"
+  }
+]

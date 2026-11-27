@@ -4,23 +4,24 @@ Specs are the source of truth for behaviour. Code implements a spec; a test prov
 
 ## Index
 
-| #   | Spec                                                          | Milestone |
-| --- | ------------------------------------------------------------- | --------- |
-| 001 | [Rooms and lobby](001-rooms-and-lobby.md)                     | M1        |
-| 002 | [Game loop](002-game-loop.md)                                 | M1        |
-| 003 | [Drawing](003-drawing.md)                                     | M1        |
-| 004 | [Guessing and chat](004-guessing-and-chat.md)                 | M1        |
-| 005 | [Scoring](005-scoring.md)                                     | M1        |
-| 006 | [Words and languages](006-words-and-languages.md)             | M2        |
-| 007 | [Presence and resilience](007-presence-and-resilience.md)     | M2        |
-| 008 | [Reactions and gallery](008-reactions-and-gallery.md)         | M2        |
-| 009 | [Solo mode](009-solo-mode.md)                                 | M3        |
-| 010 | [Identity and avatars](010-identity-and-avatars.md)           | M2        |
-| 011 | [App shell](011-app-shell.md)                                 | M4        |
-| 012 | [Deployment and operations](012-deployment-and-operations.md) | M4        |
-| 015 | [Observability](015-observability.md)                         | M6        |
-| 101 | [Bots](roadmap/101-bots.md)                                   | after v1  |
-| 102 | [Team mode](roadmap/102-team-mode.md)                         | after v1  |
+| #   | Spec                                                                | Milestone |
+| --- | ------------------------------------------------------------------- | --------- |
+| 001 | [Rooms and lobby](001-rooms-and-lobby.md)                           | M1        |
+| 002 | [Game loop](002-game-loop.md)                                       | M1        |
+| 003 | [Drawing](003-drawing.md)                                           | M1        |
+| 004 | [Guessing and chat](004-guessing-and-chat.md)                       | M1        |
+| 005 | [Scoring](005-scoring.md)                                           | M1        |
+| 006 | [Words and languages](006-words-and-languages.md)                   | M2        |
+| 007 | [Presence and resilience](007-presence-and-resilience.md)           | M2        |
+| 008 | [Reactions and gallery](008-reactions-and-gallery.md)               | M2        |
+| 009 | [Solo mode](009-solo-mode.md)                                       | M3        |
+| 010 | [Identity and avatars](010-identity-and-avatars.md)                 | M2        |
+| 011 | [App shell](011-app-shell.md)                                       | M4        |
+| 012 | [Deployment and operations](012-deployment-and-operations.md)       | M4        |
+| 015 | [Observability](015-observability.md)                               | M6        |
+| 016 | [Kubernetes and OpenShift deployment](016-kubernetes-deployment.md) | M6        |
+| 101 | [Bots](roadmap/101-bots.md)                                         | after v1  |
+| 102 | [Team mode](roadmap/102-team-mode.md)                               | after v1  |
 
 ## Format
 

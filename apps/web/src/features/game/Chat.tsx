@@ -38,6 +38,18 @@ export function Chat({ view, className }: { view: RoomView; className?: string }
     if (log && following.current) log.scrollTop = log.scrollHeight;
   }, [chat]);
 
+  // When the log changes size, as it does when the on-screen keyboard opens
+  // and only the latest line is left (spec 011), it stays at the end.
+  useEffect(() => {
+    const log = logRef.current;
+    if (!log || typeof ResizeObserver === 'undefined') return;
+    const observer = new ResizeObserver(() => {
+      if (following.current) log.scrollTop = log.scrollHeight;
+    });
+    observer.observe(log);
+    return () => observer.disconnect();
+  }, []);
+
   const handleScroll = () => {
     const log = logRef.current;
     if (!log) return;
@@ -60,7 +72,7 @@ export function Chat({ view, className }: { view: RoomView; className?: string }
       aria-label={t('chat.title')}
       className={cx('flex min-h-0 flex-col overflow-hidden', className)}
     >
-      <h2 className="hidden px-4 pt-3 pb-1 text-label text-fg-secondary sm:block">
+      <h2 className="hidden px-4 pt-3 pb-1 text-label text-fg-secondary typing:hidden sm:block">
         {t('chat.title')}
       </h2>
       <div
@@ -72,7 +84,7 @@ export function Chat({ view, className }: { view: RoomView; className?: string }
         aria-label={t('chat.title')}
         tabIndex={0}
         onScroll={handleScroll}
-        className="scroll-quiet flex min-h-0 flex-1 flex-col overflow-y-auto px-2 py-2"
+        className="scroll-quiet flex min-h-0 flex-1 flex-col overflow-y-auto px-2 py-2 typing:max-h-7 typing:flex-none typing:overflow-hidden typing:py-0.5"
       >
         <ul className="flex min-h-full flex-col gap-0.5">
           {chat.length === 0 ? (
@@ -85,7 +97,10 @@ export function Chat({ view, className }: { view: RoomView; className?: string }
           ))}
         </ul>
       </div>
-      <form onSubmit={handleSubmit} className="flex items-center gap-2 border-t border-line p-2">
+      <form
+        onSubmit={handleSubmit}
+        className="flex items-center gap-2 border-t border-line p-2 typing:p-1"
+      >
         <input
           ref={inputRef}
           data-testid="chat-input"

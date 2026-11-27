@@ -1,0 +1,260 @@
+name: Deploy OpenShift demo
+
+# Deploys the demo profile of the Helm chart to the OpenShift namespace of the
+# GitHub environment `dev` and checks the result (spec 016).
+#
+# Started by hand, or after a successful CI run on main when the repository
+# variable DEPLOY_DEMO_ON_MAIN is `true`. It never runs for pull requests, so
+# code from a fork never meets the cluster credentials.
+#
+# Configuration, all in the environment `dev` (Settings → Environments):
+#   secret   OPENSHIFT_TOKEN          login token for the namespace
+#   variable OPENSHIFT_SERVER         API URL, https://api…:6443
+#   variable OPENSHIFT_NAMESPACE      an existing namespace
+#   secret   GRAFANA_ADMIN_PASSWORD   optional; generated on first use if absent
+#
+# A deployment restarts the game when its image or settings changed. Games in
+# progress end; players are told the server is restarting.
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: Commit on main to deploy (SHA, or main for its head)
+        default: main
+        required: true
+      image_digest:
+        description: Game image digest (sha256:…); empty resolves the commit's sha- tag in GHCR
+        default: ''
+        required: false
+      grafana_route:
+        description: Expose Grafana on a public HTTPS Route with its login
+        type: boolean
+        default: true
+      traffic:
+        description: Run the synthetic traffic generator
+        type: boolean
+        default: true
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: read
+
+# One deployment at a time for the environment, and never a cancelled one:
+# stopping halfway would leave the release in an unknown state.
+concurrency:
+  group: deploy-openshift-demo-dev
+  cancel-in-progress: false
+
+env:
+  OC_VERSION: '4.22.22'
+  OC_SHA256: dafaca983ff4a1de782fc0f281552789955a2020cdbddd8f505d16f0f7d879aa
+  HELM_VERSION: v4.3.1
+  HELM_SHA256: 0403a88ae20913d11b10a2467b50087721fea7581736da6b9d3992f5357fe54b
+  IMAGE_REPOSITORY: ghcr.io/mistral-valaise/open-skribbl
+
+jobs:
+  # Decides what may be deployed: a commit that is on main and whose CI passed.
+  guard:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (vars.DEPLOY_DEMO_ON_MAIN == 'true' &&
+       github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.event == 'push')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+      checks: read
+    outputs:
+      sha: ${{ steps.commit.outputs.sha }}
+      digest: ${{ steps.image.outputs.digest }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Resolve the commit and require it to be on main
+        id: commit
+        env:
+          REQUESTED: ${{ github.event_name == 'workflow_dispatch' && inputs.ref || github.event.workflow_run.head_sha }}
+        run: |
+          set -euo pipefail
+          if ! sha="$(git rev-parse --verify --quiet "${REQUESTED}^{commit}" || git rev-parse --verify --quiet "origin/${REQUESTED}^{commit}")"; then
+            echo "::error::'${REQUESTED}' is not a commit of this repository."
+            exit 1
+          fi
+          if ! git merge-base --is-ancestor "$sha" origin/main; then
+            echo "::error::Commit $sha is not on main. Only commits on main are deployed."
+            exit 1
+          fi
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+      - name: Require a successful CI run for the commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHA: ${{ steps.commit.outputs.sha }}
+        run: |
+          set -euo pipefail
+          conclusion="$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/ci.yml/runs?head_sha=${SHA}&event=push&per_page=1" --jq '.workflow_runs[0].conclusion // "none"')"
+          if [ "$conclusion" != "success" ]; then
+            echo "::error::CI for $SHA is '$conclusion', not 'success'. Deploy a commit whose CI run on main passed."
+            exit 1
+          fi
+      - name: Resolve the image digest
+        id: image
+        env:
+          GIVEN: ${{ github.event_name == 'workflow_dispatch' && inputs.image_digest || '' }}
+          SHA: ${{ steps.commit.outputs.sha }}
+        run: |
+          set -euo pipefail
+          if [ -n "$GIVEN" ]; then
+            digest="$GIVEN"
+          else
+            # The release workflow tags every commit of main as sha-<commit>.
+            if ! digest="$(docker buildx imagetools inspect "${IMAGE_REPOSITORY}:sha-${SHA}" --format '{{.Manifest.Digest}}')"; then
+              echo "::error::No image ${IMAGE_REPOSITORY}:sha-${SHA}. Wait for the Release workflow of this commit, or make the package public or pass image_digest."
+              exit 1
+            fi
+          fi
+          if ! printf '%s' "$digest" | grep -Eq '^sha256:[0-9a-f]{64}$'; then
+            echo "::error::'$digest' is not an image digest (sha256:<64 hex digits>)."
+            exit 1
+          fi
+          echo "digest=$digest" >> "$GITHUB_OUTPUT"
+
+  deploy:
+    needs: guard
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment:
+      name: dev
+      url: ${{ steps.urls.outputs.game }}
+    permissions:
+      contents: read
+    env:
+      NAMESPACE: ${{ vars.OPENSHIFT_NAMESPACE }}
+      KUBECONFIG: ${{ runner.temp }}/kubeconfig
+      IMAGE_DIGEST: ${{ needs.guard.outputs.digest }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          ref: ${{ needs.guard.outputs.sha }}
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4.3.0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+
+      - name: Install oc and helm, verified by checksum
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/bin" && cd "$RUNNER_TEMP"
+          curl --fail --silent --show-error --location --output oc.tar.gz \
+            "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/${OC_VERSION}/openshift-client-linux-${OC_VERSION}.tar.gz"
+          echo "${OC_SHA256}  oc.tar.gz" | sha256sum --check --strict
+          tar --extract --gzip --file oc.tar.gz --directory bin oc
+          curl --fail --silent --show-error --location --output helm.tar.gz \
+            "https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz"
+          echo "${HELM_SHA256}  helm.tar.gz" | sha256sum --check --strict
+          tar --extract --gzip --file helm.tar.gz --strip-components 1 --directory bin linux-amd64/helm
+          echo "$RUNNER_TEMP/bin" >> "$GITHUB_PATH"
+
+      - name: Log in with a temporary kubeconfig
+        env:
+          OPENSHIFT_TOKEN: ${{ secrets.OPENSHIFT_TOKEN }}
+          OPENSHIFT_SERVER: ${{ vars.OPENSHIFT_SERVER }}
+        run: |
+          set -euo pipefail
+          if [ -z "$OPENSHIFT_TOKEN" ] || [ -z "$OPENSHIFT_SERVER" ] || [ -z "$NAMESPACE" ]; then
+            echo "::error::Set the secret OPENSHIFT_TOKEN and the variables OPENSHIFT_SERVER and OPENSHIFT_NAMESPACE in the environment 'dev'."
+            exit 1
+          fi
+          case "$OPENSHIFT_SERVER" in
+            https://*) ;;
+            *) echo "::error::OPENSHIFT_SERVER must be an https:// URL."; exit 1 ;;
+          esac
+          umask 077
+          # Certificates are verified against the runner's trust store; the token
+          # goes into the kubeconfig file only.
+          oc config set-cluster demo --server="$OPENSHIFT_SERVER" >/dev/null
+          oc config set-credentials demo --token="$OPENSHIFT_TOKEN" >/dev/null
+          oc config set-context demo --cluster=demo --user=demo --namespace="$NAMESPACE" >/dev/null
+          oc config use-context demo >/dev/null
+
+      - name: Render the chart
+        run: |
+          set -euo pipefail
+          helm lint deploy/helm/kritzel --strict \
+            --values deploy/helm/kritzel/values-demo.yaml \
+            --set-string "image.digest=$IMAGE_DIGEST" --set-string grafana.existingSecret=kritzel-grafana
+          helm template kritzel deploy/helm/kritzel --namespace "$NAMESPACE" \
+            --values deploy/helm/kritzel/values-demo.yaml \
+            --set-string "image.repository=$IMAGE_REPOSITORY" \
+            --set-string "image.digest=$IMAGE_DIGEST" \
+            --set-string grafana.existingSecret=kritzel-grafana \
+            --set "grafana.route.enabled=${{ github.event_name != 'workflow_dispatch' || inputs.grafana_route }}" \
+            --set "traffic.enabled=${{ github.event_name != 'workflow_dispatch' || inputs.traffic }}" \
+            > "$RUNNER_TEMP/rendered.yaml"
+
+      - name: Preflight (login, namespace, permissions, quota)
+        run: node deploy/scripts/preflight.mjs --namespace "$NAMESPACE" --manifests "$RUNNER_TEMP/rendered.yaml"
+
+      - name: Server-side dry run
+        run: oc apply --dry-run=server --namespace "$NAMESPACE" --filename "$RUNNER_TEMP/rendered.yaml" >/dev/null
+
+      - name: Deploy
+        env:
+          GRAFANA_ADMIN_PASSWORD: ${{ secrets.GRAFANA_ADMIN_PASSWORD }}
+          GRAFANA_ROUTE: ${{ github.event_name != 'workflow_dispatch' || inputs.grafana_route }}
+          TRAFFIC: ${{ github.event_name != 'workflow_dispatch' || inputs.traffic }}
+        run: deploy/scripts/deploy.sh
+
+      - name: Addresses
+        id: urls
+        run: |
+          set -euo pipefail
+          echo "game=https://$(oc get route kritzel --namespace "$NAMESPACE" --output jsonpath='{.spec.host}')" >> "$GITHUB_OUTPUT"
+
+      - name: Summary
+        if: always()
+        env:
+          SHA: ${{ needs.guard.outputs.sha }}
+        run: |
+          {
+            echo "## OpenShift demo"
+            echo
+            echo "| | |"
+            echo "| --- | --- |"
+            echo "| Commit | \`$SHA\` |"
+            echo "| Image | \`${IMAGE_REPOSITORY}@${IMAGE_DIGEST}\` |"
+            echo "| Chart | $(sed -n 's/^version: //p' deploy/helm/kritzel/Chart.yaml) |"
+            echo "| Namespace | \`$NAMESPACE\` |"
+            echo
+            echo "A deployment that changes the game restarts it: games in progress ended, and players were told the server is restarting."
+            echo
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Verify (pods, Routes, a game over wss, telemetry, Grafana)
+        env:
+          GRAFANA_ADMIN_PASSWORD: ${{ secrets.GRAFANA_ADMIN_PASSWORD }}
+        run: node deploy/scripts/verify.mjs --namespace "$NAMESPACE" --summary "$GITHUB_STEP_SUMMARY"
+
+      - name: Diagnostics
+        if: failure()
+        run: |
+          # Scoped to the namespace and the release. Room codes are removed from
+          # log lines; no token, password or kubeconfig is printed.
+          helm status kritzel --namespace "$NAMESPACE" 2>&1 | sed -n '1,8p' || true
+          oc get pods --namespace "$NAMESPACE" --selector app.kubernetes.io/instance=kritzel --output wide 2>&1 || true
+          oc get events --namespace "$NAMESPACE" --sort-by=.lastTimestamp 2>&1 | tail -n 30 || true
+          for pod in $(oc get pods --namespace "$NAMESPACE" --selector app.kubernetes.io/instance=kritzel --output name 2>/dev/null); do
+            echo "--- $pod"
+            oc logs --namespace "$NAMESPACE" "$pod" --tail=40 2>&1 | sed -E 's/"room":"[A-Z0-9]+"/"room":"…"/g' || true
+          done
+
+      - name: Remove the kubeconfig
+        if: always()
+        run: rm -f "$KUBECONFIG"

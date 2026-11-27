@@ -1,0 +1,28 @@
+Kritzel is installed in namespace {{ .Release.Namespace }} as release {{ .Release.Name }}.
+
+One game process holds every room in memory. An upgrade, a rollback or a pod
+restart ends the games in progress; players are told the server is restarting.
+
+{{- if .Values.route.enabled }}
+
+Game:
+  oc get route {{ include "kritzel.fullname" . }} --namespace {{ .Release.Namespace }} -o jsonpath='https://{.spec.host}{"\n"}'
+{{- else }}
+
+Game (no Route or Ingress was created):
+  kubectl port-forward --namespace {{ .Release.Namespace }} service/{{ include "kritzel.fullname" . }} 3000:{{ .Values.service.port }}
+{{- end }}
+{{- if .Values.observability.enabled }}
+{{- if .Values.grafana.route.enabled }}
+
+Grafana (user admin, password in the Secret {{ .Values.grafana.existingSecret }}):
+  oc get route {{ include "kritzel.fullname" . }}-grafana --namespace {{ .Release.Namespace }} -o jsonpath='https://{.spec.host}{"\n"}'
+{{- else }}
+
+Grafana (user admin, password in the Secret {{ .Values.grafana.existingSecret }}):
+  kubectl port-forward --namespace {{ .Release.Namespace }} service/{{ include "kritzel.fullname" . }}-grafana 3001:3000
+{{- end }}
+
+The collector, Prometheus, Loki and Tempo are reachable only inside the
+namespace. Their data is kept for a short time and lost when a pod restarts.
+{{- end }}

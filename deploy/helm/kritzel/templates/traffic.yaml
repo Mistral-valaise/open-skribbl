@@ -1,0 +1,65 @@
+{{- /* Traffic generator: seeded synthetic games against the game's Service (spec 015). */ -}}
+{{- if .Values.traffic.enabled }}
+{{- $ctx := dict "root" . "component" "traffic" }}
+{{- $game := dict "root" . "component" "game" }}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ include "kritzel.componentName" $ctx }}
+  labels:
+    {{- include "kritzel.labels" $ctx | nindent 4 }}
+automountServiceAccountToken: false
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "kritzel.componentName" $ctx }}
+  labels:
+    {{- include "kritzel.labels" $ctx | nindent 4 }}
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      {{- include "kritzel.selectorLabels" $ctx | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "kritzel.labels" $ctx | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "kritzel.componentName" $ctx }}
+      automountServiceAccountToken: false
+      terminationGracePeriodSeconds: 5
+      securityContext:
+        {{- include "kritzel.podSecurityContext" . | nindent 8 }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- range . }}
+        - name: {{ . }}
+        {{- end }}
+      {{- end }}
+      containers:
+        - name: traffic
+          # The generator ships in the game image.
+          image: {{ include "kritzel.image" . }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            - node
+            - traffic.js
+          securityContext:
+            {{- include "kritzel.containerSecurityContext" . | nindent 12 }}
+          env:
+            - name: TRAFFIC_URL
+              value: {{ printf "http://%s:%v" (include "kritzel.componentName" $game) .Values.service.port | quote }}
+            - name: TRAFFIC_ROOMS
+              value: {{ .Values.traffic.rooms | quote }}
+            - name: TRAFFIC_PLAYERS
+              value: {{ .Values.traffic.players | quote }}
+            - name: TRAFFIC_SEED
+              value: {{ .Values.traffic.seed | quote }}
+            - name: TRAFFIC_PACE
+              value: {{ .Values.traffic.paceMs | quote }}
+          resources:
+            {{- toYaml .Values.traffic.resources | nindent 12 }}
+{{- end }}

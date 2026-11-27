@@ -28,15 +28,15 @@ The container runs as a non-root user and writes nothing, so `--read-only` and `
 
 All variables are optional.
 
-| Variable            | Default   | Meaning                                                                                                              |
-| ------------------- | --------- | -------------------------------------------------------------------------------------------------------------------- |
-| `PORT`              | `3000`    | Listening port                                                                                                       |
-| `HOST`              | `0.0.0.0` | Listening address                                                                                                    |
-| `MAX_ROOMS`         | `500`     | Maximum number of live rooms                                                                                         |
-| `TRUST_PROXY`       | `false`   | Set to `true` behind a reverse proxy, so rate limits see the visitor's address instead of the proxy's                |
-| `LOG_LEVEL`         | `info`    | `debug`, `info`, `warn` or `error`                                                                                   |
-| `TELEMETRY_ENABLED` | `false`   | Set to `true` to export metrics, traces and logs over OTLP/HTTP; see [Observability](#observability)                 |
-| `RUM_ENABLED`       | `false`   | Set to `true` to offer players the browser measurement switch and accept its reports; needs `TELEMETRY_ENABLED=true` |
+| Variable            | Default   | Meaning                                                                                                                                                      |
+| ------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `PORT`              | `3000`    | Listening port                                                                                                                                               |
+| `HOST`              | `0.0.0.0` | Listening address                                                                                                                                            |
+| `MAX_ROOMS`         | `500`     | Maximum number of live rooms                                                                                                                                 |
+| `TRUST_PROXY`       | `false`   | Behind a reverse proxy: the proxy's address or network (for example `172.18.0.0/16`), so only its forwarded addresses are believed; `true` believes anyone's |
+| `LOG_LEVEL`         | `info`    | `debug`, `info`, `warn` or `error`                                                                                                                           |
+| `TELEMETRY_ENABLED` | `false`   | Set to `true` to export metrics, traces and logs over OTLP/HTTP; see [Observability](#observability)                                                         |
+| `RUM_ENABLED`       | `false`   | Set to `true` to offer players the browser measurement switch and accept its reports; needs `TELEMETRY_ENABLED=true`                                         |
 
 An invalid value stops the container at start-up with a message that names the variable.
 
@@ -132,6 +132,10 @@ pnpm obs:up
 ```
 
 Grafana is published on `127.0.0.1:3001` only, with a login. [OBSERVABILITY.md](OBSERVABILITY.md) describes every variable, metric, span and dashboard and the proposed service level objectives; [RUNBOOK.md](RUNBOOK.md) says what to do when an alert fires.
+
+## Kubernetes and OpenShift
+
+`docker run` is the way Kritzel is meant to be hosted. For a cluster there is a Helm chart in `deploy/helm/kritzel`: the game alone by default, or with the observability stack in its demo profile. It runs exactly one replica of the game and needs nothing beyond a namespace. See [DEPLOYMENT-OPENSHIFT.md](DEPLOYMENT-OPENSHIFT.md).
 
 ## Capacity
 

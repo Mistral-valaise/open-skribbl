@@ -7,6 +7,7 @@ import { loadWordLists } from '@kritzel/content';
 import { LANGUAGES, MAX_FRAME_BYTES, type Difficulty, type Language } from '@kritzel/shared';
 import Fastify, { type FastifyInstance } from 'fastify';
 import { systemClock, type Clock } from './clock.js';
+import type { ProxyTrust } from './config.js';
 import { handleConnection } from './gateway.js';
 import { TokenBucket } from './rateLimit.js';
 import { RoomRegistry, ServerFullError } from './rooms/registry.js';
@@ -24,7 +25,7 @@ export type Logger = (
 
 export interface AppOptions {
   maxRooms?: number;
-  trustProxy?: boolean;
+  trustProxy?: ProxyTrust;
   log?: Logger;
   /** Records nothing unless given (spec 015). */
   telemetry?: Telemetry;

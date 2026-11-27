@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Generates the Prometheus rules for Kritzel's service level objectives from
-// deploy/observability/slo/kritzel.slo.yaml with Sloth (spec 015).
+// deploy/helm/kritzel/files/slo/kritzel.slo.yaml with Sloth (spec 015).
 //
 // Usage: node scripts/slo.mjs [--check]
 //
@@ -15,7 +15,7 @@ import { fileURLToPath } from 'node:url';
 
 const SLOTH_IMAGE =
   'ghcr.io/slok/sloth:v0.16.0@sha256:f0f0075b0d45c1cf684e92947508cc1d5bf573925f785f803a439b2306c8b9a5';
-const root = fileURLToPath(new URL('../deploy/observability/', import.meta.url));
+const root = fileURLToPath(new URL('../deploy/helm/kritzel/files/', import.meta.url));
 const spec = join(root, 'slo/kritzel.slo.yaml');
 const rules = join(root, 'prometheus/rules/sloth-kritzel.yaml');
 const check = process.argv.includes('--check');

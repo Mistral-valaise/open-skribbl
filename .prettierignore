@@ -4,6 +4,9 @@ coverage
 packages/content/solo/drawings
 
 # Generated: pnpm dashboards:generate and pnpm slo:generate
-deploy/observability/grafana/dashboards/*.json
-deploy/observability/prometheus/rules/sloth-kritzel.yaml
-deploy/observability/grafana/dashboards/sloth-*.json
+deploy/helm/kritzel/files/grafana/dashboards/*.json
+deploy/helm/kritzel/files/prometheus/rules/sloth-kritzel.yaml
+deploy/helm/kritzel/files/grafana/dashboards/sloth-*.json
+
+# Helm templates are not YAML until they are rendered
+deploy/helm/kritzel/templates

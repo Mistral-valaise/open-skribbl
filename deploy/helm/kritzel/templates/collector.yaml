@@ -1,0 +1,97 @@
+{{- /* OpenTelemetry Collector: the one gateway between the game and the backends (spec 015). */ -}}
+{{- if .Values.observability.enabled }}
+{{- $ctx := dict "root" . "component" "collector" }}
+{{- $config := .Files.Get "files/collector/config.yaml" }}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ include "kritzel.componentName" $ctx }}
+  labels:
+    {{- include "kritzel.labels" $ctx | nindent 4 }}
+automountServiceAccountToken: false
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "kritzel.componentName" $ctx }}
+  labels:
+    {{- include "kritzel.labels" $ctx | nindent 4 }}
+data:
+  config.yaml: |
+    {{- $config | nindent 4 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "kritzel.componentName" $ctx }}
+  labels:
+    {{- include "kritzel.labels" $ctx | nindent 4 }}
+spec:
+  type: ClusterIP
+  selector:
+    {{- include "kritzel.selectorLabels" $ctx | nindent 4 }}
+  ports:
+    - name: otlp-http
+      port: 4318
+      targetPort: otlp-http
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "kritzel.componentName" $ctx }}
+  labels:
+    {{- include "kritzel.labels" $ctx | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "kritzel.selectorLabels" $ctx | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "kritzel.labels" $ctx | nindent 8 }}
+      annotations:
+        # Restart when the configuration changes, and only then.
+        checksum/config: {{ $config | sha256sum }}
+    spec:
+      serviceAccountName: {{ include "kritzel.componentName" $ctx }}
+      automountServiceAccountToken: false
+      terminationGracePeriodSeconds: 15
+      securityContext:
+        {{- include "kritzel.podSecurityContext" . | nindent 8 }}
+      containers:
+        - name: collector
+          image: {{ .Values.collector.image }}
+          args:
+            - --config=/etc/otelcol/config.yaml
+          securityContext:
+            {{- include "kritzel.containerSecurityContext" . | nindent 12 }}
+          env:
+            {{- include "kritzel.backendHosts" . | nindent 12 }}
+          ports:
+            - name: otlp-http
+              containerPort: 4318
+            - name: health
+              containerPort: 13133
+          readinessProbe:
+            httpGet:
+              path: /
+              port: health
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: health
+            periodSeconds: 20
+            failureThreshold: 3
+          resources:
+            {{- toYaml .Values.collector.resources | nindent 12 }}
+          volumeMounts:
+            - name: config
+              mountPath: /etc/otelcol
+              readOnly: true
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "kritzel.componentName" $ctx }}
+{{- end }}

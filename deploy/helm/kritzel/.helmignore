@@ -1,0 +1,8 @@
+# Not needed in a packaged chart.
+.DS_Store
+*.md
+# Sources and tests of generated files; the generated rules are shipped.
+files/slo/
+files/prometheus/tests/
+files/grafana/provisioning/plugins/
+files/grafana/provisioning/alerting/

@@ -1,0 +1,98 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "title": "Kritzel chart values",
+  "type": "object",
+  "required": ["replicaCount", "image", "game"],
+  "properties": {
+    "replicaCount": {
+      "description": "Rooms live in the memory of one process (ADR 0001).",
+      "type": "integer",
+      "const": 1
+    },
+    "image": {
+      "type": "object",
+      "required": ["repository"],
+      "properties": {
+        "repository": { "type": "string", "minLength": 1 },
+        "tag": { "type": "string" },
+        "digest": { "type": "string", "pattern": "^(sha256:[0-9a-f]{64})?$" },
+        "pullPolicy": { "enum": ["Always", "IfNotPresent", "Never"] }
+      }
+    },
+    "requireImageDigest": { "type": "boolean" },
+    "environment": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]{0,30}$" },
+    "game": {
+      "type": "object",
+      "properties": {
+        "maxRooms": { "type": "integer", "minimum": 1, "maximum": 100000 },
+        "logLevel": { "enum": ["debug", "info", "warn", "error"] },
+        "trustProxy": { "type": "string", "pattern": "^(true|false|[0-9a-fA-F:.,/ ]+)$" },
+        "browserMeasurements": { "type": "boolean" },
+        "terminationGracePeriodSeconds": { "type": "integer", "minimum": 15, "maximum": 120 }
+      }
+    },
+    "telemetry": {
+      "type": "object",
+      "properties": {
+        "otlpEndpoint": { "type": "string", "pattern": "^(https?://.+)?$" },
+        "sampler": {
+          "enum": [
+            "always_on",
+            "always_off",
+            "traceidratio",
+            "parentbased_always_on",
+            "parentbased_always_off",
+            "parentbased_traceidratio"
+          ]
+        },
+        "samplerArg": { "type": "string", "pattern": "^(0(\\.[0-9]+)?|1(\\.0+)?)$" }
+      }
+    },
+    "route": {
+      "type": "object",
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "host": { "type": "string" },
+        "tunnelTimeout": { "type": "string", "pattern": "^[0-9]+(ms|s|m|h|d)$" }
+      }
+    },
+    "observability": {
+      "type": "object",
+      "properties": { "enabled": { "type": "boolean" } }
+    },
+    "collector": { "$ref": "#/definitions/pinned" },
+    "prometheus": { "$ref": "#/definitions/pinned" },
+    "loki": { "$ref": "#/definitions/pinned" },
+    "tempo": { "$ref": "#/definitions/pinned" },
+    "grafana": {
+      "allOf": [{ "$ref": "#/definitions/pinned" }],
+      "properties": {
+        "existingSecret": { "type": "string" },
+        "adminPassword": false,
+        "password": false
+      }
+    },
+    "traffic": {
+      "type": "object",
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "rooms": { "type": "integer", "minimum": 1, "maximum": 8 },
+        "players": { "type": "integer", "minimum": 2, "maximum": 8 },
+        "seed": { "type": "integer", "minimum": 0 },
+        "paceMs": { "type": "integer", "minimum": 0 }
+      }
+    }
+  },
+  "definitions": {
+    "pinned": {
+      "type": "object",
+      "properties": {
+        "image": {
+          "description": "Observability images are pinned by digest.",
+          "type": "string",
+          "pattern": "@sha256:[0-9a-f]{64}$"
+        }
+      }
+    }
+  }
+}

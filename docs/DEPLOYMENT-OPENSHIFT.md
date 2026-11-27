@@ -133,7 +133,7 @@ Could not be measured: the disk usage of Loki and Tempo (their images have no sh
 ## Rotating credentials
 
 - **Token**: copy a new login command from the OpenShift console and replace the secret `OPENSHIFT_TOKEN`. Nothing in the cluster needs to change.
-- **Grafana password**: replace the secret `GRAFANA_ADMIN_PASSWORD` and run the workflow, or run `deploy.sh` with the variable set. The demo's Grafana database is ephemeral and is created anew, with the password from the Secret, whenever the pod starts, so restart Grafana to apply a new one: `oc rollout restart deployment/kritzel-grafana --namespace "$NAMESPACE"`.
+- **Grafana password**: replace the secret `GRAFANA_ADMIN_PASSWORD` and run the workflow, or run `deploy.sh` with the variable set. Grafana reads the password when it starts, so the script restarts Grafana when the Secret's value changed; its database is ephemeral and is created anew with the new password.
 
 ## Rolling back
 

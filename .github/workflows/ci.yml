@@ -38,6 +38,10 @@ jobs:
           tar --extract --gzip --file helm.tar.gz --strip-components 1 --directory bin linux-amd64/helm
           echo "$RUNNER_TEMP/bin" >> "$GITHUB_PATH"
       - run: pnpm check
+      # GitHub refuses a workflow file with an invalid expression only after
+      # it is merged; actionlint says so before.
+      - name: Lint the workflows
+        run: docker run --rm --volume "$PWD:/repo:ro" --workdir /repo rhysd/actionlint:1.7.12@sha256:b1934ee5f1c509618f2508e6eb47ee0d3520686341fec936f3b79331f9315667 -color
       - run: pnpm build
 
   e2e:

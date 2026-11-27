@@ -225,8 +225,24 @@ describe('deployment workflow (spec 016)', () => {
     }
     // The token reaches oc through the environment, never the command line.
     expect(text).not.toMatch(/--token[= ]\$\{\{/);
-    expect(text).toContain('KUBECONFIG');
-    expect(text).toContain('runner.temp');
+    expect(text).toContain('KUBECONFIG="$RUNNER_TEMP/kubeconfig"');
+    expect(text).toContain('rm -f "$RUNNER_TEMP/kubeconfig"');
+  });
+
+  it('AC-016-18: the workflow file is one GitHub accepts', () => {
+    // The runner context does not exist where a job's env is evaluated; GitHub
+    // rejects the whole file for it, and only once it is on the default branch.
+    for (const [name, job] of Object.entries(workflow.jobs)) {
+      const env = (job as { env?: Record<string, string> }).env ?? {};
+      for (const [key, value] of Object.entries(env)) {
+        expect(String(value), `${name}.env.${key}`).not.toMatch(/\$\{\{[^}]*\brunner\./);
+      }
+    }
+    expect(String(workflow.concurrency.group)).not.toMatch(/runner\.|secrets\./);
+    // CI lints every workflow with actionlint, pinned by digest.
+    expect(read('.github/workflows/ci.yml')).toMatch(
+      /rhysd\/actionlint:[\d.]+@sha256:[0-9a-f]{64}/,
+    );
   });
 
   it('AC-016-20: deploys by digest with wait, timeout and rollback, always inside the namespace', () => {

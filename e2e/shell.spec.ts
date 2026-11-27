@@ -124,11 +124,22 @@ test('layout, accessibility scan, reduced motion and translated errors (AC-011-0
   // Phone width: the guesser sees mask, timer, canvas and input without scrolling …
   await guest.setViewportSize({ width: 375, height: 740 });
   expect(await guest.evaluate(() => window.scrollY)).toBe(0);
+  // Polled: the layout is rebuilt for the new width, so an element can be
+  // briefly detached right after the viewport changes.
   for (const id of ['word-mask', 'timer', 'canvas', 'chat-input']) {
-    const box = (await guest.getByTestId(id).boundingBox())!;
-    expect(box.y, id).toBeGreaterThanOrEqual(0);
-    expect(box.y + box.height, id).toBeLessThanOrEqual(740);
-    expect(box.x + box.width, id).toBeLessThanOrEqual(375);
+    const element = guest.getByTestId(id);
+    await expect(element).toBeVisible();
+    await expect
+      .poll(
+        async () => {
+          const box = await element.boundingBox();
+          return (
+            box !== null && box.y >= 0 && box.y + box.height <= 740 && box.x + box.width <= 375
+          );
+        },
+        { message: `${id} is fully on screen at 375 px`, timeout: 3_000 },
+      )
+      .toBe(true);
   }
   // … and the drawer can reach every tool, size and colour.
   await host.setViewportSize({ width: 375, height: 740 });

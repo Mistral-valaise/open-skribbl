@@ -54,83 +54,84 @@ export function Toolbar() {
       aria-label={t('toolbar.label')}
       className={cx(
         'scroll-hidden flex w-full shrink-0 animate-enter items-center gap-2 overflow-x-auto px-3 py-1',
-        'sm:flex-wrap sm:justify-center sm:gap-x-3 sm:overflow-visible sm:rounded-lg sm:border sm:border-line',
+        'sm:flex-wrap sm:justify-center sm:gap-x-4 sm:overflow-visible sm:rounded-lg sm:border sm:border-line',
         'sm:bg-surface-raised sm:p-2 sm:shadow-sm',
       )}
     >
-      <div className={GROUP}>
-        <IconButton
-          data-testid="tool-brush"
-          label={t('toolbar.brush')}
-          icon={<Brush {...ICON} />}
-          pressed={tool === 'brush'}
-          onClick={() => selectTool('brush')}
-        />
-        <IconButton
-          data-testid="tool-eraser"
-          label={t('toolbar.eraser')}
-          icon={<Eraser {...ICON} />}
-          pressed={tool === 'eraser'}
-          onClick={() => selectTool('eraser')}
-        />
-        <IconButton
-          data-testid="tool-fill"
-          label={t('toolbar.fill')}
-          icon={<PaintBucket {...ICON} />}
-          pressed={tool === 'fill'}
-          onClick={() => selectTool('fill')}
-        />
+      {/* One row on phones; from tablet width the sizes sit below the tools and actions. */}
+      <div className="flex shrink-0 items-center gap-2 sm:flex-col sm:items-start sm:gap-1">
+        <div className="flex shrink-0 items-center gap-2">
+          <div className={GROUP}>
+            <IconButton
+              data-testid="tool-brush"
+              label={t('toolbar.brush')}
+              icon={<Brush {...ICON} />}
+              pressed={tool === 'brush'}
+              onClick={() => selectTool('brush')}
+            />
+            <IconButton
+              data-testid="tool-eraser"
+              label={t('toolbar.eraser')}
+              icon={<Eraser {...ICON} />}
+              pressed={tool === 'eraser'}
+              onClick={() => selectTool('eraser')}
+            />
+            <IconButton
+              data-testid="tool-fill"
+              label={t('toolbar.fill')}
+              icon={<PaintBucket {...ICON} />}
+              pressed={tool === 'fill'}
+              onClick={() => selectTool('fill')}
+            />
+          </div>
+          <span aria-hidden className={DIVIDER} />
+          <div className={GROUP}>
+            <IconButton
+              data-testid="undo"
+              label={t('toolbar.undo')}
+              icon={<Undo2 {...ICON} />}
+              disabled={!canUndo}
+              onClick={undo}
+            />
+            <IconButton
+              data-testid="redo"
+              label={t('toolbar.redo')}
+              icon={<Redo2 {...ICON} />}
+              disabled={!canRedo}
+              onClick={redo}
+            />
+            <IconButton
+              data-testid="clear"
+              label={t('toolbar.clear')}
+              icon={<Trash2 {...ICON} />}
+              tone="danger"
+              disabled={!canUndo}
+              onClick={clearCanvas}
+            />
+          </div>
+        </div>
+        <span aria-hidden className={cx(DIVIDER, 'sm:hidden')} />
+        <div role="group" aria-label={t('toolbar.sizes')} className={GROUP}>
+          {BRUSH_SIZES.map((value, index) => (
+            <IconButton
+              key={value}
+              data-testid={`size-${value}`}
+              label={t('toolbar.size', { size: value, key: index + 1 })}
+              pressed={size === value}
+              onClick={() => selectSize(value)}
+              icon={
+                <span
+                  aria-hidden
+                  className="rounded-full bg-current"
+                  style={{ width: SIZE_DOTS[index], height: SIZE_DOTS[index] }}
+                />
+              }
+            />
+          ))}
+        </div>
       </div>
 
-      <span aria-hidden className={DIVIDER} />
-
-      <div role="group" aria-label={t('toolbar.sizes')} className={GROUP}>
-        {BRUSH_SIZES.map((value, index) => (
-          <IconButton
-            key={value}
-            data-testid={`size-${value}`}
-            label={t('toolbar.size', { size: value, key: index + 1 })}
-            pressed={size === value}
-            onClick={() => selectSize(value)}
-            icon={
-              <span
-                aria-hidden
-                className="rounded-full bg-current"
-                style={{ width: SIZE_DOTS[index], height: SIZE_DOTS[index] }}
-              />
-            }
-          />
-        ))}
-      </div>
-
-      <span aria-hidden className={DIVIDER} />
-
-      <div className={cx(GROUP, 'sm:order-last')}>
-        <IconButton
-          data-testid="undo"
-          label={t('toolbar.undo')}
-          icon={<Undo2 {...ICON} />}
-          disabled={!canUndo}
-          onClick={undo}
-        />
-        <IconButton
-          data-testid="redo"
-          label={t('toolbar.redo')}
-          icon={<Redo2 {...ICON} />}
-          disabled={!canRedo}
-          onClick={redo}
-        />
-        <IconButton
-          data-testid="clear"
-          label={t('toolbar.clear')}
-          icon={<Trash2 {...ICON} />}
-          tone="danger"
-          disabled={!canUndo}
-          onClick={clearCanvas}
-        />
-      </div>
-
-      <span aria-hidden className={cx(DIVIDER, 'sm:order-last')} />
+      <span aria-hidden className={cx(DIVIDER, 'sm:h-20')} />
 
       <div
         role="group"

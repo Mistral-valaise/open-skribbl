@@ -2,7 +2,7 @@ import { useId, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttribu
 import { cx } from './cx.js';
 
 const CONTROL =
-  'min-h-11 w-full rounded-sm border bg-surface-overlay px-3 text-body text-fg ' +
+  'min-h-11 rounded-sm border bg-surface-overlay px-3 text-body text-fg ' +
   'transition-colors motion-fast disabled:opacity-60';
 
 interface TextFieldProps extends InputHTMLAttributes<HTMLInputElement> {
@@ -38,6 +38,7 @@ export function TextField({
         aria-describedby={error ? errorId : undefined}
         className={cx(
           CONTROL,
+          'w-full',
           error ? 'border-danger' : 'border-line hover:border-fg-muted',
           inputClassName,
         )}
@@ -63,12 +64,15 @@ export function SelectField({ label, className, id, children, ...rest }: SelectF
   const selectId = id ?? generatedId;
   return (
     <div className={cx('flex items-center justify-between gap-4', className)}>
-      <label htmlFor={selectId} className="text-label text-fg-secondary">
+      <label htmlFor={selectId} className="min-w-0 text-label text-fg-secondary">
         {label}
       </label>
       <select
         id={selectId}
-        className={cx(CONTROL, 'w-36 border-line pr-2 text-label enabled:hover:border-fg-muted')}
+        className={cx(
+          CONTROL,
+          'w-36 shrink-0 border-line pr-2 text-label enabled:hover:border-fg-muted',
+        )}
         {...rest}
       >
         {children}

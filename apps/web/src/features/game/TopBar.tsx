@@ -34,9 +34,11 @@ export function TopBar({ view, onLeave }: TopBarProps) {
 
   return (
     <header className="flex shrink-0 items-center gap-3 border-b border-line bg-surface-raised px-3 py-2 sm:gap-4 sm:px-4">
-      <Wordmark size="sm" className="hidden lg:inline-block" />
+      <div className="hidden sm:block">
+        <Wordmark size="sm" />
+      </div>
       <div
-        className="flex shrink-0 flex-col lg:ml-4"
+        className="flex shrink-0 flex-col sm:ml-2 lg:ml-4"
         aria-label={t('game.roundLabel', { round: view.round, total: view.totalRounds })}
       >
         <span aria-hidden className="text-caption text-fg-muted uppercase">

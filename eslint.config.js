@@ -16,6 +16,8 @@ export default tseslint.config(
         setTimeout: 'readonly',
         setInterval: 'readonly',
         clearInterval: 'readonly',
+        Buffer: 'readonly',
+        AbortSignal: 'readonly',
       },
     },
   },

@@ -20,7 +20,12 @@
     "spec:coverage": "node scripts/spec-coverage.mjs",
     "check": "pnpm lint && pnpm format:check && pnpm typecheck && pnpm test && pnpm spec:coverage --strict",
     "e2e": "playwright test",
-    "loadtest": "node scripts/loadtest.mjs"
+    "loadtest": "node scripts/loadtest.mjs",
+    "obs:up": "node scripts/obs.mjs up",
+    "obs:down": "node scripts/obs.mjs down",
+    "obs:reset": "node scripts/obs.mjs reset",
+    "obs:status": "node scripts/obs.mjs status",
+    "dashboards:generate": "node scripts/dashboards.mjs"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.14.1",

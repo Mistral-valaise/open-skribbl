@@ -44,6 +44,8 @@ export const SCORING = {
   base: 100,
   timeBonus: 400,
   firstGuessBonus: 50,
+  /** The drawer earns the guessers' average divided by this, so a game for two is not a permanent tie. */
+  drawerDivisor: 2,
 } as const;
 
 /** Spec 006 — words. */

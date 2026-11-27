@@ -13,8 +13,14 @@ describe('scoring formulas (spec 005)', () => {
     expect(guessPoints(90_000, 80_000)).toBe(500);
   });
 
-  it('AC-005-04: guesses of 450 and 300 among three guessers earn the drawer 250', () => {
-    expect(drawerPoints([450, 300], 3)).toBe(250);
+  it('AC-005-13: guesses of 450 and 300 among three guessers earn the drawer 125', () => {
+    expect(drawerPoints([450, 300], 3)).toBe(125);
+  });
+
+  it('AC-005-14: with one guesser the drawer earns half of what the guesser earned', () => {
+    expect(drawerPoints([500], 1)).toBe(250);
+    expect(drawerPoints([350], 1)).toBe(175);
+    expect(drawerPoints([151], 1)).toBe(75);
   });
 
   it('AC-005-05: no guesses earn the drawer 0', () => {

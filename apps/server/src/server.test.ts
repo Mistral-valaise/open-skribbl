@@ -228,7 +228,8 @@ describe('a game over the wire', () => {
     noa.send({ type: 'chat.send', text: word });
     await noa.until(() => noa.lastState?.phase === 'turnEnd', 'turn end');
     expect(noa.lastState?.turnEnd?.reason).toBe('all_guessed');
-    expect(noa.lastState?.participants.map((p) => p.score)).toEqual([550, 550]);
+    // The drawer earns half of the guesser's 550 (spec 005).
+    expect(noa.lastState?.participants.map((p) => p.score)).toEqual([275, 550]);
 
     server.clock.advance(6_000);
     const choices = await noa.next('word.choices');

@@ -8,6 +8,7 @@ export const en = {
   'app.openSource': 'Open source',
   'app.repository': 'Source code on GitHub',
   'app.version': 'Version {version}',
+  'app.createdBy': 'Created by {name}',
 
   'language.label': 'Language',
   'language.en': 'English',

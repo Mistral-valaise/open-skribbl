@@ -27,7 +27,7 @@ describe('scoring in a game (spec 005)', () => {
     expect(score(h, players[2]!)).toBe(500);
   });
 
-  it('AC-005-04, AC-005-08: the drawer earns the average over all guessers, and deltas list every player', () => {
+  it('AC-005-13, AC-005-08: the drawer earns half the average over all guessers, and deltas list every player', () => {
     const { h, players, word } = drawing(4);
     const [drawer, a, b, c] = players as Participant[];
     h.advance(20_000);
@@ -37,9 +37,9 @@ describe('scoring in a game (spec 005)', () => {
     h.advance(40_000);
 
     expect(h.state.phase).toBe('turnEnd');
-    expect(score(h, drawer!)).toBe(250);
+    expect(score(h, drawer!)).toBe(125);
     expect(h.view(c!).turnEnd?.deltas).toEqual({
-      [drawer!.id]: 250,
+      [drawer!.id]: 125,
       [a!.id]: 450,
       [b!.id]: 300,
       [c!.id]: 0,
@@ -76,7 +76,7 @@ describe('scoring in a game (spec 005)', () => {
     });
     expect(update.participants.find((p) => p.id === drawer!.id)?.score).toBe(0);
     h.advance(80_000);
-    expect(score(h, drawer!)).toBe(275);
+    expect(score(h, drawer!)).toBe(137);
   });
 
   it('AC-005-10: a guesser who reconnects within the grace period keeps the score', () => {
@@ -97,7 +97,25 @@ describe('scoring in a game (spec 005)', () => {
     h.chat(a!, word); // 550
     h.chat(b!, word); // 500
     expect(h.state.phase).toBe('turnEnd');
-    expect(score(h, drawer!)).toBe(Math.floor(1050 / 3));
+    expect(score(h, drawer!)).toBe(Math.floor(1050 / 6));
+  });
+
+  it('AC-005-14: two players who guess at different speeds end with different scores', () => {
+    const { h, players, word } = drawing(2);
+    const [first, second] = players as Participant[];
+    // Turn 1: the first player draws, the second guesses after 10 s.
+    h.advance(10_000);
+    h.chat(second!, word);
+    expect(h.state.phase).toBe('turnEnd');
+    expect([score(h, first!), score(h, second!)]).toEqual([250, 500]);
+
+    // Turn 2: roles swapped, the guess comes after 40 s.
+    h.advance(6_000);
+    const next = h.choose();
+    h.advance(40_000);
+    h.chat(first!, next);
+    expect(h.state.phase).toBe('turnEnd');
+    expect([score(h, first!), score(h, second!)]).toEqual([600, 675]);
   });
 
   it('AC-005-12: a new game in the same room starts with all scores at 0', () => {

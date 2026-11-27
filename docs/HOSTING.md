@@ -20,9 +20,64 @@ Open <http://localhost:3000>. Or use the compose file in the repository root:
 docker compose up -d
 ```
 
-Once the repository's release workflow has run on `main` or a `v*` tag, the same image is available as `ghcr.io/mistral-valaise/open-skribbl` (`edge` for `main`, `latest` and the version for tags) and `docker build` is no longer needed.
+Or skip the build and run a published image; [Published images](#published-images) says which tag to choose:
+
+```bash
+docker run -d --name kritzel -p 3000:3000 ghcr.io/mistral-valaise/open-skribbl:latest
+```
 
 The container runs as a non-root user and writes nothing, so `--read-only` and `--cap-drop ALL` work.
+
+## Published images
+
+Images are published to `ghcr.io/mistral-valaise/open-skribbl` for `linux/amd64` and `linux/arm64`. An image is built once per commit of `main`; every other tag is a second name for one of those builds, given after it passed its checks ([spec 017](specs/017-release-and-supply-chain.md)).
+
+| Tag            | What it is                                                                                       | Use it for                                    |
+| -------------- | ------------------------------------------------------------------------------------------------ | --------------------------------------------- |
+| `latest`       | The last release. Tested, scanned and signed.                                                    | Running Kritzel                               |
+| `X.Y.Z`        | One release, for example `1.0.0`. Never moves.                                                   | Pinning a version, rolling back               |
+| `X.Y`          | The newest patch release of a minor version.                                                     | Following fixes without new features          |
+| `edge`         | The last commit of `main` that passed the same tests and scan. Not a release.                    | Trying what comes next                        |
+| `sha-<commit>` | The build of one commit of `main`. Never moves. It is pushed before its tests and scan have run. | Deployments that pin a commit, with its check |
+
+Only an image that passed is signed. `latest`, a version and `edge` are set after signing; a `sha-<commit>` tag on its own says nothing about the checks, so verify its signature before relying on it.
+
+A tag can be moved by whoever controls the registry; a digest cannot. To pin exactly what you verified, run the image by digest: `ghcr.io/mistral-valaise/open-skribbl@sha256:…`. Each [release](https://github.com/Mistral-valaise/open-skribbl/releases) states its digest.
+
+### Verifying the signature
+
+Images are signed with [cosign](https://docs.sigstore.dev/cosign/system_config/installation/) without a key: the signature names the workflow that made it and is recorded in a public log. With cosign 3 or newer:
+
+```bash
+IMAGE=ghcr.io/mistral-valaise/open-skribbl
+DIGEST=$(docker buildx imagetools inspect "$IMAGE:latest" --format '{{.Manifest.Digest}}')
+
+cosign verify "$IMAGE@$DIGEST" \
+  --certificate-oidc-issuer https://token.actions.githubusercontent.com \
+  --certificate-identity-regexp '^https://github\.com/Mistral-valaise/open-skribbl/\.github/workflows/release\.yml@refs/(heads/main|tags/v[0-9]+\.[0-9]+\.[0-9]+)$'
+```
+
+Written out for one image, the command is `cosign verify ghcr.io/mistral-valaise/open-skribbl@sha256:<digest>` with the same two options. It succeeds only if this repository's release workflow signed that digest, on `main` or on a version tag. A release is signed from both, so to accept releases only, end the expression with `@refs/tags/v[0-9]+\.[0-9]+\.[0-9]+$`.
+
+The image also carries a software bill of materials and a build provenance record:
+
+```bash
+docker buildx imagetools inspect "$IMAGE@$DIGEST" --format '{{ json (index .SBOM "linux/amd64").SPDX }}'
+gh attestation verify "oci://$IMAGE@$DIGEST" --repo Mistral-valaise/open-skribbl
+```
+
+The bill of materials lists what is in the image: the operating system packages and Node.js. The npm packages are compiled into the server bundle and the web app; they are the production dependencies in `pnpm-lock.yaml` at the commit of the image.
+
+### Rolling back
+
+A release never changes, so going back is running the version you had. Running games end, as with any restart.
+
+```bash
+docker rm -f kritzel
+docker run -d --name kritzel -p 3000:3000 ghcr.io/mistral-valaise/open-skribbl:1.0.0
+```
+
+With Compose or a platform, set the image to the version or the digest instead of `latest` and deploy again. Rooms are not stored, so there is no data to migrate in either direction.
 
 ## Configuration
 
@@ -110,7 +165,7 @@ These three guides follow each platform's documented Docker workflow; they have 
 
 - **Health:** `GET /healthz` answers `200 {"status":"ok"}`. The image has a matching `HEALTHCHECK`.
 - **Logs:** one JSON object per line on stdout. They contain room codes and counts, never nicknames, chat text or words.
-- **Updates:** pull or rebuild the image and restart. Running games end; players see "The server is restarting".
+- **Updates:** pull the new image, or rebuild it, and restart. Running games end; players see "The server is restarting". To go back, see [Rolling back](#rolling-back).
 - **Stopping:** on `SIGTERM` the server tells every participant and exits within seconds.
 - **Privacy:** the app makes no request to any other host, sets no cookies, and stores nothing on the server beyond the life of a room.
 

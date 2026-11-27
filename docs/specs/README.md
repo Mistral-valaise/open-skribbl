@@ -20,6 +20,7 @@ Specs are the source of truth for behaviour. Code implements a spec; a test prov
 | 012 | [Deployment and operations](012-deployment-and-operations.md)       | M4        |
 | 015 | [Observability](015-observability.md)                               | M6        |
 | 016 | [Kubernetes and OpenShift deployment](016-kubernetes-deployment.md) | M6        |
+| 017 | [Release and supply chain](017-release-and-supply-chain.md)         | M7        |
 | 101 | [Bots](roadmap/101-bots.md)                                         | after v1  |
 | 102 | [Team mode](roadmap/102-team-mode.md)                               | after v1  |
 

@@ -25,6 +25,13 @@ ENV NODE_ENV=production \
     PORT=3000
 WORKDIR /app
 
+# The server is `node main.js` and nothing else. The package managers of the
+# base image are never run here, and their modules are where the image scan
+# finds vulnerabilities (spec 017), so they do not ship.
+RUN rm -rf /usr/local/lib/node_modules /opt/yarn-* \
+      /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack \
+      /usr/local/bin/yarn /usr/local/bin/yarnpkg
+
 COPY --from=build /app/apps/server/dist ./
 COPY --from=build /app/apps/web/dist ./web
 

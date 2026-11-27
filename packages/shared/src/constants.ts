@@ -92,3 +92,17 @@ export const SOLO = {
   color: '#14151C',
   brushSize: 8,
 } as const;
+
+/** Spec 015 — browser measurements. */
+export const RUM = {
+  /** Events in one report. */
+  maxEvents: 20,
+  /** Size of one report. */
+  maxBytes: 4096,
+  /** Reports per minute and address. */
+  reportsPerMinute: 30,
+  /** Largest duration a browser may report, in milliseconds. */
+  maxDurationMs: 600_000,
+  /** Key of the player's choice in browser storage. */
+  storageKey: 'kritzel.rum',
+} as const;

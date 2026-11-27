@@ -2,6 +2,7 @@ export * from './constants.js';
 export * from './drawing.js';
 export * from './identity.js';
 export * from './protocol.js';
+export * from './rum.js';
 export * from './scoring.js';
 export * from './words/mask.js';
 export * from './words/normalize.js';

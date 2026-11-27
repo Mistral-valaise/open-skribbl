@@ -12,6 +12,7 @@ import { TokenBucket } from './rateLimit.js';
 import { RoomRegistry, ServerFullError } from './rooms/registry.js';
 import { SPANS } from './telemetry/contract.js';
 import { instrumentHttp } from './telemetry/http.js';
+import { registerRum } from './telemetry/rum.js';
 import { noopTelemetry, type Telemetry } from './telemetry/telemetry.js';
 
 /** Structured log sink; the default discards everything (tests). */
@@ -154,8 +155,11 @@ export async function createApp(options: AppOptions = {}): Promise<App> {
     return { exists: true, code: room.code, phase: room.state.phase };
   });
 
+  const rum = (options.rum ?? false) && telemetry.enabled;
+  registerRum(server, { telemetry, clock, enabled: rum });
+
   server.get('/ws', { websocket: true }, (socket) =>
-    handleConnection(socket, registry, clock, log, { telemetry }),
+    handleConnection(socket, registry, clock, log, { telemetry, acceptTraceparent: rum }),
   );
 
   if (telemetry.enabled) {

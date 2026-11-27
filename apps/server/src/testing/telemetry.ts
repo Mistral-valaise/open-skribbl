@@ -14,6 +14,7 @@ import {
   SimpleSpanProcessor,
   TracerProvider,
 } from '@opentelemetry/sdk-trace';
+import { PresetIdGenerator } from '../telemetry/browserIds.js';
 import { enableContextPropagation } from '../telemetry/context.js';
 import { Telemetry } from '../telemetry/telemetry.js';
 
@@ -33,6 +34,8 @@ export interface TestTelemetry {
   telemetry: Telemetry;
   /** Finished spans, oldest first. */
   spans(): ReturnType<InMemorySpanExporter['getFinishedSpans']>;
+  /** Spans recorded on behalf of browsers (spec 015). */
+  browserSpans(): ReturnType<InMemorySpanExporter['getFinishedSpans']>;
   logs(): ReturnType<InMemoryLogRecordExporter['getFinishedLogRecords']>;
   /** Collects and returns the current value of every metric. */
   metrics(): Promise<MetricPoint[]>;
@@ -45,6 +48,12 @@ export function createTestTelemetry(): TestTelemetry {
   const spanExporter = new InMemorySpanExporter();
   const tracerProvider = new TracerProvider({
     spanProcessors: [new SimpleSpanProcessor({ exporter: spanExporter })],
+  });
+  const browserExporter = new InMemorySpanExporter();
+  const browserIds = new PresetIdGenerator();
+  const browserProvider = new TracerProvider({
+    idGenerator: browserIds,
+    spanProcessors: [new SimpleSpanProcessor({ exporter: browserExporter })],
   });
   const metricExporter = new InMemoryMetricExporter(AggregationTemporality.CUMULATIVE);
   const meterProvider = new MeterProvider({
@@ -66,8 +75,10 @@ export function createTestTelemetry(): TestTelemetry {
       meter: meterProvider.getMeter('kritzel'),
       tracer: tracerProvider.getTracer('kritzel'),
       logger: loggerProvider.getLogger('kritzel'),
+      browser: { tracer: browserProvider.getTracer('kritzel'), ids: browserIds },
     }),
     spans: () => spanExporter.getFinishedSpans(),
+    browserSpans: () => browserExporter.getFinishedSpans(),
     logs: () => logExporter.getFinishedLogRecords(),
     async metrics() {
       metricExporter.reset();
@@ -106,6 +117,7 @@ export function createTestTelemetry(): TestTelemetry {
     async shutdown() {
       await Promise.all([
         tracerProvider.shutdown(),
+        browserProvider.shutdown(),
         meterProvider.shutdown(),
         loggerProvider.shutdown(),
       ]);

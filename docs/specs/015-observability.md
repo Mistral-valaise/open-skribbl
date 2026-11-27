@@ -61,7 +61,7 @@ The resource carries `service.name` (default `kritzel`), `service.version`, `ser
 - `GET /api/config` returns `{ "rum": boolean }`. `POST /api/telemetry` exists only when RUM is enabled; otherwise it answers 404.
 - The player's choice is stored in the browser as a preference (`kritzel.rum`), like the theme. There is no cookie and no identifier.
 - Reported: Largest Contentful Paint, Interaction to Next Paint (the slowest interaction of the page view) and Cumulative Layout Shift where the browser supports them; a count of script errors by kind (`error`, `unhandledrejection`), never the message or stack; the duration and outcome of joining and reconnecting.
-- A report is JSON of at most 4 KiB with at most 20 events and exactly the documented fields; anything else is refused with 400. Reports are limited to 30 per minute per address (429 beyond that). The server sets the resource (`service.name=kritzel-web`); the browser cannot.
+- A report is JSON of at most 4 KiB with at most 20 events and exactly the documented fields; a larger body is refused with 413, anything else with 400. Reports are limited to 30 per minute per address (429 beyond that). The server sets the resource (`service.name=kritzel-web`); the browser cannot.
 - A join may carry a W3C `traceparent`. When RUM is enabled and the value is well-formed, the server's join span becomes a child of it, and the browser's later report of that join adds the root span. A malformed value is ignored. Baggage is not accepted.
 - The Content-Security-Policy stays as specified in spec 012.
 
@@ -109,7 +109,7 @@ Measured with the spec 012 load test (30 rooms of 8 players, 1 CPU, 512 MB), tel
 - **AC-015-23** The `shutting down` log record reaches the receiver before the process exits.
 - **AC-015-24** `/api/config` answers `{"rum":false}` by default and `POST /api/telemetry` answers 404.
 - **AC-015-25** With RUM enabled, a valid report is answered with 204 and its web-vital, error and timing events appear in the corresponding metrics.
-- **AC-015-26** A report with an unknown field, more than 20 events or more than 4 KiB is answered with 400 and records nothing; the 31st report within a minute from one address is answered with 429.
+- **AC-015-26** A report with an unknown field or more than 20 events is answered with 400, one of more than 4 KiB with 413, and neither records a measurement; the 31st report within a minute from one address is answered with 429.
 - **AC-015-27** The web app sends no request to `/api/telemetry` until the player turns the switch on, and none after turning it off.
 - **AC-015-28** A join carrying a valid `traceparent` produces a `room.join` span in that trace; the browser's timing report for it adds a root span with the reported ids. A malformed `traceparent` is ignored.
 - **AC-015-29** With RUM switched on, the browser contacts no origin other than the app's own, and the Content-Security-Policy header is unchanged.

@@ -1239,7 +1239,7 @@
             "type": "loki",
             "uid": "loki"
           },
-          "expr": "{service_name=~\"$service\", deployment_environment_name=~\"$env\"}",
+          "expr": "{service_name!=\"\", service_name=~\"$service\", deployment_environment_name=~\"$env\"}",
           "queryType": "range",
           "editorMode": "code",
           "maxLines": 200

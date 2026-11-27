@@ -503,7 +503,7 @@ function overview() {
   ).add(
     logs(
       'Server log (exported fields only)',
-      `{service_name=~"$service", deployment_environment_name=~"$env"}`,
+      `{service_name!="", service_name=~"$service", deployment_environment_name=~"$env"}`,
       'Room codes, names and messages are not exported. Expand a line and follow its trace link.',
     ),
     16,
@@ -924,6 +924,53 @@ function websocket() {
         'Open a trace to see the browser span, the server spans and their log lines.',
       ),
       12,
+      8,
+    );
+
+  l.row('Browsers (only players who switched measurements on)');
+  l.add(
+    timeseries(
+      'Loading and reaction time, 75th percentile',
+      [
+        target(
+          quantile(0.75, 'kritzel_rum_web_vital_seconds', 'kritzel_rum_vital', S, '15m'),
+          '{{kritzel_rum_vital}}',
+        ),
+      ],
+      {
+        unit: 's',
+        description:
+          'Largest Contentful Paint (lcp) and the slowest interaction of a page view (inp), over 15 minutes. Empty unless the operator offers browser measurements and players switch them on.',
+      },
+    ),
+    8,
+    8,
+  )
+    .add(
+      timeseries(
+        'Layout shift, 75th percentile',
+        [target(quantile(0.75, 'kritzel_rum_layout_shift_ratio', '', S, '15m'), 'layout shift')],
+        { description: 'Cumulative Layout Shift score, over 15 minutes.', min: 0 },
+      ),
+      8,
+      8,
+    )
+    .add(
+      timeseries(
+        'Script errors by kind',
+        [
+          target(
+            orZero(rate('kritzel_rum_errors_total', S, 'kritzel_rum_error_kind')),
+            '{{kritzel_rum_error_kind}}',
+          ),
+        ],
+        {
+          unit: 'ops',
+          stack: true,
+          description: 'Counts only. Messages and stacks are never sent.',
+        },
+      ),
+      8,
       8,
     );
   return dashboard(
@@ -1464,7 +1511,7 @@ function security() {
   ).add(
     logs(
       'Warnings and errors',
-      `{service_name=~"$service", deployment_environment_name=~"$env"} | detected_level=~"warn|error"`,
+      `{service_name!="", service_name=~"$service", deployment_environment_name=~"$env"} | detected_level=~"warn|error"`,
       'For example a refused room creation on a full server.',
     ),
     16,

@@ -1,7 +1,7 @@
 # Prometheus for Kritzel (spec 015). Everything is pushed: the collector
 # remote-writes the application's metrics, its span metrics and what it
 # scrapes from the stack itself. Prometheus therefore needs no targets and no
-# host names, which keeps this file identical for Compose and Helm.
+# host names, so this file does not depend on how the stack is deployed.
 global:
   evaluation_interval: 30s
 

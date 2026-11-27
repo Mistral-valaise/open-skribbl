@@ -925,7 +925,7 @@
             "type": "loki",
             "uid": "loki"
           },
-          "expr": "{service_name=~\"$service\", deployment_environment_name=~\"$env\"} | detected_level=~\"warn|error\"",
+          "expr": "{service_name!=\"\", service_name=~\"$service\", deployment_environment_name=~\"$env\"} | detected_level=~\"warn|error\"",
           "queryType": "range",
           "editorMode": "code",
           "maxLines": 200

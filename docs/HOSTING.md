@@ -28,13 +28,15 @@ The container runs as a non-root user and writes nothing, so `--read-only` and `
 
 All variables are optional.
 
-| Variable      | Default   | Meaning                                                                                               |
-| ------------- | --------- | ----------------------------------------------------------------------------------------------------- |
-| `PORT`        | `3000`    | Listening port                                                                                        |
-| `HOST`        | `0.0.0.0` | Listening address                                                                                     |
-| `MAX_ROOMS`   | `500`     | Maximum number of live rooms                                                                          |
-| `TRUST_PROXY` | `false`   | Set to `true` behind a reverse proxy, so rate limits see the visitor's address instead of the proxy's |
-| `LOG_LEVEL`   | `info`    | `debug`, `info`, `warn` or `error`                                                                    |
+| Variable            | Default   | Meaning                                                                                                              |
+| ------------------- | --------- | -------------------------------------------------------------------------------------------------------------------- |
+| `PORT`              | `3000`    | Listening port                                                                                                       |
+| `HOST`              | `0.0.0.0` | Listening address                                                                                                    |
+| `MAX_ROOMS`         | `500`     | Maximum number of live rooms                                                                                         |
+| `TRUST_PROXY`       | `false`   | Set to `true` behind a reverse proxy, so rate limits see the visitor's address instead of the proxy's                |
+| `LOG_LEVEL`         | `info`    | `debug`, `info`, `warn` or `error`                                                                                   |
+| `TELEMETRY_ENABLED` | `false`   | Set to `true` to export metrics, traces and logs over OTLP/HTTP; see [Observability](#observability)                 |
+| `RUM_ENABLED`       | `false`   | Set to `true` to offer players the browser measurement switch and accept its reports; needs `TELEMETRY_ENABLED=true` |
 
 An invalid value stops the container at start-up with a message that names the variable.
 
@@ -111,6 +113,25 @@ These three guides follow each platform's documented Docker workflow; they have 
 - **Updates:** pull or rebuild the image and restart. Running games end; players see "The server is restarting".
 - **Stopping:** on `SIGTERM` the server tells every participant and exits within seconds.
 - **Privacy:** the app makes no request to any other host, sets no cookies, and stores nothing on the server beyond the life of a room.
+
+## Observability
+
+Telemetry is optional and off by default. Without it the server loads no telemetry code and opens no outbound connection. To export metrics, traces and logs to an OpenTelemetry collector over OTLP/HTTP, set:
+
+```
+TELEMETRY_ENABLED=true
+OTEL_EXPORTER_OTLP_ENDPOINT=http://collector.example.internal:4318
+```
+
+The standard `OTEL_*` variables are honoured; gRPC export is not supported. This is the one case in which the server contacts another host, and only the one you name. Exported telemetry carries counts, durations and fixed label values, never nicknames, chat text, words, drawings or room codes. The health check does not depend on it, and a collector that is down never stops a game.
+
+From a checkout, an optional Compose overlay starts the game with a collector, Prometheus, Loki, Tempo and Grafana, with dashboards and alert rules in place:
+
+```bash
+pnpm obs:up
+```
+
+Grafana is published on `127.0.0.1:3001` only, with a login. [OBSERVABILITY.md](OBSERVABILITY.md) describes every variable, metric, span and dashboard and the proposed service level objectives; [RUNBOOK.md](RUNBOOK.md) says what to do when an alert fires.
 
 ## Capacity
 

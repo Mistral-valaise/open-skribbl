@@ -55,6 +55,12 @@ describe('telemetry configuration (spec 015)', () => {
     expect(() => loadConfig({ ...on, OTEL_EXPORTER_OTLP_PROTOCOL: 'grpc' })).toThrow(
       /OTEL_EXPORTER_OTLP_PROTOCOL/,
     );
+    expect(() => loadConfig({ ...on, OTEL_EXPORTER_OTLP_TRACES_PROTOCOL: 'grpc' })).toThrow(
+      /OTEL_EXPORTER_OTLP_TRACES_PROTOCOL/,
+    );
+    expect(
+      loadConfig({ ...on, OTEL_EXPORTER_OTLP_LOGS_PROTOCOL: 'http/protobuf' }).telemetry?.protocol,
+    ).toBe('http/protobuf');
     expect(() => loadConfig({ TELEMETRY_ENABLED: 'maybe' })).toThrow(/TELEMETRY_ENABLED/);
     expect(() =>
       loadConfig({ ...on, OTEL_TRACES_SAMPLER_ARG: '2', OTEL_TRACES_SAMPLER: 'traceidratio' }),

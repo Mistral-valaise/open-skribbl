@@ -266,3 +266,54 @@ describe('collector and Compose files (spec 015)', () => {
     expect(overlay.services.grafana!.ports).toEqual(['127.0.0.1:3001:3000']);
   });
 });
+
+describe('documentation (spec 015)', () => {
+  const guide = read('docs/OBSERVABILITY.md');
+
+  it('AC-015-41: the guide lists every metric and span of the contract', async () => {
+    const { SPANS } = await import('../apps/server/src/telemetry/contract.js');
+    const missing: string[] = [];
+    for (const metric of Object.values(METRICS)) {
+      for (const name of [metric.name, metric.prometheus]) {
+        if (!guide.includes(`\`${name}\``)) missing.push(name);
+      }
+    }
+    for (const span of Object.values(SPANS)) {
+      if (!guide.includes(`\`${span}\``)) missing.push(span);
+    }
+    expect(missing).toEqual([]);
+    expect(guide).toContain('`ws <type>`');
+    expect(guide).toContain('`<METHOD> <route>`');
+  });
+
+  it('AC-015-41: the runbook has a section for every alert', () => {
+    const runbook = read('docs/RUNBOOK.md');
+    const alerts = new Set<string>();
+    for (const file of ['kritzel-alerts.yaml', 'sloth-kritzel.yaml']) {
+      const parsed = parse(read(`${OBS}/prometheus/rules/${file}`)) as {
+        groups: { rules: { alert?: string }[] }[];
+      };
+      for (const rule of parsed.groups.flatMap((group) => group.rules)) {
+        if (rule.alert) alerts.add(rule.alert);
+      }
+    }
+    expect(alerts.size).toBe(11);
+    for (const alert of alerts) expect(runbook, alert).toContain(`\n## ${alert}\n`);
+  });
+
+  it('AC-015-40: the measured overhead is recorded and within the budget', () => {
+    const section = guide.slice(guide.indexOf('\n## Overhead'));
+    const row = (state: string) =>
+      new RegExp(
+        `\\| ${state}\\s*\\|[^|]*\\|[^|]*/[^|]*/ (\\d+) ms /[^|]*\\| 0\\s*\\| ([\\d.]+) MiB`,
+      ).exec(section);
+    const off = row('off');
+    const on = row('on');
+    expect(off, 'telemetry off row').not.toBeNull();
+    expect(on, 'telemetry on row').not.toBeNull();
+    // Spec 015, "Overhead budget": at most 5 ms at the 99th percentile and 96 MB.
+    expect(Number(on![1]) - Number(off![1])).toBeLessThanOrEqual(5);
+    expect(Number(on![2]) - Number(off![2])).toBeLessThanOrEqual(96);
+    expect(section).toContain('1 CPU and 512 MB');
+  });
+});

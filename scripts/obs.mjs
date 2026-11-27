@@ -83,7 +83,7 @@ async function waitUntilHealthy(timeoutMs = 180_000) {
 const command = process.argv[2];
 if (command === 'up') {
   ensureEnvFile();
-  compose('up', '-d', '--build', '--wait-timeout', '120');
+  compose('up', '-d', '--build');
   console.log('Waiting for Grafana and its data sources…');
   console.log(await waitUntilHealthy());
   console.log(`Game:    http://127.0.0.1:3000`);

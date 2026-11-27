@@ -1,9 +1,9 @@
 # 015 — Observability
 
-|           |          |
-| --------- | -------- |
-| Status    | Approved |
-| Milestone | M6       |
+|           |             |
+| --------- | ----------- |
+| Status    | Implemented |
+| Milestone | M6          |
 
 ## Intent
 
@@ -39,14 +39,14 @@ The resource carries `service.name` (default `kritzel`), `service.version`, `ser
 - **Disconnect, reconnect, leave.** A lost socket is a _disconnect_. A join that resumes a seat is a _reconnect_; its duration is the time the seat was without a connection, as seen by the server. A `leave` message, a kick, a replaced connection and an expired seat are recorded under their own cause, so they can be told apart from lost connections.
 - **Join validity.** A join refused for `room_not_found`, `room_full`, `kicked`, `invalid_nickname`, `invalid_avatar` or `version_mismatch` is the player's or host's doing and is labelled `validity="excluded"`. Every other join is `valid` and either succeeds or counts against the join objective.
 - **Relay latency** is server-side only: from reading a `draw.op` frame to having queued it for every recipient. It says nothing about delivery to browsers.
-- **Labels are allowlisted.** Label values come from fixed sets: message type, outcome, reason, cause, phase, role, route template, HTTP method and status. A value outside its set is recorded as `other`. Room codes, participant, connection and session ids, trace ids, URLs, addresses and free text are never labels. The cardinality budget is 600 label combinations across all instruments of the application at any load; a histogram counts once per combination, and in Prometheus becomes one series per bucket plus three.
+- **Labels are allowlisted.** Label values come from fixed sets: message type, outcome, reason, cause, role, route template, HTTP method and status. A value outside its set is recorded as `other`. Room codes, participant, connection and session ids, trace ids, URLs, addresses and free text are never labels. The cardinality budget is 600 label combinations across all instruments of the application at any load; a histogram counts once per combination, and in Prometheus becomes one series per bucket plus three.
 - **Spans** cover one operation: `room.create`, `room.join`, `room.reconnect`, `game.start`, `game.end`, `guess.evaluate`, `drawing.relay`, and one server span per HTTP request and per WebSocket message. No span covers a socket's lifetime or a whole game. At most one in `DRAW_SPAN_SAMPLE_EVERY` (64) drawing operations per connection produces a span.
 - **Histogram buckets** for durations in seconds: 0.001, 0.0025, 0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10, 30, 60. Game duration uses 30, 60, 120, 300, 600, 900, 1800, 3600.
 
 ### Privacy
 
 - Exported telemetry never contains nicknames, chat or guess text, words (secret, custom or offered), drawing content, session tokens, room codes, invite links, query strings, request headers or client addresses.
-- Log records are exported with allowlisted attributes only: `rooms`, `seats`, `code`, `reason`, `signal`, `port`, `host`, `maxRooms`, `trustProxy`, `logLevel`, `telemetry`, `rum`, `dropped`. The stdout line keeps the room code (spec 012); the exported record does not.
+- Log records are exported with allowlisted attributes only: `rooms`, `seats`, `code`, `reason`, `signal`, `port`, `host`, `maxRooms`, `trustProxy`, `logLevel`, `telemetry`, `rum`. The stdout line keeps the room code (spec 012); the exported record does not.
 - The collector configuration repeats the allowlist, so a mistake in the application does not reach a backend.
 - No per-player record exists: nothing identifies a browser across reports, and no report is stored with an address.
 
@@ -77,7 +77,7 @@ The resource carries `service.name` (default `kritzel`), `service.version`, `ser
 
 ### Synthetic traffic
 
-- The traffic generator plays complete games against a running server with a seeded random source: the same seed produces the same sequence of actions. It reports as `service.name=kritzel-traffic` and never claims to be a player in server metrics.
+- The traffic generator plays complete games against a running server with a seeded random source: the same seed produces the same sequence of actions. It writes its progress as JSON lines to stdout and exports no telemetry itself; the games it plays appear in the server's metrics like any others.
 
 ### Overhead budget
 

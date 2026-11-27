@@ -56,8 +56,8 @@ An invalid value stops the process at start-up with a message naming the variabl
 
 ### CI and release
 
-- **CI** on every pull request and on `main`: install, lint, type check, unit and integration tests, strict spec coverage, build, end-to-end tests.
-- **Release** on push to `main` and on `v*` tags: build the multi-architecture image and push it to GHCR, tagged `edge` for `main` and with the version plus `latest` for tags.
+- **CI** on every pull request and on `main`: install, lint, type check, unit and integration tests, strict spec coverage, build, end-to-end tests. A further job starts the observability stack and checks it through its APIs (spec 015).
+- **Release** on push to `main` and on `v*` tags: build the multi-architecture image and push it to GHCR, tagged `edge` and the immutable `sha-<commit>` for `main`, and with the version plus `latest` for tags.
 - Workflows use only the repository's `GITHUB_TOKEN`.
 
 ### Capacity check

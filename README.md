@@ -41,6 +41,8 @@ scripts/          Repository tooling
 | [Design guideline](docs/DESIGN.md)             | Brand, tokens, components, screens, accessibility           |
 | [Specs](docs/specs/README.md)                  | One spec per feature with numbered acceptance criteria      |
 | [Hosting](docs/HOSTING.md)                     | Docker, configuration, reverse proxies, capacity            |
+| [Observability](docs/OBSERVABILITY.md)         | Optional telemetry, the local stack, dashboards, objectives |
+| [Runbook](docs/RUNBOOK.md)                     | What to do when an alert fires                              |
 | [Roadmap](docs/ROADMAP.md)                     | Milestones and what comes after v1                          |
 | [Decisions](docs/adr/)                         | Architecture decision records                               |
 | [Glossary](CONTEXT.md)                         | The project's vocabulary                                    |
@@ -86,6 +88,23 @@ docker run -d -p 3000:3000 kritzel
 ```
 
 Then open <http://localhost:3000>. No database and no configuration are needed. [`docs/HOSTING.md`](docs/HOSTING.md) covers configuration, reverse proxies (Caddy, nginx, Traefik), hosting platforms and measured capacity.
+
+## Observability
+
+Telemetry is optional and off by default: without configuration the server exports nothing and opens no outbound connection. To send metrics, traces and logs to an OpenTelemetry collector over OTLP/HTTP, set two variables on the container:
+
+```
+TELEMETRY_ENABLED=true
+OTEL_EXPORTER_OTLP_ENDPOINT=http://collector.example.internal:4318
+```
+
+To try it locally with a collector, Prometheus, Loki, Tempo and Grafana with dashboards already in place:
+
+```bash
+pnpm obs:up
+```
+
+Grafana is then on <http://127.0.0.1:3001> (user `admin`, generated password in `.env.observability`). Exported telemetry contains counts and durations, never nicknames, chat, words, drawings or room codes. [`docs/OBSERVABILITY.md`](docs/OBSERVABILITY.md) lists everything that is exported; [`docs/RUNBOOK.md`](docs/RUNBOOK.md) explains the alerts.
 
 ## Contributing
 

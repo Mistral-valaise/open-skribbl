@@ -90,12 +90,12 @@ groups:
     rules:
       - alert: KritzelTelemetryDropped
         # The game's own queues are full: the collector is slow or unreachable.
-        expr: sum(rate(otel_sdk_processor_span_processed_total{error_type="queue_full"}[5m])) > 0
+        expr: sum(rate({__name__=~"otel_sdk_processor_(span|log)_processed_total", error_type="queue_full"}[5m])) > 0
         for: 10m
         labels:
           severity: info
           owner: operator
         annotations:
-          summary: The game is dropping spans because its export queue is full
-          description: 'Gameplay is unaffected; traces are incomplete.'
+          summary: The game is dropping spans or log records because an export queue is full
+          description: 'Gameplay is unaffected; traces and exported logs are incomplete.'
           runbook_url: https://github.com/Mistral-valaise/open-skribbl/blob/main/docs/RUNBOOK.md#kritzeltelemetrydropped

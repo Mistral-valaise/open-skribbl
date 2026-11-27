@@ -160,7 +160,13 @@ export function startTelemetry(
           ),
           sampler,
           idGenerator: browserIds,
-          spanProcessors: [new BatchSpanProcessor({ ...batch, exporter: traceExporter() })],
+          spanProcessors: [
+            new BatchSpanProcessor({
+              ...batch,
+              exporter: traceExporter(),
+              selfObsMeterProvider: meterProvider,
+            }),
+          ],
         })
       : undefined;
 

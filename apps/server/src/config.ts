@@ -73,15 +73,29 @@ function loadTelemetry(env: NodeJS.ProcessEnv): TelemetrySettings | null {
   const disabled = oneOf(env, 'OTEL_SDK_DISABLED', 'false', ['true', 'false']) === 'true';
   if (!enabled || disabled) return null;
 
-  if (env.OTEL_EXPORTER_OTLP_PROTOCOL === 'grpc') {
+  const protocol = oneOf(env, 'OTEL_EXPORTER_OTLP_PROTOCOL', 'http/protobuf', [
+    ...OTLP_PROTOCOLS,
+    'grpc',
+  ]);
+  if (protocol === 'grpc') {
     throw new ConfigError(
       'OTEL_EXPORTER_OTLP_PROTOCOL=grpc is not supported; use http/protobuf or http/json',
     );
   }
+  // One protocol for all signals: a per-signal variable may repeat it, nothing else.
+  for (const signal of ['TRACES', 'METRICS', 'LOGS']) {
+    const name = `OTEL_EXPORTER_OTLP_${signal}_PROTOCOL`;
+    const value = env[name];
+    if (value !== undefined && value !== '' && value !== protocol) {
+      throw new ConfigError(
+        `${name}="${value}" is not supported; all signals use OTEL_EXPORTER_OTLP_PROTOCOL (${protocol})`,
+      );
+    }
+  }
   const exporter = (name: string) => oneOf(env, name, 'otlp', ['otlp', 'none']) === 'otlp';
   const sampler = oneOf(env, 'OTEL_TRACES_SAMPLER', 'parentbased_always_on', SAMPLERS);
   return {
-    protocol: oneOf(env, 'OTEL_EXPORTER_OTLP_PROTOCOL', 'http/protobuf', OTLP_PROTOCOLS),
+    protocol,
     traces: exporter('OTEL_TRACES_EXPORTER'),
     metrics: exporter('OTEL_METRICS_EXPORTER'),
     logs: exporter('OTEL_LOGS_EXPORTER'),

@@ -92,7 +92,7 @@ export const LABEL_VALUES = {
   'kritzel.validity': ['valid', 'excluded'],
   'kritzel.role': ['player', 'spectator'],
   'kritzel.scope': ['draw', 'chat', 'room_create', 'telemetry'],
-  'kritzel.rum.vital': ['lcp', 'inp', 'cls'],
+  'kritzel.rum.vital': ['lcp', 'inp'],
   'kritzel.rum.error.kind': ['error', 'unhandledrejection'],
   'kritzel.rum.timing': ['join', 'reconnect'],
   'http.request.method': ['GET', 'POST', 'HEAD', 'OPTIONS', 'PUT', 'PATCH', 'DELETE'],
@@ -102,7 +102,6 @@ export const LABEL_VALUES = {
     '/api/rooms/:code',
     '/api/config',
     '/api/telemetry',
-    '/ws',
     '/*',
     'unmatched',
   ],
@@ -478,7 +477,6 @@ export const LOG_ATTRIBUTE_ALLOWLIST: readonly string[] = [
   'logLevel',
   'telemetry',
   'rum',
-  'dropped',
 ];
 
 /** Returns `value` when the label allows it, `other` otherwise. */

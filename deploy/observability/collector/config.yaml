@@ -2,9 +2,8 @@
 #
 # One gateway between the game and the backends. It receives OTLP over HTTP,
 # repeats the application's privacy allowlists, derives span metrics with
-# exemplars and forwards each signal to its backend. The same file is used by
-# the Compose overlay and by the Helm chart; host names come from the
-# environment.
+# exemplars and forwards each signal to its backend. Host names come from the
+# environment, so the file does not depend on how the stack is deployed.
 extensions:
   health_check:
     endpoint: 0.0.0.0:13133
@@ -81,7 +80,7 @@ processors:
     log_statements:
       - context: log
         statements:
-          - keep_keys(log.attributes, ["rooms", "seats", "code", "reason", "signal", "port", "host", "maxRooms", "trustProxy", "logLevel", "telemetry", "rum", "dropped"])
+          - keep_keys(log.attributes, ["rooms", "seats", "code", "reason", "signal", "port", "host", "maxRooms", "trustProxy", "logLevel", "telemetry", "rum"])
 
   # One service identity on every signal: these resource attributes become
   # Prometheus labels and Loki labels, everything else is dropped.

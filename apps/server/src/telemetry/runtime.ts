@@ -7,6 +7,9 @@ import {
 import { getHeapStatistics } from 'node:v8';
 import type { Telemetry } from './telemetry.js';
 
+/** Sampling interval of the event-loop delay monitor. */
+export const EVENT_LOOP_RESOLUTION_MS = 20;
+
 const GC_TYPES: Record<number, string> = {
   [constants.NODE_PERFORMANCE_GC_MAJOR]: 'major',
   [constants.NODE_PERFORMANCE_GC_MINOR]: 'minor',
@@ -32,9 +35,14 @@ export function instrumentRuntime(telemetry: Telemetry): () => void {
   });
 
   // Percentiles cover the time since the previous export; `max` resets the window.
-  const delay = monitorEventLoopDelay({ resolution: 20 });
+  // The histogram records the time between samples, which includes the sampling
+  // interval itself; that interval is subtracted, so an idle loop reports about zero.
+  const delay = monitorEventLoopDelay({ resolution: EVENT_LOOP_RESOLUTION_MS });
   delay.enable();
-  const seconds = (nanoseconds: number) => (Number.isFinite(nanoseconds) ? nanoseconds / 1e9 : 0);
+  const seconds = (nanoseconds: number) =>
+    Number.isFinite(nanoseconds)
+      ? Math.max(0, nanoseconds / 1e9 - EVENT_LOOP_RESOLUTION_MS / 1000)
+      : 0;
   telemetry.observe('eventLoopDelayP50', () => seconds(delay.percentile(50)));
   telemetry.observe('eventLoopDelayP99', () => seconds(delay.percentile(99)));
   telemetry.observe('eventLoopDelayMax', () => {

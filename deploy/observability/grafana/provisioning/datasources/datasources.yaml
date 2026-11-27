@@ -53,7 +53,8 @@ datasources:
         filterByTraceID: false
         filterBySpanID: false
         customQuery: true
-        query: '{service_name="$${__span.tags["service.name"]}"} | trace_id="$${__trace.traceId}"'
+        # Not filtered by service: a browser span belongs to kritzel-web, its log lines to kritzel.
+        query: '{service_name=~".+"} | trace_id="$${__trace.traceId}"'
       # Trace -> metrics: rate and latency of the span's operation.
       tracesToMetrics:
         datasourceUid: prometheus

@@ -24,6 +24,8 @@ export function instrumentHttp(server: FastifyInstance, telemetry: Telemetry): H
   const pending = new WeakMap<FastifyRequest, Pending>();
 
   server.addHook('onRequest', async (request) => {
+    // The upgrade never gets a response; WebSocket traffic is measured per message.
+    if (request.routeOptions.url === '/ws') return;
     pending.set(request, {
       startedAt: telemetry.now(),
       // Named and labelled once the route is known.
@@ -36,9 +38,6 @@ export function instrumentHttp(server: FastifyInstance, telemetry: Telemetry): H
     if (!entry) return;
     pending.delete(request);
     const route = routeOf(request);
-    // The WebSocket upgrade is measured as messages, not as an HTTP request that lasts for hours.
-    if (route === '/ws') return entry.span.end();
-
     const labels: Labels = {
       'http.request.method': request.method,
       'http.route': route,

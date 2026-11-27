@@ -190,6 +190,7 @@ Rules:
 | `ui/`         | Design-system components from [`DESIGN.md`](DESIGN.md)                         |
 | `i18n/`       | Typed dictionaries (`en`, `de`, `es`, `fr`) and the `t()` helper               |
 | `audio/`      | Web Audio synthesised sound effects                                            |
+| `telemetry/`  | Opt-in browser measurements: vitals, error counts, join timing, reports        |
 
 Rules:
 
@@ -197,7 +198,8 @@ Rules:
 - Every visible string goes through `t()`. `en.ts` defines the keys; `de.ts` and `es.ts` must satisfy the same type, so a missing translation is a compile error.
 - Styling uses Tailwind utilities bound to the design tokens in `DESIGN.md`; raw colour values appear only in the token file and the drawing palette.
 - Fonts, icons and any other asset are bundled. The app issues no cross-origin request.
-- Player preferences (nickname, avatar, language, theme, mute, `clientId`, solo best) live in `localStorage`; the per-room `sessionToken` lives in `sessionStorage`.
+- Player preferences (nickname, avatar, language, theme, mute, the choice for browser measurements, `clientId`, solo best) live in `localStorage`; the per-room `sessionToken` lives in `sessionStorage`.
+- Browser measurements (spec 015) are hand-written in `telemetry/`, run only while the server offers them and the player has switched them on, and go to `/api/telemetry` on the app's own origin.
 
 ## 8. Solo mode
 

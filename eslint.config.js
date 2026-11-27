@@ -6,7 +6,7 @@ export default tseslint.config(
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
-    files: ['scripts/**/*.mjs'],
+    files: ['scripts/**/*.mjs', 'apps/*/build.mjs'],
     languageOptions: {
       globals: {
         process: 'readonly',
@@ -16,6 +16,8 @@ export default tseslint.config(
         setTimeout: 'readonly',
         setInterval: 'readonly',
         clearInterval: 'readonly',
+        Buffer: 'readonly',
+        AbortSignal: 'readonly',
       },
     },
   },

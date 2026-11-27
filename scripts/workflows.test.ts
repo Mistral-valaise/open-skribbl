@@ -22,6 +22,9 @@ describe('workflows (spec 012)', () => {
       expect(check, part).toContain(part);
     }
     expect(ci).not.toContain('continue-on-error');
+    // The observability stack is started the documented way and checked live (spec 015).
+    expect(ci).toContain('pnpm obs:up');
+    expect(ci).toContain('e2e/observability.spec.ts');
   });
 
   it('AC-012-13: the release workflow publishes amd64 and arm64 images to GHCR', () => {
@@ -30,6 +33,10 @@ describe('workflows (spec 012)', () => {
     expect(release).toContain('ghcr.io/${{ github.repository }}');
     expect(release).toContain('push: true');
     expect(release).toContain('secrets.GITHUB_TOKEN');
+    // An immutable tag per commit, and the version baked into the build.
+    expect(release).toContain('type=sha,prefix=sha-,format=long');
+    expect(release).toContain('KRITZEL_VERSION=');
+    expect(read('Dockerfile')).toContain('ARG KRITZEL_VERSION');
   });
 
   it('AC-012-08: the image runs as a non-root user', () => {

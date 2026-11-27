@@ -140,10 +140,13 @@ Each component lives in `apps/web/src/ui`, supports both themes, keyboard use an
 | **Toolbar**                | Tools, sizes, palette, undo, redo, clear. Selected tool and colour are marked by ring and shape, not only colour.                                |
 | **Toast**                  | Bottom-centre, auto-dismiss after 4 s, at most one visible.                                                                                      |
 | **Modal**                  | Centred, `xl` radius, traps focus, closes on Escape. Becomes a bottom sheet on phones.                                                           |
+| **Switch**                 | A choice of on or off that takes effect at once. The thumb's side shows the state; colour only repeats it.                                       |
 | **Tooltip**                | On hover and focus, 400 ms delay.                                                                                                                |
 | **Empty and error states** | A line of text and one action; no illustrations required.                                                                                        |
 
 Icons come from one bundled outline icon set (Lucide), 20 px at 1.75 stroke in controls.
+
+Where the operator offers browser measurements (spec 015), the shell controls gain one icon button (gauge) after the mute toggle. It opens a modal with a short explanation of what is shared and a switch that is off by default. Below 342 px the control row of the game's top bar and of the lobby header wraps onto another line.
 
 ## 9. Screens
 

@@ -9,3 +9,6 @@ playwright-report
 test-results
 *.md
 !packages/**/*.md
+.env*
+deploy
+docker-compose*.yml

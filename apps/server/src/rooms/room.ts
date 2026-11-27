@@ -12,6 +12,8 @@ import {
   type ServerMessage,
 } from '@kritzel/shared';
 import type { Clock } from '../clock.js';
+import { RoomObserver, type Signal } from '../telemetry/observe.js';
+import { noopTelemetry, type Telemetry } from '../telemetry/telemetry.js';
 
 /** The open socket of one participant, as far as a room cares. */
 export interface Connection {
@@ -25,6 +27,7 @@ export interface RoomDeps {
   random: () => number;
   words: (language: Language, difficulty: Difficulty) => readonly string[];
   onDispose: (code: string) => void;
+  telemetry?: Telemetry;
 }
 
 /**
@@ -36,12 +39,15 @@ export class Room {
   private readonly conns = new Map<string, Connection>();
   private readonly timers = new Map<string, () => void>();
   private disposed = false;
+  private readonly telemetry: Telemetry;
+  private readonly observer = new RoomObserver();
 
   constructor(
     readonly code: string,
     language: Language,
     private readonly deps: RoomDeps,
   ) {
+    this.telemetry = deps.telemetry ?? noopTelemetry;
     this.current = createRoomState(code, defaultSettings(language));
     // A room nobody joins is disposed like an abandoned one (spec 001).
     this.setTimer(TIMER.empty, deps.clock.now() + TIMING.emptyRoomMs);
@@ -65,14 +71,22 @@ export class Room {
     return this.current.seats.find((seat) => seat.connId === connId)?.id;
   }
 
-  dispatch(event: RoomEvent): void {
-    if (this.disposed) return;
+  /**
+   * Applies one event. Returns what it did in telemetry terms (spec 015);
+   * the list is empty when telemetry is off.
+   */
+  dispatch(event: RoomEvent): Signal[] {
+    if (this.disposed) return [];
     const { clock, random, words } = this.deps;
+    const startedAt = this.telemetry.now();
     const now = clock.now();
-    const { state, effects } = reduce(this.current, event, { now, random, words });
+    const previous = this.current;
+    const { state, effects } = reduce(previous, event, { now, random, words });
     this.current = state;
 
+    let disposing = false;
     for (const effect of effects) {
+      if (disposing) break;
       switch (effect.type) {
         case 'send':
           for (const connId of effect.conns) this.conns.get(connId)?.send(effect.message);
@@ -98,14 +112,27 @@ export class Room {
           this.clearTimer(effect.key);
           break;
         case 'dispose':
-          this.dispose();
-          return;
+          disposing = true;
+          break;
       }
     }
+
+    // Recorded after the fan-out, so durations and spans include it.
+    const signals = this.telemetry.enabled
+      ? this.observer.observe(previous, event, state, effects, now)
+      : [];
+    this.telemetry.roomSignals(signals, startedAt);
+    if (disposing) this.dispose();
+    return signals;
   }
 
   /** Tells everyone the server is stopping and closes the room. */
   shutdown(): void {
+    if (this.disposed) return;
+    this.telemetry.roomSignals(
+      this.observer.closed(this.current, 'shutdown', this.deps.clock.now()),
+      this.telemetry.now(),
+    );
     for (const conn of this.conns.values()) conn.send({ type: 'server.shutdown' });
     this.dispose();
   }

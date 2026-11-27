@@ -13,6 +13,9 @@ COPY packages/content/package.json packages/content/
 RUN pnpm install --frozen-lockfile
 
 COPY . .
+# Reported as `service.version` when telemetry is on (spec 015).
+ARG KRITZEL_VERSION=0.0.0
+ENV KRITZEL_VERSION=${KRITZEL_VERSION}
 RUN pnpm build
 
 # ── runtime ──────────────────────────────────────────────────────────────

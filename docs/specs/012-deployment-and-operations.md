@@ -29,6 +29,8 @@ All configuration is by environment variable; every variable is optional.
 | `TRUST_PROXY` | `false`   | Read the client address from `X-Forwarded-For` (set when behind a reverse proxy) |
 | `LOG_LEVEL`   | `info`    | `debug`, `info`, `warn`, `error`                                                 |
 
+Telemetry adds its own variables, all optional and off by default; they are listed in [spec 015](015-observability.md).
+
 An invalid value stops the process at start-up with a message naming the variable.
 
 ### Image
@@ -50,11 +52,12 @@ An invalid value stops the process at start-up with a message naming the variabl
 - One JSON object per line on stdout: time, level, message, context.
 - Logged: start-up configuration, room created and disposed (code only), participant counts, rejected messages by error code, shutdown.
 - Never logged: nicknames, chat text, words, session tokens, IP addresses at `info` level.
+- Inside a traced operation the line also carries `trace_id` and `span_id` (spec 015).
 
 ### CI and release
 
-- **CI** on every pull request and on `main`: install, lint, type check, unit and integration tests, strict spec coverage, build, end-to-end tests.
-- **Release** on push to `main` and on `v*` tags: build the multi-architecture image and push it to GHCR, tagged `edge` for `main` and with the version plus `latest` for tags.
+- **CI** on every pull request and on `main`: install, lint, type check, unit and integration tests, strict spec coverage, build, end-to-end tests. A further job starts the observability stack and checks it through its APIs (spec 015).
+- **Release** on push to `main` and on `v*` tags: build the multi-architecture image and push it to GHCR, tagged `edge` and the immutable `sha-<commit>` for `main`, and with the version plus `latest` for tags.
 - Workflows use only the repository's `GITHUB_TOKEN`.
 
 ### Capacity check
@@ -81,4 +84,4 @@ An invalid value stops the process at start-up with a message naming the variabl
 
 ## Out of scope
 
-Kubernetes manifests and Helm charts, built-in TLS, metrics endpoints, multi-instance deployments, automatic updates.
+Kubernetes manifests and Helm charts, built-in TLS, a scrape endpoint for metrics (telemetry is pushed, spec 015), multi-instance deployments, automatic updates.

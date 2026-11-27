@@ -236,6 +236,12 @@ export const en = {
   'theme.toDark': 'Switch to the dark theme',
   'sound.mute': 'Mute sounds',
 
+  'measurements.title': 'Browser measurements',
+  'measurements.explanation':
+    'This is optional. When you switch it on, your browser shares loading and reaction times, error counts and how long joining took with whoever runs this Kritzel server. It never shares names, chat, drawings or words.',
+  'measurements.switch': 'Share browser measurements',
+  'measurements.close': 'Close',
+
   'announce.yourTurn': 'Your turn. Choose a word.',
   'announce.draw': 'Draw: {word}',
   'announce.guess': '{name} is drawing. Guess the word. Letters per word: {counts}',

@@ -12,6 +12,7 @@ import {
 import { playSound } from '../audio/index.js';
 import { soundEventsFor } from '../audio/roomSounds.js';
 import { RoomConnection, webSocketUrl } from '../connection/roomConnection.js';
+import { measureAttempt } from '../telemetry/index.js';
 import {
   clearSession,
   loadAvatar,
@@ -88,6 +89,7 @@ export function joinRoom({ code, nickname, role }: JoinParams): void {
       onLost: () => {
         if (active === room) useRoomStore.setState({ status: 'reconnecting' });
       },
+      measureAttempt,
     }),
   };
   active = room;

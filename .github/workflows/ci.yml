@@ -70,3 +70,29 @@ jobs:
         env:
           KRITZEL_E2E_URL: https://localhost:8443
           KRITZEL_CONTAINER: kritzel
+
+  # The local observability stack, started the documented way and checked
+  # through its real APIs (spec 015).
+  observability:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm obs:up
+      - name: Signals, correlation, redaction and objectives
+        run: pnpm exec playwright test e2e/observability.spec.ts
+        env:
+          KRITZEL_OBS: '1'
+      - name: Container state and recent output
+        if: failure()
+        run: |
+          docker compose --env-file .env.observability -f docker-compose.yml -f docker-compose.observability.yml ps
+          docker compose --env-file .env.observability -f docker-compose.yml -f docker-compose.observability.yml logs --tail 80 --no-color
+      - run: pnpm obs:down
+        if: always()

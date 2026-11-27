@@ -163,3 +163,25 @@ _Avoid_: Solo game, practice
 **Replay**:
 The animated redrawing of a stored drawing, stroke by stroke.
 _Avoid_: Playback
+
+### Operations
+
+**Telemetry**:
+Metrics, traces and logs the server exports for its operator, when the operator turns it on.
+_Avoid_: Analytics, tracking, monitoring data
+
+**Telemetry contract**:
+The fixed list of metrics, label values, spans and exported log attributes.
+_Avoid_: Schema, metric catalogue
+
+**Browser measurements**:
+Performance figures a player's browser shares after the player has switched them on.
+_Avoid_: RUM (in UI copy), tracking, usage data
+
+**Synthetic traffic**:
+Games played by the traffic generator to exercise an instance.
+_Avoid_: Fake players, bots (a bot is a computer-controlled player)
+
+**Service level objective**:
+A target for a measured share of good events, such as successful joins, over a period.
+_Avoid_: SLA, guarantee

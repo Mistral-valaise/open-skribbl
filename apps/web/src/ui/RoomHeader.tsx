@@ -16,7 +16,7 @@ export function RoomHeader({ onLeave, children }: RoomHeaderProps) {
   return (
     <header className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
       <Wordmark size="sm" />
-      <div className="ml-auto flex items-center gap-1 sm:gap-3">
+      <div className="ml-auto flex flex-wrap items-center justify-end gap-1 sm:gap-3">
         {children}
         <ShellControls />
         <Button

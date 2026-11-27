@@ -1,4 +1,4 @@
-import type { Language } from '@kritzel/shared';
+import type { ClientConfig, Language } from '@kritzel/shared';
 
 /** The HTTP API (docs/ARCHITECTURE.md §4). Paths are relative: same origin only. */
 
@@ -33,5 +33,34 @@ export async function lookUpRoom(code: string, signal?: AbortSignal): Promise<Ro
     return response.ok ? 'found' : 'unreachable';
   } catch {
     return 'unreachable';
+  }
+}
+
+/** What the server offers this client (spec 015); anything but a clear yes means no. */
+export async function fetchClientConfig(): Promise<ClientConfig> {
+  try {
+    const response = await fetch('/api/config');
+    if (!response.ok) return { rum: false };
+    const body: unknown = await response.json();
+    return { rum: typeof body === 'object' && body !== null && 'rum' in body && body.rum === true };
+  } catch {
+    return { rum: false };
+  }
+}
+
+/**
+ * Posts one report of browser measurements (spec 015). `keepalive` lets it
+ * finish while the page is being hidden or closed. A report that fails is lost.
+ */
+export function postMeasurements(body: string): void {
+  try {
+    void fetch('/api/telemetry', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body,
+      keepalive: true,
+    }).catch(() => undefined);
+  } catch {
+    // No `fetch`, or it refused the request: nothing is sent.
   }
 }

@@ -1,12 +1,15 @@
-// Bundles the server and its dependencies into dist/main.js and copies the
+// Bundles the server and the traffic generator with their dependencies into dist/ and copies the
 // word lists next to it, so the runtime image needs no node_modules.
-import { cpSync, rmSync } from 'node:fs';
+import { cpSync, readFileSync, rmSync } from 'node:fs';
 import { build } from 'esbuild';
 
+// Set by the image build; falls back to the workspace version.
+const version =
+  process.env.KRITZEL_VERSION ||
+  JSON.parse(readFileSync(new URL('../../package.json', import.meta.url), 'utf8')).version;
+
 rmSync('dist', { recursive: true, force: true });
-await build({
-  entryPoints: ['src/main.ts'],
-  outfile: 'dist/main.js',
+const shared = {
   bundle: true,
   platform: 'node',
   format: 'esm',
@@ -18,5 +21,13 @@ await build({
   // Optional native accelerators of `ws`; it falls back to JavaScript without them.
   external: ['bufferutil', 'utf-8-validate'],
   logLevel: 'warning',
+};
+await build({
+  ...shared,
+  entryPoints: ['src/main.ts'],
+  outfile: 'dist/main.js',
+  define: { __KRITZEL_VERSION__: JSON.stringify(version) },
 });
+// The traffic generator ships next to the server (spec 015, "Synthetic traffic").
+await build({ ...shared, entryPoints: ['src/traffic/main.ts'], outfile: 'dist/traffic.js' });
 cpSync('../../packages/content/words', 'dist/words', { recursive: true });

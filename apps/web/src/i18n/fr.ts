@@ -237,6 +237,12 @@ export const fr: Messages = {
   'theme.toDark': 'Passer au thème sombre',
   'sound.mute': 'Couper le son',
 
+  'measurements.title': 'Mesures du navigateur',
+  'measurements.explanation':
+    'C’est facultatif. Si tu l’actives, ton navigateur partage les temps de chargement et de réaction, le nombre d’erreurs et le temps qu’il t’a fallu pour rejoindre un salon avec les personnes qui gèrent ce serveur Kritzel. Il ne partage jamais les noms, le chat, les dessins ni les mots.',
+  'measurements.switch': 'Partager les mesures du navigateur',
+  'measurements.close': 'Fermer',
+
   'announce.yourTurn': 'À toi. Choisis un mot.',
   'announce.draw': 'Dessine : {word}',
   'announce.guess': '{name} dessine. Devine le mot. Lettres par mot : {counts}',

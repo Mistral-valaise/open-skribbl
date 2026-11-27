@@ -2,6 +2,7 @@ import { LogOut } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { IconButton, ICON } from './IconButton.js';
 import { LanguageSwitch } from './LanguageSwitch.js';
+import { MeasurementsControl } from './MeasurementsControl.js';
 import { MuteToggle, ShellControls, ThemeToggle } from './ShellControls.js';
 import { PHONE_QUERY, useMediaQuery } from './useMediaQuery.js';
 import { Wordmark } from './Wordmark.js';
@@ -37,11 +38,13 @@ export function PlayTopBar({ progress, word, timer, leaveLabel, onLeave }: PlayT
   if (isPhone) {
     return (
       <header className="flex shrink-0 flex-col border-b border-line bg-surface-raised px-3 pt-1 pb-2">
-        <div className="flex items-center justify-between gap-2">
+        {/* With the control for browser measurements, the narrowest phones need a second row. */}
+        <div className="flex flex-wrap items-center justify-between gap-x-2">
           <LanguageSwitch />
-          <div className="flex shrink-0 items-center">
+          <div className="ml-auto flex shrink-0 items-center">
             <ThemeToggle />
             <MuteToggle />
+            <MeasurementsControl />
             {leave}
           </div>
         </div>

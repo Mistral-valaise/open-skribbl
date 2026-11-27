@@ -1,0 +1,190 @@
+# OpenTelemetry Collector for Kritzel (spec 015, "Local stack").
+#
+# One gateway between the game and the backends. It receives OTLP over HTTP,
+# repeats the application's privacy allowlists, derives span metrics with
+# exemplars and forwards each signal to its backend. Host names come from the
+# environment, so the file does not depend on how the stack is deployed.
+extensions:
+  health_check:
+    endpoint: 0.0.0.0:13133
+
+receivers:
+  otlp:
+    protocols:
+      http:
+        endpoint: 0.0.0.0:4318
+        max_request_body_size: 4194304
+  # The collector's and the backends' own metrics, so the stack can be watched
+  # without a second scraper. The backends expose thousands of series; only
+  # the few the dashboards and the capacity notes use are kept.
+  prometheus/self:
+    config:
+      scrape_configs:
+        - job_name: otel-collector
+          scrape_interval: 30s
+          static_configs:
+            - targets: ['127.0.0.1:8888']
+        - job_name: prometheus
+          scrape_interval: 30s
+          static_configs:
+            - targets: ['${env:PROMETHEUS_HOST}:9090']
+          metric_relabel_configs:
+            - source_labels: [__name__]
+              regex: process_resident_memory_bytes|process_cpu_seconds_total|prometheus_tsdb_head_series|prometheus_tsdb_storage_blocks_bytes|prometheus_tsdb_wal_storage_size_bytes|prometheus_tsdb_head_samples_appended_total|prometheus_tsdb_exemplar_exemplars_in_storage|prometheus_rule_evaluation_failures_total
+              action: keep
+        - job_name: loki
+          scrape_interval: 30s
+          static_configs:
+            - targets: ['${env:LOKI_HOST}:3100']
+          metric_relabel_configs:
+            - source_labels: [__name__]
+              regex: process_resident_memory_bytes|process_cpu_seconds_total|loki_distributor_bytes_received_total|loki_distributor_lines_received_total|loki_ingester_memory_streams|loki_discarded_samples_total
+              action: keep
+        - job_name: tempo
+          scrape_interval: 30s
+          static_configs:
+            - targets: ['${env:TEMPO_HOST}:3200']
+          metric_relabel_configs:
+            - source_labels: [__name__]
+              regex: process_resident_memory_bytes|process_cpu_seconds_total|tempo_distributor_bytes_received_total|tempo_distributor_spans_received_total|tempo_live_store_live_traces|tempo_discarded_spans_total
+              action: keep
+        - job_name: grafana
+          scrape_interval: 30s
+          static_configs:
+            - targets: ['${env:GRAFANA_HOST}:3000']
+          metric_relabel_configs:
+            - source_labels: [__name__]
+              regex: process_resident_memory_bytes|process_cpu_seconds_total|grafana_build_info|grafana_stat_totals_dashboard
+              action: keep
+
+processors:
+  # First in every pipeline: refuse data before the process runs out of memory.
+  memory_limiter:
+    check_interval: 1s
+    limit_mib: 180
+    spike_limit_mib: 40
+
+  # Second line of defence for spec 015, "Privacy". The application already
+  # exports allowlisted fields only; anything else that reaches the collector
+  # is dropped here. Keep these lists equal to
+  # apps/server/src/telemetry/contract.ts (a test compares them).
+  transform/allowlist:
+    error_mode: ignore
+    trace_statements:
+      - context: span
+        statements:
+          - keep_keys(span.attributes, ["kritzel.ws.message.type", "kritzel.outcome", "kritzel.reason", "kritzel.cause", "kritzel.validity", "kritzel.role", "kritzel.scope", "kritzel.rum.vital", "kritzel.rum.error.kind", "kritzel.rum.timing", "http.request.method", "http.route", "http.response.status_code", "error.type"])
+      - context: spanevent
+        statements:
+          - keep_keys(spanevent.attributes, [])
+    log_statements:
+      - context: log
+        statements:
+          - keep_keys(log.attributes, ["rooms", "seats", "code", "reason", "signal", "port", "host", "maxRooms", "trustProxy", "logLevel", "telemetry", "rum"])
+
+  # One service identity on every signal: these resource attributes become
+  # Prometheus labels and Loki labels, everything else is dropped.
+  transform/resource:
+    error_mode: ignore
+    trace_statements:
+      - context: resource
+        statements:
+          - keep_keys(resource.attributes, ["service.name", "service.version", "service.instance.id", "deployment.environment.name"])
+    metric_statements:
+      - context: resource
+        statements:
+          - keep_keys(resource.attributes, ["service.name", "service.version", "service.instance.id", "deployment.environment.name"])
+    log_statements:
+      - context: resource
+        statements:
+          - keep_keys(resource.attributes, ["service.name", "service.version", "service.instance.id", "deployment.environment.name"])
+
+  batch:
+    send_batch_size: 1024
+    send_batch_max_size: 2048
+    timeout: 5s
+
+connectors:
+  # Duration histograms per span name, with exemplars that point at the trace
+  # (ADR 0006: the JavaScript SDK does not export exemplars itself).
+  span_metrics:
+    namespace: kritzel.span
+    histogram:
+      unit: s
+      explicit:
+        buckets: [1ms, 2.5ms, 5ms, 10ms, 25ms, 50ms, 100ms, 250ms, 500ms, 1s, 2.5s, 5s, 10s]
+    dimensions:
+      - name: kritzel.outcome
+      - name: http.route
+    exemplars:
+      enabled: true
+    metrics_flush_interval: 15s
+    aggregation_cardinality_limit: 500
+
+exporters:
+  prometheus_remote_write:
+    endpoint: http://${env:PROMETHEUS_HOST}:9090/api/v1/write
+    # The service identity becomes labels on every series; nothing else does.
+    resource_constant_labels:
+      included:
+        - service.name
+        - service.version
+        - service.instance.id
+        - deployment.environment.name
+    target_info:
+      enabled: false
+    timeout: 10s
+    retry_on_failure:
+      enabled: true
+      max_elapsed_time: 60s
+    remote_write_queue:
+      enabled: true
+      queue_size: 2000
+  otlp_http/loki:
+    endpoint: http://${env:LOKI_HOST}:3100/otlp
+    timeout: 10s
+    retry_on_failure:
+      enabled: true
+      max_elapsed_time: 60s
+    sending_queue:
+      enabled: true
+      queue_size: 500
+  otlp_http/tempo:
+    endpoint: http://${env:TEMPO_HOST}:4318
+    timeout: 10s
+    retry_on_failure:
+      enabled: true
+      max_elapsed_time: 60s
+    sending_queue:
+      enabled: true
+      queue_size: 500
+
+service:
+  extensions: [health_check]
+  telemetry:
+    logs:
+      level: warn
+    metrics:
+      readers:
+        - pull:
+            exporter:
+              prometheus:
+                host: 127.0.0.1
+                port: 8888
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [memory_limiter, transform/allowlist, transform/resource, batch]
+      exporters: [otlp_http/tempo, span_metrics]
+    metrics:
+      receivers: [otlp, span_metrics]
+      processors: [memory_limiter, transform/resource, batch]
+      exporters: [prometheus_remote_write]
+    metrics/self:
+      receivers: [prometheus/self]
+      processors: [memory_limiter, batch]
+      exporters: [prometheus_remote_write]
+    logs:
+      receivers: [otlp]
+      processors: [memory_limiter, transform/allowlist, transform/resource, batch]
+      exporters: [otlp_http/loki]

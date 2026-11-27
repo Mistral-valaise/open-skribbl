@@ -59,6 +59,14 @@ export function plan({ refType, refName, sha, repository, version }) {
 }
 
 /**
+ * `value` as a pattern that matches exactly that text: every character with a
+ * meaning in a regular expression is escaped, the backslash included.
+ */
+export function escapeRegExp(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+/**
  * The body of the changelog section of a version: the lines under
  * `## [X.Y.Z]` or `## X.Y.Z` (a date may follow) up to the next section.
  * `text` is the content of CHANGELOG.md, or null when the file does not exist.
@@ -71,8 +79,7 @@ export function changelogSection(text, version) {
     );
   }
   const lines = text.split(/\r?\n/);
-  const escaped = version.replace(/[.+]/g, '\\$&');
-  const heading = new RegExp(`^## \\[?v?${escaped}\\]?(\\s.*)?$`);
+  const heading = new RegExp(`^## \\[?v?${escapeRegExp(version)}\\]?(\\s.*)?$`);
   const start = lines.findIndex((line) => heading.test(line));
   if (start === -1) {
     throw new Error(`${CHANGELOG} has no section for version ${version}. ${fix}`);

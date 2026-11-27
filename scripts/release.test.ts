@@ -5,7 +5,7 @@ import { delimiter, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { parse } from 'yaml';
-import { changelogSection, pinChartImage, plan, releaseNotes } from './release.mjs';
+import { changelogSection, escapeRegExp, pinChartImage, plan, releaseNotes } from './release.mjs';
 
 /**
  * Tests of the release process and the supply-chain rules (spec 017). The
@@ -369,6 +369,25 @@ describe('release tags (spec 017)', () => {
     );
   });
 
+  it('AC-017-12: a version is looked up as text, never as a pattern', () => {
+    // Every character with a meaning in a regular expression, the backslash included.
+    const special = '.*+?^${}()|[]\\/-';
+    expect(escapeRegExp('1.2.3')).toBe('1\\.2\\.3');
+    expect(escapeRegExp('a\\b')).toBe('a\\\\b');
+    expect(new RegExp(`^${escapeRegExp(special)}$`).test(special)).toBe(true);
+    for (const character of special) {
+      const pattern = new RegExp(`^${escapeRegExp(character)}$`);
+      expect(pattern.test(character), character).toBe(true);
+      expect(pattern.test('x'), character).toBe(false);
+      expect(pattern.test(''), character).toBe(false);
+    }
+    // A dot in the version does not stand for any character, and a pattern is not run.
+    const log = '# Changelog\n\n## 1x2x3\n\n- Not this one.\n\n## [1.2.3]\n\n- This one.\n';
+    expect(changelogSection(log, '1.2.3')).toBe('- This one.');
+    expect(() => changelogSection(log, '1.2.\\d')).toThrow(/no section for version 1\.2\.\\d/);
+    expect(() => changelogSection(log, '.*')).toThrow(/no section/);
+  });
+
   it('AC-017-12: the changelog section of the version is found, or its absence is named', () => {
     const log = [
       '# Changelog',
@@ -647,9 +666,8 @@ describe('pinning (spec 017)', () => {
       'caddy',
     ];
     for (const tool of tools) {
-      const escaped = tool.replace(/[./]/g, '\\$&');
       const references = [
-        ...sources.matchAll(new RegExp(`(?<![\\w/.-])${escaped}:[^\\s'"]+`, 'g')),
+        ...sources.matchAll(new RegExp(`(?<![\\w/.-])${escapeRegExp(tool)}:[^\\s'"]+`, 'g')),
       ];
       expect(references.length, tool).toBeGreaterThan(0);
       for (const [reference] of references) {

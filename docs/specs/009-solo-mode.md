@@ -1,9 +1,9 @@
 # 009 — Solo mode
 
-|           |          |
-| --------- | -------- |
-| Status    | Proposed |
-| Milestone | M3       |
+|           |             |
+| --------- | ----------- |
+| Status    | Implemented |
+| Milestone | M3          |
 
 ## Intent
 
@@ -22,7 +22,7 @@ This is stage 1 of playing against the computer. Bots that guess the player's dr
 
 ### Content
 
-- Categories and drawings come from the bundled dataset (`packages/content/solo`, served under `/content/solo/`). Each category has an id and a label in `en`, `de` and `es`; each has at least 10 curated drawings.
+- Categories and drawings come from the bundled dataset (`packages/content/solo`, served under `/content/solo/`). Each category has an id and a label in `en`, `de`, `es` and `fr`; each has at least 10 curated drawings.
 - A drawing is a list of strokes; a stroke is a list of points in a 256 × 256 space. It is scaled to fit the canvas centred with a 10 % margin and drawn with the brush in `#14151C`, size 8.
 - A run draws ten distinct categories at random and one random drawing for each.
 - Category labels that are ambiguous or unsuitable in a language are excluded from that language's solo set in `categories.json`.
@@ -76,7 +76,7 @@ This is stage 1 of playing against the computer. Bots that guess the player's dr
 - **AC-009-12** A total higher than the stored best for the run's language replaces it; the bests of other languages are unaffected; the value survives a reload.
 - **AC-009-13** With the network disabled after the run has started, the run can be completed.
 - **AC-009-14** During a solo run the browser sends no WebSocket message and no request other than `GET` requests under `/content/solo/`.
-- **AC-009-15** Every category in `categories.json` has non-empty `en`, `de` and `es` labels unless excluded for that language, and a drawings file with at least 10 drawings.
+- **AC-009-15** Every category in `categories.json` has non-empty `en`, `de`, `es` and `fr` labels unless excluded for that language, and a drawings file with at least 10 drawings.
 - **AC-009-16** The solo screen shows the dataset credit with a link to the notice.
 
 ## Out of scope

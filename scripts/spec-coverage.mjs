@@ -9,7 +9,7 @@ const root = new URL('..', import.meta.url).pathname;
 const strict = process.argv.includes('--strict');
 
 const SPEC_DIR = join(root, 'docs/specs');
-const TEST_ROOTS = ['apps', 'packages', 'e2e'].map((dir) => join(root, dir));
+const TEST_ROOTS = ['apps', 'packages', 'e2e', 'scripts'].map((dir) => join(root, dir));
 const TEST_FILE = /\.(test|spec)\.(ts|tsx|mts|js|mjs)$/;
 const SKIP_DIRS = new Set(['node_modules', 'dist', 'coverage']);
 const AC_ID = /AC-\d{3}-\d{2}/g;

@@ -1,0 +1,226 @@
+# Kritzel word list: Spanish, hard
+# Abstract ideas, compound concepts and professions. One word per line; see docs/specs/006-words-and-languages.md.
+alarma
+alergia
+aplauso
+arquitecto
+astronauta
+público
+otoño
+equilibrio
+herrero
+aburrimiento
+lluvia de ideas
+soborno
+camuflaje
+celebración
+campeón
+caos
+compromiso
+confusión
+obra
+valentía
+curiosidad
+fecha límite
+democracia
+detective
+dieta
+disfraz
+sueño
+eco
+electricidad
+emergencia
+evolución
+examen
+ejercicio
+cuento de hadas
+moda
+libertad
+amistad
+jardinero
+gravedad
+costumbre
+cosecha
+deberes
+honestidad
+prisa
+ilusión
+imaginación
+inflación
+insomnio
+entrevista
+invento
+celos
+periodista
+viaje
+juez
+conocimiento
+risa
+socorrista
+suerte
+ilusionista
+maratón
+memoria
+mecánico
+medianoche
+error
+lunes
+pesadilla
+ruido
+órbita
+paciencia
+piloto
+fontanero
+veneno
+contaminación
+población
+promesa
+rompecabezas
+fila
+ensayo
+jubilación
+ritmo
+rumor
+hora punta
+escultor
+secreto
+sombra
+atajo
+silencio
+estornudo
+programa
+sistema solar
+recuerdo
+estrés
+sorpresa
+trabajo en equipo
+viaje en el tiempo
+turista
+atasco
+traductor
+vacaciones
+victoria
+pronóstico del tiempo
+fin de semana
+susurro
+sabiduría
+bostezo
+contraseña
+videollamada
+pausa para comer
+cumpleaños
+pasaporte
+accidente
+consejo
+ambición
+aniversario
+disculpa
+apetito
+discusión
+subasta
+autógrafo
+bancarrota
+ganga
+principiante
+traición
+apagón
+venda en los ojos
+presupuesto
+burocracia
+coche compartido
+censura
+donación
+jaque mate
+infancia
+cambio climático
+coincidencia
+competición
+conciencia
+cuenta atrás
+crisis
+crítica
+retraso
+diplomático
+descuento
+sequía
+economía
+elecciones
+vergüenza
+energía
+envidia
+igualdad
+eternidad
+exageración
+excusa
+expedición
+fama
+cansancio
+primeros auxilios
+falsificación
+fortuna
+generación
+cotilleo
+gratitud
+hibernación
+hipo
+nostalgia
+horizonte
+hipnosis
+impaciencia
+herencia
+instinto
+descanso
+ironía
+desfase horario
+justicia
+karaoke
+casero
+liderazgo
+lealtad
+mayoría
+meditación
+migración
+motivación
+negociación
+obstáculo
+opinión
+horas extra
+paradoja
+sueldo
+paz
+perfume
+permiso
+fobia
+pódcast
+pobreza
+predicción
+ascenso
+protesta
+cuarentena
+rebelión
+reflejo
+reembolso
+venganza
+rutina
+sabotaje
+sarcasmo
+chivo expiatorio
+escasez
+efecto secundario
+charla
+miedo escénico
+estereotipo
+suscripción
+superstición
+sospecha
+compasión
+impuesto
+tentación
+tradición
+confianza
+errata
+vértigo
+voluntario
+garantía
+fuerza de voluntad
+gravedad cero

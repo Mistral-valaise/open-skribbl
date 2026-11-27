@@ -1,0 +1,234 @@
+# Kritzel word list: French, hard
+# Abstract ideas, compound concepts and professions. One word per line; see docs/specs/006-words-and-languages.md.
+alarme
+allergie
+applaudissements
+architecte
+astronaute
+public
+automne
+équilibre
+forgeron
+ennui
+remue-méninges
+pot-de-vin
+camouflage
+fête
+champion
+chaos
+compromis
+confusion
+chantier
+courage
+curiosité
+date limite
+démocratie
+détective
+régime
+déguisement
+rêve
+écho
+électricité
+urgence
+évolution
+examen
+exercice
+conte de fées
+mode
+liberté
+amitié
+jardinier
+gravité
+habitude
+récolte
+devoirs
+honnêteté
+hâte
+illusion
+imagination
+inflation
+insomnie
+entretien
+invention
+jalousie
+journaliste
+voyage
+juge
+connaissance
+rire
+sauveteur
+chance
+illusionniste
+marathon
+mémoire
+mécanicien
+minuit
+erreur
+lundi
+cauchemar
+bruit
+orbite
+patience
+pilote
+plombier
+poison
+pollution
+population
+promesse
+casse-tête
+file d'attente
+répétition
+retraite
+rythme
+rumeur
+heure de pointe
+sculpteur
+secret
+ombre
+raccourci
+silence
+éternuement
+logiciel
+système solaire
+souvenir
+stress
+surprise
+travail d'équipe
+voyage dans le temps
+touriste
+embouteillage
+traducteur
+vacances
+victoire
+météo
+week-end
+chuchotement
+sagesse
+bâillement
+mot de passe
+appel vidéo
+pause déjeuner
+anniversaire
+passeport
+accident
+conseil
+ambition
+excuses
+appétit
+dispute
+vente aux enchères
+autographe
+faillite
+bonne affaire
+débutant
+trahison
+panne de courant
+bandeau
+budget
+bureaucratie
+covoiturage
+censure
+don
+échec et mat
+enfance
+changement climatique
+coïncidence
+trajet
+compétition
+conscience
+compte à rebours
+crise
+critique
+retard
+diplomate
+réduction
+sécheresse
+économie
+élection
+gêne
+rappel
+énergie
+envie
+égalité
+éternité
+exagération
+prétexte
+expédition
+gloire
+fatigue
+pare-feu
+premiers secours
+retour en arrière
+contrefaçon
+fortune
+génération
+potins
+gratitude
+hibernation
+hoquet
+mal du pays
+horizon
+hypnose
+impatience
+héritage
+instinct
+entracte
+ironie
+décalage horaire
+justice
+karaoké
+propriétaire
+direction
+faille
+loyauté
+majorité
+méditation
+migration
+motivation
+négociation
+nostalgie
+obstacle
+opinion
+heures supplémentaires
+paradoxe
+salaire
+paix
+parfum
+permission
+phobie
+podcast
+pauvreté
+prédiction
+procrastination
+promotion
+manifestation
+quarantaine
+rébellion
+récession
+reflet
+remboursement
+vengeance
+routine
+sabotage
+sarcasme
+bouc émissaire
+deuxième chance
+pénurie
+effet secondaire
+bavardage
+trac
+stéréotype
+abonnement
+superstition
+soupçon
+compassion
+impôt
+tentation
+tradition
+confiance
+faute de frappe
+vertige
+bénévole
+garantie
+volonté
+apesanteur

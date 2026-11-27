@@ -1,9 +1,9 @@
 # 011 — App shell
 
-|           |          |
-| --------- | -------- |
-| Status    | Proposed |
-| Milestone | M4       |
+|           |             |
+| --------- | ----------- |
+| Status    | Implemented |
+| Milestone | M4          |
 
 ## Intent
 
@@ -26,13 +26,13 @@ The shell is everything around the game that makes Kritzel feel finished: themes
 
 ### Sound
 
-- Effects: join, your turn, your correct guess, another player's correct guess, tick (each of the last 10 s of the drawing phase), turn end, win.
+- Effects: join (any participant joins, yourself included), your turn, your correct guess, another player's correct guess, tick (each of the last 10 s of the drawing phase), turn end, win (for everyone when the results appear).
 - Synthesised with the Web Audio API; no audio files. Audio starts only after the first user interaction.
 - Muted state is stored; default is unmuted.
 
 ### Layout
 
-- Breakpoints: below 640 px, 640–1023 px, 1024 px and up, with the layouts defined in the design guideline.
+- Breakpoints: below 640 px, 640–1279 px, 1280 px and up, with the layouts defined in the design guideline.
 - No horizontal scrolling at any width from 320 px.
 - On phones the chat input remains visible when the on-screen keyboard is open.
 

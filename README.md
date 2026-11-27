@@ -1,14 +1,16 @@
 # Kritzel
 
-**Draw. Guess. No ads.** Kritzel is an open-source draw-and-guess party game you host yourself and play with your team: private rooms, no accounts, no tracking, no third-party requests. English, German and Spanish, with a solo mode against the computer.
+**Draw. Guess. No ads.** Kritzel is an open-source draw-and-guess party game you host yourself and play with your team: private rooms, no accounts, no tracking, no third-party requests. English, German, Spanish and French, with a solo mode against the computer.
 
-> **Status: milestone M0 (foundation).** The specifications and the workspace are in place; the game itself is built in milestones M1–M4. See the [roadmap](docs/ROADMAP.md).
+> **Status: version 1 is implemented.** All twelve feature specs are covered by tests; see the [roadmap](docs/ROADMAP.md) for what comes next (bots, team mode).
 
-🇩🇪 Kritzel ist ein quelloffenes Zeichnen-und-Raten-Spiel zum Selbsthosten: private Räume fürs Team, ohne Werbung, ohne Konten, ohne Tracking. Auf Deutsch, Englisch und Spanisch, mit Solo-Modus gegen den Computer.
+🇩🇪 Kritzel ist ein quelloffenes Zeichnen-und-Raten-Spiel zum Selbsthosten: private Räume fürs Team, ohne Werbung, ohne Konten, ohne Tracking. Auf Deutsch, Englisch, Spanisch und Französisch, mit Solo-Modus gegen den Computer.
 
-🇪🇸 Kritzel es un juego de dibujar y adivinar de código abierto que alojas tú mismo: salas privadas para tu equipo, sin anuncios, sin cuentas y sin rastreo. En español, inglés y alemán, con modo en solitario contra el ordenador.
+🇪🇸 Kritzel es un juego de dibujar y adivinar de código abierto que alojas tú mismo: salas privadas para tu equipo, sin anuncios, sin cuentas y sin rastreo. En español, inglés, alemán y francés, con modo en solitario contra el ordenador.
 
-## What you get in v1
+🇫🇷 Kritzel est un jeu de dessin et de devinettes open source à héberger soi-même : des salons privés pour ton équipe, sans publicité, sans compte et sans pistage. En français, anglais, allemand et espagnol, avec un mode solo contre l'ordinateur.
+
+## What you get
 
 - Private rooms by link or six-character code, 2–12 players plus spectators
 - Brush, eraser, fill, undo and redo, on mouse, touch and stylus
@@ -38,6 +40,7 @@ scripts/          Repository tooling
 | [Architecture guideline](docs/ARCHITECTURE.md) | Modules, protocol, drawing pipeline, testing, deployment    |
 | [Design guideline](docs/DESIGN.md)             | Brand, tokens, components, screens, accessibility           |
 | [Specs](docs/specs/README.md)                  | One spec per feature with numbered acceptance criteria      |
+| [Hosting](docs/HOSTING.md)                     | Docker, configuration, reverse proxies, capacity            |
 | [Roadmap](docs/ROADMAP.md)                     | Milestones and what comes after v1                          |
 | [Decisions](docs/adr/)                         | Architecture decision records                               |
 | [Glossary](CONTEXT.md)                         | The project's vocabulary                                    |
@@ -70,15 +73,23 @@ pnpm dev
 pnpm check
 ```
 
-`pnpm dev` starts the server and the web client in watch mode. `pnpm check` runs lint, formatting, type check, tests and spec coverage; CI runs the same command. `pnpm spec:coverage` alone prints the coverage table.
+`pnpm dev` starts the server on port 3000 and the web client on port 5173 in watch mode; open the web client's address. `pnpm check` runs lint, formatting, type check, tests and spec coverage; CI runs the same command. `pnpm spec:coverage` alone prints the coverage table. `pnpm e2e` plays full games in a real browser (it needs Chromium: `pnpm exec playwright install chromium`).
 
 ## Hosting
 
-The Docker image and the hosting guides arrive with milestone M4 ([spec 012](docs/specs/012-deployment-and-operations.md)). The target is a single command with no configuration.
+```bash
+docker build -t kritzel .
+```
+
+```bash
+docker run -d -p 3000:3000 kritzel
+```
+
+Then open <http://localhost:3000>. No database and no configuration are needed. [`docs/HOSTING.md`](docs/HOSTING.md) covers configuration, reverse proxies (Caddy, nginx, Traefik), hosting platforms and measured capacity.
 
 ## Contributing
 
-Read [`AGENTS.md`](AGENTS.md) first; it applies to human contributors too. Word lists and translations are especially welcome once milestone M2 has landed.
+Read [`AGENTS.md`](AGENTS.md) first; it applies to human contributors too. Word lists and translations are especially welcome: the interface dictionaries are in `apps/web/src/i18n/`, the word lists in `packages/content/words/`.
 
 ## Licence
 

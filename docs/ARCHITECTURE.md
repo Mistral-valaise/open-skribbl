@@ -1,10 +1,10 @@
 # Kritzel — Architecture Guideline
 
-|            |                                  |
-| ---------- | -------------------------------- |
-| Status     | Proposed (awaiting owner review) |
-| Vocabulary | [`CONTEXT.md`](../CONTEXT.md)    |
-| Decisions  | [`docs/adr/`](adr/)              |
+|            |                                    |
+| ---------- | ---------------------------------- |
+| Status     | Approved; implemented in version 1 |
+| Vocabulary | [`CONTEXT.md`](../CONTEXT.md)      |
+| Decisions  | [`docs/adr/`](adr/)                |
 
 This document describes the shape of the system and the rules every change follows. Behaviour lives in the specs; this document says where that behaviour is implemented and how the parts talk to each other.
 
@@ -63,14 +63,15 @@ web ──► shared ◄── server
 
 The heart of the game. Everything here is a pure function with unit tests that name the acceptance criterion they prove.
 
-| Module      | Responsibility                                                               | Specs         |
-| ----------- | ---------------------------------------------------------------------------- | ------------- |
-| `protocol/` | Zod schemas and inferred types for every message; `PROTOCOL_VERSION`; limits | all           |
-| `game/`     | Room state, the reducer, per-participant views                               | 001, 002, 007 |
-| `scoring/`  | Guess points, drawer points, ranking                                         | 005           |
-| `words/`    | Normalisation, matching, close guess, mask and hint schedule, word selection | 004, 006      |
-| `drawing/`  | Op types, validation, op-log reduction (undo, redo, clear), limits           | 003           |
-| `identity/` | Nickname and avatar validation                                               | 010           |
+| Module         | Responsibility                                                                                     | Specs              |
+| -------------- | -------------------------------------------------------------------------------------------------- | ------------------ |
+| `protocol.ts`  | Zod schemas for client messages, types for server messages and views, settings, `PROTOCOL_VERSION` | all                |
+| `game/`        | Room state, the reducer (`reduce`), per-participant views (`viewFor`)                              | 001, 002, 004, 007 |
+| `scoring.ts`   | Guess points, drawer points, ranking                                                               | 005                |
+| `words/`       | Normalisation, matching, close guess, mask and hint schedule, word selection                       | 004, 006           |
+| `drawing.ts`   | Op schemas, effective items, op-log reduction (undo, redo, clear), limits                          | 003                |
+| `identity.ts`  | Nickname and avatar validation                                                                     | 010                |
+| `constants.ts` | Every number a spec names, defined once                                                            | all                |
 
 ### Game engine
 
@@ -92,7 +93,7 @@ Phases and transitions are specified in [spec 002](specs/002-game-loop.md).
 ### Transport
 
 - One WebSocket endpoint: `GET /ws`. Messages are UTF-8 JSON objects with a string `type` field.
-- Every inbound message is parsed with its Zod schema. Unknown types, invalid payloads and oversized frames (over 16 KB) are dropped and answered with `error`.
+- Every inbound message is parsed with its Zod schema. Unknown types, invalid payloads and oversized frames (over 32 KB) are dropped and answered with `error`.
 - The first message on a connection must be `join`; it carries `protocolVersion`. On mismatch the server answers `error { code: "version_mismatch" }` and the client reloads.
 - The server sends WebSocket pings every 15 s and closes connections that miss two.
 
@@ -107,53 +108,54 @@ Snapshots carry `serverNow` and absolute deadlines (`phaseEndsAt`); the client d
 
 ### Message catalogue
 
-`packages/shared/src/protocol` is authoritative once it exists; this table is the design it implements.
+`packages/shared/src/protocol.ts` is authoritative; this table is an overview.
 
-| Direction | Type              | Payload                                                                      | Notes                                                          |
-| --------- | ----------------- | ---------------------------------------------------------------------------- | -------------------------------------------------------------- |
-| C→S       | `join`            | `protocolVersion, roomCode, nickname, avatar, role, clientId, sessionToken?` | First message. `sessionToken` resumes a seat.                  |
-| C→S       | `settings.update` | partial settings                                                             | Host, lobby only.                                              |
-| C→S       | `game.start`      | —                                                                            | Host, lobby only.                                              |
-| C→S       | `game.playAgain`  | —                                                                            | Host, game end only.                                           |
-| C→S       | `player.kick`     | `playerId`                                                                   | Host.                                                          |
-| C→S       | `word.choose`     | `index`                                                                      | Drawer, choosing phase.                                        |
-| C→S       | `draw.op`         | `op`                                                                         | Drawer, drawing phase.                                         |
-| C→S       | `chat.send`       | `text`                                                                       | Guess or chat; the server decides.                             |
-| C→S       | `reaction.send`   | `emoji`                                                                      |                                                                |
-| C→S       | `like.set`        | `value: "up" \| "down"`                                                      |                                                                |
-| C→S       | `gallery.get`     | `turnIndex`                                                                  | Game end only.                                                 |
-| S→C       | `joined`          | `participantId, sessionToken, state, opLog`                                  |                                                                |
-| S→C       | `room.state`      | per-participant snapshot                                                     |                                                                |
-| S→C       | `word.choices`    | `words[]`                                                                    | Drawer only.                                                   |
-| S→C       | `draw.op`         | `op`                                                                         | Everyone except the sender.                                    |
-| S→C       | `chat.message`    | `id, channel, kind, from?, text?, key?, params?`                             | `kind: "chat" \| "system"`; system messages carry an i18n key. |
-| S→C       | `guess.feedback`  | `kind: "correct" \| "close"`                                                 | Sender only.                                                   |
-| S→C       | `reaction`        | `participantId, emoji`                                                       |                                                                |
-| S→C       | `gallery.drawing` | `turnIndex, opLog`                                                           |                                                                |
-| S→C       | `kicked`          | —                                                                            | Followed by close.                                             |
-| S→C       | `server.shutdown` | —                                                                            | Graceful stop.                                                 |
-| S→C       | `error`           | `code`                                                                       | Codes map to i18n keys on the client.                          |
+| Direction | Type              | Payload                                                                      | Notes                                                                                |
+| --------- | ----------------- | ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| C→S       | `join`            | `protocolVersion, roomCode, nickname, avatar, role, clientId, sessionToken?` | First message. `sessionToken` resumes a seat.                                        |
+| C→S       | `leave`           | —                                                                            | Gives up the seat at once.                                                           |
+| C→S       | `settings.update` | partial settings                                                             | Host, lobby only.                                                                    |
+| C→S       | `game.start`      | —                                                                            | Host, lobby only.                                                                    |
+| C→S       | `game.playAgain`  | —                                                                            | Host, game end only.                                                                 |
+| C→S       | `player.kick`     | `playerId`                                                                   | Host.                                                                                |
+| C→S       | `word.choose`     | `index`                                                                      | Drawer, choosing phase.                                                              |
+| C→S       | `draw.op`         | `op`                                                                         | Drawer, drawing phase.                                                               |
+| C→S       | `chat.send`       | `text`                                                                       | Guess or chat; the server decides.                                                   |
+| C→S       | `reaction.send`   | `emoji`                                                                      |                                                                                      |
+| C→S       | `like.set`        | `value: "up" \| "down"`                                                      |                                                                                      |
+| C→S       | `gallery.get`     | `turnIndex`                                                                  | Game end only.                                                                       |
+| S→C       | `joined`          | `participantId, sessionToken, state, items, redo`                            | `items` are the effective drawing items of the current turn, `redo` the undone ones. |
+| S→C       | `room.state`      | per-participant snapshot                                                     |                                                                                      |
+| S→C       | `word.choices`    | `words[]`                                                                    | Drawer only.                                                                         |
+| S→C       | `draw.op`         | `op`                                                                         | Everyone except the sender.                                                          |
+| S→C       | `chat.message`    | `id, channel, kind, from?, text?, key?, params?`                             | `kind: "chat" \| "system"`; system messages carry an i18n key.                       |
+| S→C       | `guess.feedback`  | `kind: "correct" \| "close"`, `text`                                         | Sender only.                                                                         |
+| S→C       | `reaction`        | `participantId, emoji`                                                       |                                                                                      |
+| S→C       | `gallery.drawing` | `turnIndex, items`                                                           |                                                                                      |
+| S→C       | `kicked`          | —                                                                            | Followed by close.                                                                   |
+| S→C       | `server.shutdown` | —                                                                            | Graceful stop.                                                                       |
+| S→C       | `error`           | `code`                                                                       | Codes map to i18n keys on the client.                                                |
 
 ### HTTP API
 
-| Method | Path               | Purpose                                                                                          |
-| ------ | ------------------ | ------------------------------------------------------------------------------------------------ |
-| `POST` | `/api/rooms`       | Create a room; returns `{ code }`. Rate-limited per IP.                                          |
-| `GET`  | `/api/rooms/:code` | `200 { exists: true, joinable }` or `404`; lets the client show a clear error before connecting. |
-| `GET`  | `/healthz`         | Liveness: `200 { "status": "ok" }`.                                                              |
-| `GET`  | `/*`               | Static web app with SPA fallback; `/content/*` serves solo data.                                 |
+| Method | Path               | Purpose                                                                                       |
+| ------ | ------------------ | --------------------------------------------------------------------------------------------- |
+| `POST` | `/api/rooms`       | Create a room; returns `{ code }`. Rate-limited per IP.                                       |
+| `GET`  | `/api/rooms/:code` | `200 { exists, code, phase }` or `404`; lets the client show a clear error before connecting. |
+| `GET`  | `/healthz`         | Liveness: `200 { "status": "ok" }`.                                                           |
+| `GET`  | `/*`               | Static web app with SPA fallback; `/content/*` serves solo data.                              |
 
 ### Abuse limits
 
-Token buckets per connection: drawing 90 messages/s, chat 5 burst then 1/s, reactions 1 per 1.5 s. Excess messages are dropped; a connection that has 50 messages dropped within 10 s is closed. Room creation: 10 per minute per IP. Size limits for nicknames, chat text, strokes and op logs are constants in `shared/protocol/limits.ts` and are quoted in the specs.
+Token buckets per connection: drawing 90 messages/s, chat 5 burst then 1/s, reactions 1 per 1.5 s. Excess messages are dropped; a connection that has 50 messages dropped within 10 s is closed. Room creation: 10 per minute per IP. Size limits for nicknames, chat text, strokes and op logs are constants in `shared/constants.ts` and are quoted in the specs.
 
 ## 5. Drawing pipeline
 
 Drawings are transmitted and stored as an op log, never as pixels ([ADR 0002](adr/0002-drawing-as-op-log.md)).
 
 1. **Capture.** Pointer events on the drawer's canvas are converted to logical coordinates (800 × 600), thinned, batched every 33 ms and sent as `draw.op`.
-2. **Authority.** The server validates each op, applies it to the turn's op log (`shared/drawing`) and relays it. Undo and redo are ops; the log reducer resolves them, so every client arrives at the same effective op list.
-3. **Render.** `web` renders the effective op list onto a canvas at logical size scaled by device pixel ratio. Strokes append incrementally; undo, redo and joining trigger a full redraw.
+2. **Authority.** The server validates each op, applies it to the turn's op log (`shared/drawing`) and relays it. Undo and redo are ops; server and clients run the same `applyOp`, so everyone arrives at the same effective items. A joining participant receives those items, not the raw ops.
+3. **Render.** `web` renders the effective items onto a canvas whose backing store is always 1600 × 1200 (twice the logical size), on every device, so flood fills see the same pixels everywhere; CSS scales it to the layout. Strokes append incrementally; undo, redo and joining trigger a full redraw.
 4. **Reuse.** The same renderer serves the live game, the gallery, PNG export and the solo replay.
 
 Details and limits are in [spec 003](specs/003-drawing.md).
@@ -186,7 +188,7 @@ Rules:
 | `features/`   | One folder per screen or feature: `home`, `lobby`, `game`, `results`, `solo`   |
 | `canvas/`     | Renderer, pointer capture, flood fill, PNG export, replay                      |
 | `ui/`         | Design-system components from [`DESIGN.md`](DESIGN.md)                         |
-| `i18n/`       | Typed dictionaries (`en`, `de`, `es`) and the `t()` helper                     |
+| `i18n/`       | Typed dictionaries (`en`, `de`, `es`, `fr`) and the `t()` helper               |
 | `audio/`      | Web Audio synthesised sound effects                                            |
 
 Rules:
@@ -205,7 +207,7 @@ Solo mode runs entirely in the browser ([ADR 0005](adr/0005-client-side-solo-on-
 
 ```
 words/<lang>/{easy,medium,hard}.txt   one word per line, '#' comments
-solo/categories.json                  id plus en/de/es label per category
+solo/categories.json                  id plus en/de/es/fr label per category
 solo/drawings/<id>.json               curated drawings per category
 ```
 

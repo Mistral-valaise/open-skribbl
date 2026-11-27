@@ -2,7 +2,7 @@
 
 |                |                                                                   |
 | -------------- | ----------------------------------------------------------------- |
-| Status         | Proposed (awaiting owner review)                                  |
+| Status         | Approved; implemented in version 1                                |
 | Direction      | "Studio": calm, dark-first, professional surface; playful moments |
 | Implemented by | `apps/web/src/ui` and the Tailwind theme                          |
 
@@ -18,7 +18,7 @@
 
 - **Name:** Kritzel (German for "scribble"). Always capitalised, never translated.
 - **Wordmark:** "Kritzel" set in the display typeface, weight 700, with a hand-drawn squiggle underline in the accent colour. The squiggle alone is the favicon and app icon.
-- **Voice:** short, warm, direct. Address the player informally (`du` in German, `tú` in Spanish). One exclamation mark per screen at most. System messages state facts: "Mara guessed the word", "Time's up — it was _lighthouse_".
+- **Voice:** short, warm, direct. Address the player informally (`du` in German, `tú` in Spanish, `tu` in French). One exclamation mark per screen at most. System messages state facts: "Mara guessed the word", "Time's up — it was _lighthouse_".
 
 ## 3. Colour
 
@@ -35,30 +35,32 @@ Tokens are CSS custom properties defined once and exposed to Tailwind. Component
 | `--border`         | `#2A2E3F` | `#E1E3EC` | Dividers, outlines             |
 | `--text-primary`   | `#F2F3F7` | `#14151C` | Body and headings              |
 | `--text-secondary` | `#A6ABBD` | `#4C5166` | Labels, metadata               |
-| `--text-muted`     | `#6E748A` | `#7A8096` | Placeholders, disabled         |
+| `--text-muted`     | `#8A91A8` | `#646A80` | Placeholders, disabled         |
 
 ### Accent and semantics
 
 | Token            | Dark      | Light     | Use                                         |
 | ---------------- | --------- | --------- | ------------------------------------------- |
 | `--accent`       | `#6A5AF9` | `#6A5AF9` | Primary buttons, focus ring, selected state |
-| `--accent-hover` | `#7D6FFA` | `#5546E0` |                                             |
+| `--accent-hover` | `#5B4BEF` | `#5546E0` |                                             |
 | `--accent-text`  | `#A99FFF` | `#5546E0` | Accent-coloured text and icons on surfaces  |
 | `--on-accent`    | `#FFFFFF` | `#FFFFFF` | Text on accent fills                        |
-| `--success`      | `#34D17A` | `#15803D` | Correct guess, "guessed" state              |
-| `--warning`      | `#F5B041` | `#B45309` | Close guess, last ten seconds               |
+| `--success`      | `#34D17A` | `#126F34` | Correct guess, "guessed" state              |
+| `--warning`      | `#F5B041` | `#9C4708` | Close guess, last ten seconds               |
 | `--danger`       | `#F26D6D` | `#B91C1C` | Errors, kick, time up                       |
 | `--info`         | `#5CC3F5` | `#0369A1` | Neutral system notices                      |
 
 Rules:
 
-- Text and icon colours meet WCAG 2.1 AA against the surface they sit on (4.5:1 for body text, 3:1 for large text and UI glyphs). An automated check enforces this (spec 011).
+- Text and icon colours meet WCAG 2.1 AA against the surface they sit on (4.5:1 for body text, 3:1 for large text and UI glyphs). `apps/web/src/styles/contrast.test.ts` enforces this for every pair the components use; `apps/web/src/styles/tokens.css` holds the values, and this table mirrors it.
 - Semantic colour always comes with an icon or text. A guessed player has a check mark, not only a green name.
 - Accent is for one primary action per view and for selection. It is never a background for large areas.
 
 ### Canvas and drawing palette
 
 The canvas is paper: `#FFFFFF` in both themes, so a drawing looks identical for everyone. It sits on the surface with a 1 px border and the large shadow.
+
+Avatar bodies use a fixed set of twelve colours (`--avatar-body-0` … `--avatar-body-11` in the token file), chosen to stay distinguishable on both themes.
 
 The drawing palette has 24 colours, shown as three rows of eight:
 
@@ -116,7 +118,7 @@ The mask uses mono at `heading` size with 0.3 em letter spacing; word gaps are r
 
 ## 7. Sound
 
-Seven short effects, synthesised with the Web Audio API (no audio files): join, your turn, correct guess (yours), correct guess (someone else), tick for each of the last ten seconds, turn end, win. Default volume is moderate; a single mute toggle in the top bar is remembered. Sound never carries information that is not also visible.
+Seven short effects, synthesised with the Web Audio API (no audio files): join, your turn, correct guess (yours), correct guess (someone else), tick for each of the last ten seconds, turn end, win. Join plays for every participant who joins, your own join included; win plays for everyone when the results appear. Default volume is moderate; a single mute toggle in the top bar is remembered. Sound never carries information that is not also visible.
 
 ## 8. Components
 
@@ -157,8 +159,8 @@ Two columns from 1024 px. Left: invite card with the room code in mono and a **C
 
 | Width       | Layout                                                                                                                                                                                                                                |
 | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| ≥ 1024 px   | Top bar across. Three columns below: scoreboard (240 px), canvas with toolbar (fluid), chat (320 px).                                                                                                                                 |
-| 640–1023 px | Top bar. Canvas full width with toolbar. Below it, scoreboard and chat side by side.                                                                                                                                                  |
+| ≥ 1280 px   | Top bar across. Three columns below: scoreboard (240 px), canvas with toolbar (fluid), chat (320 px).                                                                                                                                 |
+| 640–1279 px | Top bar. Canvas full width with toolbar. Below it, scoreboard and chat side by side.                                                                                                                                                  |
 | < 640 px    | Compact top bar. Canvas full width. Toolbar as one scrollable row (drawer only). Chat fills the rest; the scoreboard collapses into a horizontal avatar strip that expands on tap. The chat input stays above the on-screen keyboard. |
 
 The top bar shows: round "2 / 3", the mask (or the word for the drawer, or the word choices during choosing), the timer ring, and the mute, theme and leave controls.
@@ -185,7 +187,7 @@ Same top bar and canvas as the game screen, a guess input instead of the chat, p
 
 ## 11. Copy and localisation
 
-- Strings are written in English first and translated to German and Spanish as natural phrases, not word for word.
+- Strings are written in English first and translated to German, Spanish and French as natural phrases, not word for word.
 - Layouts tolerate text 40 % longer than English; buttons wrap rather than truncate.
 - Numbers, plurals and ordinals use `Intl` APIs for the active language.
 - Words to draw are shown in the room's word language, independent of each player's interface language.

@@ -1,9 +1,9 @@
 # 003 — Drawing
 
-|           |          |
-| --------- | -------- |
-| Status    | Proposed |
-| Milestone | M1       |
+|           |             |
+| --------- | ----------- |
+| Status    | Implemented |
+| Milestone | M1          |
 
 ## Intent
 

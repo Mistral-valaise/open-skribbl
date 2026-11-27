@@ -100,7 +100,7 @@ describe('preflight (spec 016)', () => {
     const result = preflight('ok');
     expect(result.status, result.output).toBe(0);
     expect(result.output).toContain('Preflight passed. Nothing was changed.');
-    expect(result.output).toContain('requests 925m CPU');
+    expect(result.output).toContain('requests 925m CPU, 1328Mi memory');
   });
 
   it('AC-016-19: a rejected token is named, with how to renew it', () => {
@@ -134,7 +134,9 @@ describe('preflight (spec 016)', () => {
   it('AC-016-19: an insufficient quota says how much is needed and how much is free', () => {
     const result = preflight('quota');
     expect(result.status).toBe(1);
-    expect(result.output).toContain('requests.cpu: needs 925m, 500m free of 500m (quota compute-deploy)');
+    expect(result.output).toContain(
+      'requests.cpu: needs 925m, 500m free of 500m (quota compute-deploy)',
+    );
     expect(result.output).toContain('Nothing was changed');
     // The quota for builds and jobs does not apply to Deployments.
     expect(result.output).not.toContain('compute-build');
@@ -178,14 +180,15 @@ describe('deployment workflow (spec 016)', () => {
     expect(text).toContain("github.event.workflow_run.conclusion == 'success'");
   });
 
-  it('AC-016-17: read-only permissions, the dev environment, one run per namespace', () => {
+  it('AC-016-17: read-only permissions, the dev environment, one run at a time', () => {
     expect(workflow.permissions).toEqual({ contents: 'read' });
     for (const job of Object.values(workflow.jobs)) {
       for (const scope of Object.values(job.permissions ?? {})) expect(scope).toBe('read');
     }
     const deploy = workflow.jobs.deploy!;
     expect(deploy.environment).toEqual({ name: 'dev', url: expect.any(String) });
-    expect(workflow.concurrency.group).toContain('vars.OPENSHIFT_NAMESPACE');
+    // One environment is one namespace: its deployments never overlap and are never cut short.
+    expect(workflow.concurrency.group).toBe('deploy-openshift-demo-dev');
     expect(workflow.concurrency['cancel-in-progress']).toBe(false);
   });
 
@@ -212,7 +215,11 @@ describe('deployment workflow (spec 016)', () => {
   it('AC-016-18: no script traces its commands or prints a credential', () => {
     for (const script of scripts) {
       expect(script).not.toMatch(/set -[a-z]*x/);
-      expect(script).not.toMatch(/echo[^\n]*(OPENSHIFT_TOKEN|GRAFANA_ADMIN_PASSWORD|KUBECONFIG_CONTENT)/);
+      // Naming a secret in a message is fine; printing its value is not.
+      expect(script).not.toMatch(
+        /(echo|printf|console\.log)[^\n|]*\$\{?(OPENSHIFT_TOKEN|GRAFANA_ADMIN_PASSWORD)\b[^\n|]*$/m,
+      );
+      expect(script).not.toMatch(/cat [^\n]*KUBECONFIG/);
       expect(script).not.toContain('--insecure-skip-tls-verify');
       expect(script).not.toContain('oc whoami -t');
     }
@@ -225,18 +232,93 @@ describe('deployment workflow (spec 016)', () => {
   it('AC-016-20: deploys by digest with wait, timeout and rollback, always inside the namespace', () => {
     const deploy = read('deploy/scripts/deploy.sh');
     expect(deploy).toContain('helm upgrade --install');
-    for (const flag of ['--wait', '--timeout', '--rollback-on-failure', '--namespace "$NAMESPACE"']) {
+    for (const flag of [
+      '--wait',
+      '--timeout',
+      '--rollback-on-failure',
+      '--namespace "$NAMESPACE"',
+    ]) {
       expect(deploy, flag).toContain(flag);
     }
     expect(deploy).toContain('image.digest=');
     expect(deploy).toMatch(/sha256:\[0-9a-f\]\{64\}/);
     // Every oc and helm call that touches the cluster names the namespace.
-    for (const script of [deploy, read('deploy/scripts/verify.mjs'), read('deploy/scripts/preflight.mjs')]) {
-      const calls = [...script.matchAll(/^.*\b(?:oc|helm) (?:get|apply|create|delete|rollout|exec|upgrade|status|logs|adm|scale|port-forward)\b.*$/gm)].map(
-        (match) => match[0],
-      );
+    for (const script of [
+      deploy,
+      read('deploy/scripts/verify.mjs'),
+      read('deploy/scripts/preflight.mjs'),
+    ]) {
+      const calls = [
+        ...script.matchAll(
+          /^.*\b(?:oc|helm) (?:get|apply|create|delete|rollout|exec|upgrade|status|logs|adm|scale|port-forward)\b.*$/gm,
+        ),
+      ].map((match) => match[0]);
       for (const call of calls) expect(call, call).toMatch(/namespace|NAMESPACE/);
     }
     expect(deploy).not.toMatch(/oc (new-project|adm policy|create namespace)/);
+  });
+});
+
+describe('deployment guide (spec 016)', () => {
+  const guide = read('docs/DEPLOYMENT-OPENSHIFT.md');
+
+  it('AC-016-28: the guide records measured CPU and memory per pod, the quota used and what could not be measured', () => {
+    const section = guide.slice(guide.indexOf('### Measured resources'));
+    for (const component of [
+      'Kritzel',
+      'Collector',
+      'Prometheus',
+      'Loki',
+      'Tempo',
+      'Grafana',
+      'Traffic generator',
+    ]) {
+      expect(section, component).toMatch(
+        new RegExp(`\\| ${component}\\s*\\|\\s*\\d+m \\|\\s*\\d+Mi \\|`),
+      );
+    }
+    expect(section).toContain('Quota used by the demo');
+    expect(section).toMatch(/CPU requests \d+m of 3/);
+    expect(section).toContain('Could not be measured');
+    expect(section).toContain('What this is not: a capacity test');
+  });
+
+  it('AC-016-29: the guide covers manual commands, the workflow set-up, rotation, rollback and teardown', () => {
+    for (const heading of [
+      '## Deploying by hand',
+      '## Deploying with GitHub Actions',
+      '## The Developer Sandbox',
+      '## Rotating credentials',
+      '## Rolling back',
+      '## Removing the demo',
+      '## Troubleshooting',
+    ]) {
+      expect(guide, heading).toContain(`\n${heading}\n`);
+    }
+    for (const command of [
+      'node deploy/scripts/preflight.mjs',
+      'deploy/scripts/deploy.sh',
+      'node deploy/scripts/verify.mjs',
+      'helm rollback kritzel',
+      'helm uninstall kritzel',
+    ]) {
+      expect(guide, command).toContain(command);
+    }
+    for (const name of [
+      'OPENSHIFT_TOKEN',
+      'OPENSHIFT_SERVER',
+      'OPENSHIFT_NAMESPACE',
+      'GRAFANA_ADMIN_PASSWORD',
+    ]) {
+      expect(guide, name).toContain(`\`${name}\``);
+    }
+    // A rollback is not free: the guide has to say what it does to running games.
+    const rollback = guide.slice(
+      guide.indexOf('## Rolling back'),
+      guide.indexOf('## Removing the demo'),
+    );
+    expect(rollback).toContain('games in progress end');
+    expect(read('README.md')).toContain('docs/DEPLOYMENT-OPENSHIFT.md');
+    expect(read('docs/HOSTING.md')).toContain('DEPLOYMENT-OPENSHIFT.md');
   });
 });

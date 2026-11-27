@@ -8,7 +8,12 @@ import { expect, test, type APIRequestContext } from '@playwright/test';
  * Checks of the local observability stack (spec 015) against its real APIs.
  * They run only against a stack started outside the test run:
  *
- *   pnpm obs:up && KRITZEL_OBS=1 pnpm e2e observability
+ *   pnpm obs:up && KRITZEL_OBS=1 pnpm exec playwright test e2e/observability.spec.ts
+ *
+ * or against a deployment on OpenShift (spec 016), logged in with `oc`:
+ *
+ *   KRITZEL_OBS=1 KRITZEL_OPENSHIFT_NAMESPACE=<ns> KRITZEL_GRAFANA_URL=https://<grafana route> \\
+ *     KRITZEL_GRAFANA_PASSWORD=… pnpm exec playwright test e2e/observability.spec.ts
  *
  * Everything is asked through Grafana's data source proxy, because Grafana is
  * the only published port. The data is produced by the production image and
@@ -31,25 +36,39 @@ const headers = {
   authorization: `Basic ${Buffer.from(`admin:${adminPassword()}`).toString('base64')}`,
 };
 
-/** Runs a command in the game container of the Compose project. */
+/**
+ * Where the game runs. By default the Compose project; with
+ * KRITZEL_OPENSHIFT_NAMESPACE set, the Helm release in that namespace (spec
+ * 016), reached with `oc` and the current login.
+ */
+const openshiftNamespace = process.env.KRITZEL_OPENSHIFT_NAMESPACE;
+const collectorHost = openshiftNamespace ? 'kritzel-collector' : 'otel-collector';
+
+/** Runs a command in the game container. */
 function inGame(...command: string[]): string {
-  return execFileSync(
-    'docker',
-    [
-      'compose',
-      '--env-file',
-      envFile,
-      '-f',
-      'docker-compose.yml',
-      '-f',
-      'docker-compose.observability.yml',
-      'exec',
-      '-T',
-      'kritzel',
-      ...command,
-    ],
-    { cwd: root, encoding: 'utf8', timeout: 240_000 },
-  );
+  const [program, args] = openshiftNamespace
+    ? ['oc', ['exec', '--namespace', openshiftNamespace, 'deployment/kritzel', '--', ...command]]
+    : [
+        'docker',
+        [
+          'compose',
+          '--env-file',
+          envFile,
+          '-f',
+          'docker-compose.yml',
+          '-f',
+          'docker-compose.observability.yml',
+          'exec',
+          '-T',
+          'kritzel',
+          ...command,
+        ],
+      ];
+  return execFileSync(program as string, args as string[], {
+    cwd: root,
+    encoding: 'utf8',
+    timeout: 240_000,
+  });
 }
 
 type Sample = { metric: Record<string, string>; value: [number, string] };
@@ -126,6 +145,7 @@ async function trace(request: APIRequestContext, traceId: string): Promise<Trace
   );
 }
 
+// On OpenShift the same checks prove AC-016-24: the stack works there as it does in Compose.
 test.describe('observability stack', () => {
   test.skip(!enabled, 'needs a running stack and KRITZEL_OBS=1');
   test.describe.configure({ mode: 'serial', timeout: 300_000 });
@@ -428,7 +448,7 @@ test.describe('observability stack', () => {
     };
     // The collector is reachable only inside the Compose network.
     const script = `
-      const send = (path, body) => fetch('http://otel-collector:4318' + path, {
+      const send = (path, body) => fetch('http://${collectorHost}:4318' + path, {
         method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body),
       }).then((response) => response.status);
       Promise.all([send('/v1/traces', ${JSON.stringify(traces)}), send('/v1/logs', ${JSON.stringify(logs)})])

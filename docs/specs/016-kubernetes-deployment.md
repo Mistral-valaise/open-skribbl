@@ -1,9 +1,9 @@
 # 016 — Kubernetes and OpenShift deployment
 
-|           |          |
-| --------- | -------- |
-| Status    | Approved |
-| Milestone | M6       |
+|           |             |
+| --------- | ----------- |
+| Status    | Implemented |
+| Milestone | M6          |
 
 ## Intent
 
@@ -41,10 +41,10 @@ Some teams run everything on a cluster. A Helm chart lets them install Kritzel t
 | Prometheus        |        200m |     1000m |          256Mi |        768Mi |                     2Gi |
 | Loki              |        200m |     1000m |          256Mi |        768Mi |                     2Gi |
 | Tempo             |        200m |     1000m |          256Mi |        768Mi |                     2Gi |
-| Grafana           |        100m |      500m |          128Mi |        384Mi |                   512Mi |
+| Grafana           |        100m |      500m |          256Mi |        768Mi |                   512Mi |
 | Traffic generator |         25m |      200m |           48Mi |        128Mi |                    64Mi |
 
-These are starting values. `docs/DEPLOYMENT-OPENSHIFT.md` records what a running demo actually used.
+These are starting values, except Grafana's: the 384Mi first proposed got its pod killed for memory on the sandbox, where it uses about 350Mi. `docs/DEPLOYMENT-OPENSHIFT.md` records what a running demo actually used.
 
 ### Proxy trust
 
@@ -55,11 +55,11 @@ These are starting values. `docs/DEPLOYMENT-OPENSHIFT.md` records what a running
 - `.github/workflows/deploy-openshift-demo.yml`, started by hand (`workflow_dispatch`) with the commit to deploy, and optionally after a successful CI run on `main` when the repository variable `DEPLOY_DEMO_ON_MAIN` is `true`. It never runs for pull requests.
 - It runs in the GitHub environment `dev` and uses exactly: the secret `OPENSHIFT_TOKEN`, the variables `OPENSHIFT_SERVER` and `OPENSHIFT_NAMESPACE`, and optionally the secret `GRAFANA_ADMIN_PASSWORD`.
 - Only commits that are on `main` and whose CI run succeeded are deployed. The image is taken from GHCR by the digest of its `sha-<commit>` tag.
-- Runs for the same namespace never overlap. Workflow permissions are read-only. Third-party actions are pinned to a full commit SHA; `oc` and `helm` are pinned versions verified by checksum.
+- Runs for the environment, and so for its namespace, never overlap and are never cancelled halfway. Workflow permissions are read-only. Third-party actions are pinned to a full commit SHA; `oc` and `helm` are pinned versions verified by checksum.
 - Credentials go into a temporary kubeconfig, TLS verification stays on, and no step prints a token, a password, a kubeconfig or a room code.
-- **Preflight** (`deploy/scripts/preflight.sh`) stops before anything is changed, with a message that says what to do, when: the token is rejected, the namespace is not the expected one, a required permission is missing, or the quota cannot hold the chart's requests and limits.
+- **Preflight** (`deploy/scripts/preflight.mjs`) stops before anything is changed, with a message that says what to do, when: the token is rejected, the namespace is not the expected one, a required permission is missing, or the quota cannot hold the chart's requests and limits.
 - **Deploy**: `helm upgrade --install` with `--wait`, a timeout, and rollback on failure. It touches only the release's own objects.
-- **Verify** (`deploy/scripts/verify.sh`): pods ready and running with a user id from the namespace's range; the Route serves the app over HTTPS and redirects HTTP; a complete game with a reconnect is played over `wss://` through the Route; metrics, logs and traces of that run are in the backends; Grafana's data sources are healthy and the dashboards present.
+- **Verify** (`deploy/scripts/verify.mjs`): pods ready and running with a user id from the namespace's range; the Route serves the app over HTTPS and redirects HTTP; a complete game with a reconnect is played over `wss://` through the Route; metrics, logs and traces of that run are in the backends; Grafana's data sources are healthy and the dashboards present.
 - The run summary lists commit, image digest, chart version, namespace, URLs and the result of every check.
 
 ### Limits of the demo
@@ -84,7 +84,7 @@ The Developer Sandbox is a trial environment. It stops idle workloads and expire
 - **AC-016-14** The game's probes use `/healthz` only, and its termination grace period is at least 15 s.
 - **AC-016-15** `TRUST_PROXY` accepts a list of proxy addresses and networks; behind a listed proxy the address the proxy appended is used for rate limits, and a client that is not a listed proxy cannot choose its address.
 - **AC-016-16** The demo profile sets `MAX_ROOMS`, the trace sampler and the retention of every backend from values.
-- **AC-016-17** The workflow is started only by `workflow_dispatch` or by a completed CI run on `main`, has read-only permissions, uses the environment `dev`, serialises runs per namespace, and references no secret or variable other than the four named above.
+- **AC-016-17** The workflow is started only by `workflow_dispatch` or by a completed CI run on `main`, has read-only permissions, uses the environment `dev`, serialises its runs, and references no secret or variable other than the four named above.
 - **AC-016-18** Every third-party action in the workflow is pinned to a 40-character commit SHA, and no script enables shell tracing or prints a credential.
 - **AC-016-19** The preflight exits non-zero with a specific message for a rejected token, a wrong namespace, a missing permission and an insufficient quota, and exits zero when all hold.
 - **AC-016-20** The workflow deploys the game image by digest with `helm upgrade --install --wait`, a timeout and rollback on failure, and scopes every `oc` and `helm` command to the namespace.

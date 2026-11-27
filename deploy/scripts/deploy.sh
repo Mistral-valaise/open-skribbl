@@ -62,8 +62,7 @@ fi
 oc label secret "$SECRET" --namespace "$NAMESPACE" --overwrite \
   app.kubernetes.io/part-of=kritzel >/dev/null
 
-helm upgrade --install "$RELEASE" "$CHART" \
-  --namespace "$NAMESPACE" \
+helm upgrade --install "$RELEASE" "$CHART" --namespace "$NAMESPACE" \
   --values "$CHART/values-demo.yaml" \
   --set-string "image.repository=$IMAGE_REPOSITORY" \
   --set-string "image.digest=$IMAGE_DIGEST" \

@@ -13,6 +13,7 @@ Hosting Kritzel must be boring: one image, one port, no state, no secrets. An op
 
 - `docker run -p 3000:3000 ghcr.io/<owner>/<repo>` starts a complete instance: web app, API and WebSocket endpoint on one port.
 - The operator puts a TLS-terminating reverse proxy in front of it. The hosting guide (`docs/HOSTING.md`) has examples for Caddy, nginx and Traefik and notes for Fly.io, Railway and Render.
+- A Helm chart is an optional second way to run the same image on a cluster ([spec 016](016-kubernetes-deployment.md)).
 - Updating is pulling a new image and restarting. Running games end; players are told the server is restarting (spec 007).
 
 ## Rules
@@ -86,4 +87,4 @@ An invalid value stops the process at start-up with a message naming the variabl
 
 ## Out of scope
 
-Kubernetes manifests and Helm charts, built-in TLS, a scrape endpoint for metrics (telemetry is pushed, spec 015), multi-instance deployments, automatic updates.
+Built-in TLS, a scrape endpoint for metrics (telemetry is pushed, spec 015), multi-instance deployments, automatic updates.

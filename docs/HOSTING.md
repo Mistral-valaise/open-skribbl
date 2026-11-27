@@ -133,6 +133,10 @@ pnpm obs:up
 
 Grafana is published on `127.0.0.1:3001` only, with a login. [OBSERVABILITY.md](OBSERVABILITY.md) describes every variable, metric, span and dashboard and the proposed service level objectives; [RUNBOOK.md](RUNBOOK.md) says what to do when an alert fires.
 
+## Kubernetes and OpenShift
+
+`docker run` is the way Kritzel is meant to be hosted. For a cluster there is a Helm chart in `deploy/helm/kritzel`: the game alone by default, or with the observability stack in its demo profile. It runs exactly one replica of the game and needs nothing beyond a namespace. See [DEPLOYMENT-OPENSHIFT.md](DEPLOYMENT-OPENSHIFT.md).
+
 ## Capacity
 
 Measured with `pnpm loadtest` against the image limited to 1 CPU and 512 MB (`docker run --cpus 1 --memory 512m`): 30 rooms with 8 players each, every room in a running game for 60 s, drawers sending about ten drawing messages per second and guessers chatting.

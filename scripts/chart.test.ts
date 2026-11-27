@@ -273,7 +273,7 @@ describe('chart security (spec 016)', () => {
       'kritzel-prometheus': '200m 1000m 256Mi 768Mi 2Gi',
       'kritzel-loki': '200m 1000m 256Mi 768Mi 2Gi',
       'kritzel-tempo': '200m 1000m 256Mi 768Mi 2Gi',
-      'kritzel-grafana': '100m 500m 128Mi 384Mi 512Mi',
+      'kritzel-grafana': '100m 500m 256Mi 768Mi 512Mi',
       'kritzel-traffic': '25m 200m 48Mi 128Mi 64Mi',
     });
   });

@@ -43,6 +43,23 @@ test.describe('container image', () => {
     }).trim();
     expect(Number(uid)).toBeGreaterThan(0);
   });
+
+  test('AC-017-26: the image carries no package manager', () => {
+    // The server is one bundled file; npm and its modules would only be
+    // something to scan and patch.
+    const found = execFileSync(
+      'docker',
+      [
+        'exec',
+        container!,
+        'sh',
+        '-c',
+        'for tool in npm npx corepack yarn yarnpkg; do command -v "$tool"; done; ls -d /usr/local/lib/node_modules /opt/yarn-* 2>/dev/null; true',
+      ],
+      { encoding: 'utf8' },
+    ).trim();
+    expect(found).toBe('');
+  });
 });
 
 test.describe('behind a TLS reverse proxy', () => {

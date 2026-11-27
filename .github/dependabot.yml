@@ -1,0 +1,38 @@
+# Weekly update proposals (spec 017). Each arrives as a pull request and runs
+# the same checks as any other change.
+#
+# Not covered: tool images pinned inside scripts and `run` steps (actionlint,
+# Trivy, gitleaks, Caddy) and the helm and oc downloads. Those are raised by
+# hand.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    groups:
+      # One pull request for the routine updates, separate ones for majors.
+      minor-and-patch:
+        update-types: [minor, patch]
+
+  # Raises the pinned commit and the version comment together.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    groups:
+      actions:
+        patterns: ['*']
+
+  - package-ecosystem: docker
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    ignore:
+      # The Node major is a decision (.nvmrc, engines), not a routine update.
+      - dependency-name: node
+        update-types: ['version-update:semver-major']

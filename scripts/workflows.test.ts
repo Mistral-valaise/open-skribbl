@@ -9,15 +9,15 @@ describe('workflows (spec 012)', () => {
   it('AC-012-12: CI runs the full check, the build and the end-to-end tests', () => {
     const ci = read('.github/workflows/ci.yml');
     const check = JSON.parse(read('package.json')).scripts.check as string;
-    for (const step of [
-      'pnpm check',
-      'pnpm build',
-      'pnpm e2e',
-      '--frozen-lockfile',
-      'docker build',
-    ]) {
+    for (const step of ['pnpm check', 'pnpm build', 'pnpm e2e', '--frozen-lockfile']) {
       expect(ci, step).toContain(step);
     }
+    // The image is built and played through in the workflow the release shares (spec 017).
+    const imageTest = read('.github/workflows/image-test.yml');
+    expect(ci).toContain('uses: ./.github/workflows/image-test.yml');
+    expect(imageTest).toContain('docker build -t kritzel .');
+    expect(imageTest).toContain('pnpm e2e');
+    expect(imageTest).not.toContain('continue-on-error');
     for (const part of ['pnpm lint', 'pnpm typecheck', 'pnpm test', 'spec:coverage --strict']) {
       expect(check, part).toContain(part);
     }
@@ -30,11 +30,13 @@ describe('workflows (spec 012)', () => {
   it('AC-012-13: the release workflow publishes amd64 and arm64 images to GHCR', () => {
     const release = read('.github/workflows/release.yml');
     expect(release).toContain('platforms: linux/amd64,linux/arm64');
-    expect(release).toContain('ghcr.io/${{ github.repository }}');
     expect(release).toContain('push: true');
-    expect(release).toContain('secrets.GITHUB_TOKEN');
-    // An immutable tag per commit, and the version baked into the build.
-    expect(release).toContain('type=sha,prefix=sha-,format=long');
+    // Pushed with the run's own token, to ghcr.io/<owner>/<repo> in lower case.
+    expect(release).toContain('docker login ghcr.io');
+    expect(release).toContain('${{ github.token }}');
+    expect(read('scripts/release.mjs')).toContain('`ghcr.io/${repository.toLowerCase()}`');
+    // An immutable tag per commit, and the version baked into the build (spec 017).
+    expect(release).toContain(':sha-${{ github.sha }}');
     expect(release).toContain('KRITZEL_VERSION=');
     expect(read('Dockerfile')).toContain('ARG KRITZEL_VERSION');
   });

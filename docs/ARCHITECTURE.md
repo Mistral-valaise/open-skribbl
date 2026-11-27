@@ -232,7 +232,7 @@ Tests name the acceptance criteria they cover in their title (`it('AC-005-03: â€
 - The Docker image is multi-stage: build with pnpm, then a slim Node runtime containing the server bundle, its production dependencies, the web build and the content. It runs as a non-root user and listens on `PORT` (default 3000).
 - Configuration is by environment variables only; the full list is in [spec 012](specs/012-deployment-and-operations.md).
 - TLS and WebSocket upgrade are terminated by the operator's reverse proxy; the README documents Caddy, nginx and Traefik.
-- CI (GitHub Actions) runs lint, type check, tests, spec coverage and build on every pull request and on `main`; a release workflow publishes the image to GHCR from `main` and from `v*` tags.
+- CI (GitHub Actions) runs lint, type check, tests, spec coverage and build on every pull request and on `main`; a release workflow builds the image once per commit of `main`, tests, scans and signs that digest, and only then moves `edge` or, for a `v*` tag, the version and `latest` to it ([spec 017](specs/017-release-and-supply-chain.md), [ADR 0008](adr/0008-release-by-promotion.md)).
 
 ## 12. Security and privacy
 

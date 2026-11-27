@@ -1,0 +1,11 @@
+# Exceptions to the image scan (spec 017). There are none.
+#
+# An exception is a vulnerability the scan reports and that cannot be fixed
+# yet. Each entry is one line, the identifier and the day it expires, with the
+# reason in a comment on the line directly above:
+#
+#   # Why it does not affect Kritzel, and what has to happen to remove it.
+#   CVE-0000-00000 exp:YYYY-MM-DD
+#
+# Trivy stops honouring an entry on its expiry date, so the scan fails again
+# until someone looks. Give an entry three months at most.

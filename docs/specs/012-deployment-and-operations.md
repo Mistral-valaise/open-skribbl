@@ -60,8 +60,11 @@ An invalid value stops the process at start-up with a message naming the variabl
 ### CI and release
 
 - **CI** on every pull request and on `main`: install, lint, type check, unit and integration tests, strict spec coverage, build, end-to-end tests. A further job starts the observability stack and checks it through its APIs (spec 015).
-- **Release** on push to `main` and on `v*` tags: build the multi-architecture image and push it to GHCR, tagged `edge` and the immutable `sha-<commit>` for `main`, and with the version plus `latest` for tags.
-- Workflows use only the repository's `GITHUB_TOKEN`.
+- **Release** on push to `main` and on `v*` tags, by promotion ([spec 017](017-release-and-supply-chain.md)): a commit of `main` is built once into the multi-architecture image and pushed to GHCR as the immutable `sha-<commit>`. That digest is tested, scanned and signed; only then does `edge` point to it. A `v*` tag builds nothing and points the version and `latest` at the image of its commit after the same checks.
+- The tests against the container, including the game through a TLS proxy, are one reusable workflow that CI runs on an image built from the checkout and the release runs on the published digest.
+- **Security checks** on every pull request, on `main` and weekly: dependency audit, dependency review, CodeQL, a secret scan and a rescan of the released image (spec 017).
+- Workflows use the repository's `GITHUB_TOKEN` and, for signing, the run's OIDC token. No signing key or registry password is stored.
+- Actions are pinned to commit ids and tool images to digests (spec 017).
 
 ### Capacity check
 

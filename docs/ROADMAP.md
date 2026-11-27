@@ -10,6 +10,7 @@ A milestone is done when every spec assigned to it is `Implemented`: all its acc
 | **M3** Solo mode               | Dataset pipeline, replay engine, solo run, personal best                                                                                                                                                           | 009                     | Done   |
 | **M4** Polish and release      | Themes, sound, responsive and touch polish, accessibility pass, Docker image, GHCR publishing, load test, hosting guides                                                                                           | 011, 012                | Done   |
 | **M6** Cloud-native operations | Opt-in OpenTelemetry with a local observability stack, SLOs generated with Sloth, a Helm chart and the OpenShift demo deployment. M5 (security and player experience) is tracked in issues 1 and 2 and still open. | 015, 016                | Done   |
+| **M7** Release process         | Release by promotion of a tested, scanned and signed image, security checks on every change and weekly, pinned actions and tool images                                                                             | 017                     | Done   |
 
 ## After v1
 

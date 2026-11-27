@@ -1,7 +1,21 @@
 name: Release
 
-# Publishes the container image to GHCR: `edge` and `sha-<commit>` from main,
-# the version and `latest` from v* tags (spec 012).
+# Release by promotion (spec 017, ADR 0008).
+#
+# A push to main builds the image once and pushes it as `sha-<commit>` only.
+# That digest is tested, scanned and signed; then `edge` is pointed at it.
+# A tag `vX.Y.Z` builds nothing: it takes the image of its commit, runs the
+# same checks on it and points `X.Y.Z`, `X.Y` and `latest` at the same digest,
+# then creates the GitHub Release.
+#
+#   plan ─┬─ build (main only) ─┬─ test ─┬─ sign ── promote ── release (tag only)
+#         └─────────────────────┴─ scan ─┘
+#
+# `build` is skipped on a tag. A job after a skipped job is skipped too unless
+# its `if` says otherwise, so every later job names the results it requires.
+#
+# A tag pushed before the run of its commit on main has pushed the image fails
+# in `plan`; start it again once that run has finished.
 on:
   push:
     branches: [main]
@@ -9,39 +23,291 @@ on:
 
 permissions:
   contents: read
-  packages: write
 
 jobs:
-  image:
+  # Decides what this run publishes and refuses a release that is not in order,
+  # before anything is pushed.
+  plan:
+    name: Plan
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+    outputs:
+      image: ${{ steps.plan.outputs.image }}
+      version: ${{ steps.plan.outputs.version }}
+      build_version: ${{ steps.plan.outputs.build_version }}
+      tags: ${{ steps.plan.outputs.tags }}
+      release: ${{ steps.plan.outputs.release }}
+      # Set on a tag only: the image its commit already has.
+      digest: ${{ steps.image.outputs.digest }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: docker/setup-qemu-action@v3
-      - uses: docker/setup-buildx-action@v3
-      - uses: docker/login-action@v3
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      - id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ghcr.io/${{ github.repository }}
-          tags: |
-            type=raw,value=edge,enable=${{ github.ref == 'refs/heads/main' }}
-            # Immutable: deployments pin a commit, never a moving tag (spec 016).
-            type=sha,prefix=sha-,format=long
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=raw,value=latest,enable=${{ startsWith(github.ref, 'refs/tags/v') }}
-      - uses: docker/build-push-action@v6
+          # A tag run asks whether its commit is on main.
+          fetch-depth: 0
+      - name: Tags, version, and for a release the tag and the changelog
+        id: plan
+        run: node scripts/release.mjs plan
+      - name: Require the tagged commit to be on main
+        if: steps.plan.outputs.release == 'true'
+        run: |
+          set -euo pipefail
+          git fetch --quiet origin '+refs/heads/main:refs/remotes/origin/main'
+          if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/main; then
+            echo "::error::Commit $GITHUB_SHA of the tag $GITHUB_REF_NAME is not on main. A release is a tag on a commit of main."
+            exit 1
+          fi
+      - name: Find the image of the tagged commit
+        id: image
+        if: steps.plan.outputs.release == 'true'
+        env:
+          IMAGE: ${{ steps.plan.outputs.image }}
+          TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          echo "$TOKEN" | docker login ghcr.io --username "$GITHUB_ACTOR" --password-stdin
+          if ! digest="$(docker buildx imagetools inspect "$IMAGE:sha-$GITHUB_SHA" --format '{{.Manifest.Digest}}')"; then
+            echo "::error::No image $IMAGE:sha-$GITHUB_SHA. A release promotes the image built from its commit on main: wait for the Release run of that commit to push it, then run this workflow again."
+            exit 1
+          fi
+          if ! printf '%s' "$digest" | grep -Eq '^sha256:[0-9a-f]{64}$'; then
+            echo "::error::'$digest' is not an image digest (sha256:<64 hex digits>)."
+            exit 1
+          fi
+          echo "digest=$digest" >> "$GITHUB_OUTPUT"
+
+  # The only build. Its one tag is immutable and nobody pulls it by accident.
+  build:
+    name: Build sha-<commit>
+    needs: plan
+    if: github.ref_type == 'branch'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      digest: ${{ steps.build.outputs.digest }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: docker/setup-qemu-action@99012661954931238ded8c8b007157a8430204e1 # v4.4.0
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+      - name: Log in to GHCR
+        env:
+          TOKEN: ${{ github.token }}
+        run: echo "$TOKEN" | docker login ghcr.io --username "$GITHUB_ACTOR" --password-stdin
+      - id: build
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
         with:
           context: .
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: ${{ needs.plan.outputs.image }}:sha-${{ github.sha }}
+          labels: |
+            org.opencontainers.image.title=Kritzel
+            org.opencontainers.image.description=Self-hosted, ad-free draw-and-guess party game
+            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.version=${{ needs.plan.outputs.build_version }}
+            org.opencontainers.image.licenses=MIT
           build-args: |
-            KRITZEL_VERSION=${{ github.ref_type == 'tag' && steps.meta.outputs.version || format('0.0.0-{0}', github.sha) }}
+            KRITZEL_VERSION=${{ needs.plan.outputs.build_version }}
+          sbom: true
+          provenance: mode=max
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+  # Starts exactly that digest and plays through it, also behind a TLS proxy:
+  # the workflow CI runs on an image built from the checkout.
+  test:
+    name: Test the digest
+    needs: [plan, build]
+    if: ${{ !cancelled() && needs.plan.result == 'success' && (needs.build.result == 'success' || (needs.build.result == 'skipped' && needs.plan.outputs.release == 'true')) }}
+    permissions:
+      contents: read
+      packages: read
+    uses: ./.github/workflows/image-test.yml
+    with:
+      image: ${{ needs.plan.outputs.image }}@${{ needs.build.outputs.digest || needs.plan.outputs.digest }}
+
+  # Fails on a CRITICAL or HIGH vulnerability that has a fix. Exceptions are
+  # lines in .trivyignore with a reason and an expiry date.
+  scan:
+    name: Scan the digest
+    needs: [plan, build]
+    if: ${{ !cancelled() && needs.plan.result == 'success' && (needs.build.result == 'success' || (needs.build.result == 'skipped' && needs.plan.outputs.release == 'true')) }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Scan with Trivy
+        env:
+          IMAGE: ${{ needs.plan.outputs.image }}
+          DIGEST: ${{ needs.build.outputs.digest || needs.plan.outputs.digest }}
+          TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          echo "$TOKEN" | docker login ghcr.io --username "$GITHUB_ACTOR" --password-stdin
+          REGISTRY_AUTH_FILE="$HOME/.docker/config.json" scripts/scan-image.sh "$IMAGE@$DIGEST"
+
+  # Keyless: the signature is bound to this workflow's OIDC identity and logged
+  # publicly; there is no key. It is made only for a digest that passed, so a
+  # valid signature also says that the tests and the scan passed.
+  sign:
+    name: Sign the digest
+    needs: [plan, build, test, scan]
+    if: ${{ !cancelled() && needs.test.result == 'success' && needs.scan.result == 'success' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+      attestations: write
+    env:
+      IMAGE: ${{ needs.plan.outputs.image }}
+      DIGEST: ${{ needs.build.outputs.digest || needs.plan.outputs.digest }}
+    steps:
+      - uses: sigstore/cosign-installer@881c63bd87e38389154debd8331404ce7ca8a3ab # v4.1.4
+      - name: Log in to GHCR
+        env:
+          TOKEN: ${{ github.token }}
+        run: echo "$TOKEN" | docker login ghcr.io --username "$GITHUB_ACTOR" --password-stdin
+      - name: Sign with cosign
+        run: cosign sign --yes "$IMAGE@$DIGEST"
+      # The command the release notes and the hosting guide give, with this
+      # run's identity: a signature nobody can verify is not published.
+      - name: Verify the signature
+        run: |
+          cosign verify "$IMAGE@$DIGEST" \
+            --certificate-oidc-issuer https://token.actions.githubusercontent.com \
+            --certificate-identity "$GITHUB_SERVER_URL/$GITHUB_WORKFLOW_REF" > /dev/null
+      - name: Attest the build provenance
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-name: ${{ needs.plan.outputs.image }}
+          subject-digest: ${{ needs.build.outputs.digest || needs.plan.outputs.digest }}
+          push-to-registry: true
+          # Storage records belong to organisations; this repository has none.
+          create-storage-record: false
+
+  # Writes tags for the manifest that exists. Nothing is built or pushed again.
+  promote:
+    name: Promote
+    needs: [plan, build, sign]
+    if: ${{ !cancelled() && needs.sign.result == 'success' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Log in to GHCR
+        env:
+          TOKEN: ${{ github.token }}
+        run: echo "$TOKEN" | docker login ghcr.io --username "$GITHUB_ACTOR" --password-stdin
+      - name: Point the tags at the digest
+        env:
+          IMAGE: ${{ needs.plan.outputs.image }}
+          DIGEST: ${{ needs.build.outputs.digest || needs.plan.outputs.digest }}
+          TAGS: ${{ needs.plan.outputs.tags }}
+          RELEASE: ${{ needs.plan.outputs.release }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if [ "$RELEASE" != true ]; then
+            # An older run that finishes late must not move edge backwards.
+            head="$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/main" --jq .object.sha)"
+            if [ "$head" != "$GITHUB_SHA" ]; then
+              echo "::notice::main is at $head by now. edge is left to the run of that commit; this image stays available as sha-$GITHUB_SHA."
+              exit 0
+            fi
+          fi
+          tags=()
+          for tag in $TAGS; do tags+=(--tag "$IMAGE:$tag"); done
+          docker buildx imagetools create "${tags[@]}" "$IMAGE@$DIGEST"
+          for tag in $TAGS; do
+            actual="$(docker buildx imagetools inspect "$IMAGE:$tag" --format '{{.Manifest.Digest}}')"
+            if ! [ "$actual" = "$DIGEST" ]; then
+              echo "::error::$IMAGE:$tag is $actual, not the tested digest $DIGEST."
+              exit 1
+            fi
+          done
+          {
+            echo "## Promoted"
+            echo
+            echo "\`$IMAGE@$DIGEST\`"
+            echo
+            for tag in $TAGS; do echo "- \`$IMAGE:$tag\`"; done
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # The GitHub Release of a version tag: changelog, digest, how to verify the
+  # signature, the bill of materials and the Helm chart.
+  release:
+    name: GitHub Release
+    needs: [plan, promote]
+    if: ${{ !cancelled() && needs.promote.result == 'success' && needs.plan.outputs.release == 'true' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: read
+    env:
+      IMAGE: ${{ needs.plan.outputs.image }}
+      DIGEST: ${{ needs.plan.outputs.digest }}
+      VERSION: ${{ needs.plan.outputs.version }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Release notes
+        run: node scripts/release.mjs notes --digest "$DIGEST" > "$RUNNER_TEMP/notes.md"
+      - name: Software bill of materials, as recorded at build time
+        env:
+          TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          echo "$TOKEN" | docker login ghcr.io --username "$GITHUB_ACTOR" --password-stdin
+          mkdir -p "$RUNNER_TEMP/assets"
+          for platform in linux/amd64 linux/arm64; do
+            file="$RUNNER_TEMP/assets/kritzel-$VERSION-${platform//\//-}.spdx.json"
+            docker buildx imagetools inspect "$IMAGE@$DIGEST" --format "{{ json (index .SBOM \"$platform\").SPDX }}" > "$file"
+            if ! jq --exit-status '(.spdxVersion // "" | startswith("SPDX-")) and (.packages | length > 0)' "$file" > /dev/null; then
+              echo "::error::The image has no SPDX bill of materials for $platform."
+              exit 1
+            fi
+          done
+      - name: Install helm, verified by checksum
+        env:
+          HELM_VERSION: v4.3.1
+          HELM_SHA256: 0403a88ae20913d11b10a2467b50087721fea7581736da6b9d3992f5357fe54b
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/bin" && cd "$RUNNER_TEMP"
+          curl --fail --silent --show-error --location --output helm.tar.gz \
+            "https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz"
+          echo "${HELM_SHA256}  helm.tar.gz" | sha256sum --check --strict
+          tar --extract --gzip --file helm.tar.gz --strip-components 1 --directory bin linux-amd64/helm
+          echo "$RUNNER_TEMP/bin" >> "$GITHUB_PATH"
+      - name: Package the Helm chart, set to the released image
+        run: |
+          set -euo pipefail
+          cp -R deploy/helm/kritzel "$RUNNER_TEMP/chart"
+          node scripts/release.mjs chart-values --digest "$DIGEST" "$RUNNER_TEMP/chart/values.yaml"
+          helm lint "$RUNNER_TEMP/chart" --strict
+          helm package "$RUNNER_TEMP/chart" --app-version "$VERSION" --destination "$RUNNER_TEMP/assets"
+      - name: Promotional material, when the repository has any
+        run: |
+          set -euo pipefail
+          if [ -d marketing/promo/dist ]; then
+            find marketing/promo/dist -type f ! -name '.*' -exec cp {} "$RUNNER_TEMP/assets/" \;
+          fi
+      - name: Create the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if gh release view "$GITHUB_REF_NAME" > /dev/null 2>&1; then
+            # A second run for the same tag refreshes what the first one made.
+            gh release edit "$GITHUB_REF_NAME" --title "Kritzel $VERSION" --notes-file "$RUNNER_TEMP/notes.md"
+            gh release upload "$GITHUB_REF_NAME" "$RUNNER_TEMP"/assets/* --clobber
+          else
+            gh release create "$GITHUB_REF_NAME" --verify-tag --title "Kritzel $VERSION" --notes-file "$RUNNER_TEMP/notes.md" "$RUNNER_TEMP"/assets/*
+          fi

@@ -16,9 +16,9 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version-file: .nvmrc
           cache: pnpm
@@ -47,9 +47,9 @@ jobs:
   e2e:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version-file: .nvmrc
           cache: pnpm
@@ -57,46 +57,20 @@ jobs:
       - run: pnpm exec playwright install --with-deps chromium
       - run: pnpm e2e
 
+  # The image, built the way the README says, started and played through, also
+  # behind a TLS proxy. The release runs the same workflow on the digest it
+  # publishes (spec 017).
   container:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version-file: .nvmrc
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm exec playwright install --with-deps chromium
-      # The README quick start, literally.
-      - run: docker build -t kritzel .
-      - run: docker run -d --name kritzel -p 3000:3000 kritzel
-      - name: Tests against the container
-        run: pnpm e2e
-        env:
-          KRITZEL_E2E_URL: http://127.0.0.1:3000
-          KRITZEL_CONTAINER: kritzel
-      - name: Start a TLS reverse proxy in front of the container
-        run: |
-          docker network create kritzel-net
-          docker network connect kritzel-net kritzel
-          docker run -d --name caddy --network kritzel-net -p 8443:8443 caddy:2-alpine \
-            caddy reverse-proxy --from https://localhost:8443 --to kritzel:3000
-          sleep 5
-      - name: Game through the proxy
-        run: pnpm e2e container
-        env:
-          KRITZEL_E2E_URL: https://localhost:8443
-          KRITZEL_CONTAINER: kritzel
+    uses: ./.github/workflows/image-test.yml
 
   # The local observability stack, started the documented way and checked
   # through its real APIs (spec 015).
   observability:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version-file: .nvmrc
           cache: pnpm

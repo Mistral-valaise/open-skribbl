@@ -35,6 +35,7 @@ An operator who pulls `latest` must get an image that was tested, scanned and si
 - Platforms `linux/amd64` and `linux/arm64`, one build, one push, the single tag `sha-<commit>` with the full 40-character commit id.
 - BuildKit attaches a software bill of materials (SPDX) and a provenance attestation (`mode=max`) for each platform.
 - The build argument `KRITZEL_VERSION` is `<version>+<short commit>`: the version of the root `package.json` and the first 7 characters of the commit, for example `1.0.0+3f2a9c1`. A released image keeps this value; it is not rebuilt to change it.
+- The build stage runs on the platform of the machine that builds (`--platform=$BUILDPLATFORM`), once for both images. What it produces, the server bundle and the web app, is JavaScript and static files and is the same for every platform, so installing and compiling under emulation would only add time and the crashes of an emulated Node.js. The runtime stage is built for each target platform; the only command it runs is the removal below.
 - The runtime stage contains no package manager. The `npm`, `npx`, `corepack` and `yarn` commands of the base image and their modules are removed, because the server is one bundled file and never runs them.
 
 ### Checks on the digest
@@ -151,6 +152,7 @@ Dependabot proposes updates every week for npm packages, GitHub Actions and the 
 - **AC-017-26** The runtime image contains no `npm`, `npx`, `corepack` or `yarn`.
 - **AC-017-27** The hosting guide explains what `latest`, `edge`, `sha-<commit>` and version tags mean, how to verify a signature and how to roll back.
 - **AC-017-28** Every job of the release workflow ends after a time limit: 30 minutes for `build`, 20 minutes for the job of the reusable image test, 10 minutes for every other job.
+- **AC-017-29** The build stage of the image runs on the build platform, the runtime stage on the target platform, and the runtime stage runs no command other than removing files.
 
 ## Out of scope
 

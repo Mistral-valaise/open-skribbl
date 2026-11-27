@@ -1,7 +1,10 @@
 # syntax=docker/dockerfile:1
 
 # ── build ────────────────────────────────────────────────────────────────
-FROM node:22-alpine AS build
+# Runs on the machine's own platform, once for every target platform: what it
+# produces is JavaScript and static files, the same everywhere, and Node.js
+# under emulation is slow and can crash (spec 017).
+FROM --platform=$BUILDPLATFORM node:22-alpine AS build
 WORKDIR /app
 RUN corepack enable
 

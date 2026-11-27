@@ -135,7 +135,6 @@ jobs:
       contents: read
     env:
       NAMESPACE: ${{ vars.OPENSHIFT_NAMESPACE }}
-      KUBECONFIG: ${{ runner.temp }}/kubeconfig
       IMAGE_DIGEST: ${{ needs.guard.outputs.digest }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
@@ -177,6 +176,10 @@ jobs:
             *) echo "::error::OPENSHIFT_SERVER must be an https:// URL."; exit 1 ;;
           esac
           umask 077
+          # A kubeconfig of this run only, outside the checkout; removed at the end.
+          # (The runner context is not available in a job's env, so it is set here.)
+          export KUBECONFIG="$RUNNER_TEMP/kubeconfig"
+          echo "KUBECONFIG=$KUBECONFIG" >> "$GITHUB_ENV"
           # Certificates are verified against the runner's trust store; the token
           # goes into the kubeconfig file only.
           oc config set-cluster demo --server="$OPENSHIFT_SERVER" >/dev/null
@@ -257,4 +260,4 @@ jobs:
 
       - name: Remove the kubeconfig
         if: always()
-        run: rm -f "$KUBECONFIG"
+        run: rm -f "$RUNNER_TEMP/kubeconfig"

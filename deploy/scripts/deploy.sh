@@ -45,11 +45,14 @@ done
 
 # The Grafana admin password lives in a Secret and nowhere else. It is passed
 # on standard input, so it never appears in a command line or in the output.
+PASSWORD_CHANGED=false
 if [[ -n "${GRAFANA_ADMIN_PASSWORD:-}" ]]; then
-  printf '%s' "$GRAFANA_ADMIN_PASSWORD" |
+  # Applying reports "configured" when the Secret existed with another value.
+  applied="$(printf '%s' "$GRAFANA_ADMIN_PASSWORD" |
     oc create secret generic "$SECRET" --namespace "$NAMESPACE" \
       --from-file=admin-password=/dev/stdin --dry-run=client --output yaml |
-    oc apply --namespace "$NAMESPACE" --filename - >/dev/null
+    oc apply --namespace "$NAMESPACE" --filename - 2>/dev/null)"
+  if [[ "$applied" == *configured* ]]; then PASSWORD_CHANGED=true; fi
   echo "Grafana admin password stored in the Secret $SECRET."
 elif oc get secret "$SECRET" --namespace "$NAMESPACE" >/dev/null 2>&1; then
   echo "Keeping the existing Secret $SECRET."
@@ -70,5 +73,14 @@ helm upgrade --install "$RELEASE" "$CHART" --namespace "$NAMESPACE" \
   --set "grafana.route.enabled=$GRAFANA_ROUTE" \
   --set "traffic.enabled=$TRAFFIC" \
   --wait --timeout "$TIMEOUT" --rollback-on-failure
+
+# Grafana reads the password when it starts. A changed Secret alone does not
+# restart it, so an already running Grafana would keep the old password.
+if [[ "$PASSWORD_CHANGED" == true ]] &&
+  oc get deployment "${RELEASE}-grafana" --namespace "$NAMESPACE" >/dev/null 2>&1; then
+  oc rollout restart "deployment/${RELEASE}-grafana" --namespace "$NAMESPACE" >/dev/null
+  oc rollout status "deployment/${RELEASE}-grafana" --namespace "$NAMESPACE" --timeout=180s >/dev/null
+  echo "Grafana restarted to apply the changed password."
+fi
 
 helm status "$RELEASE" --namespace "$NAMESPACE" | sed -n '1,8p'

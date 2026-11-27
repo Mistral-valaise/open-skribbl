@@ -63,8 +63,14 @@ test('AC-011-17, AC-011-19: a guesser keeps seeing the drawing while the keyboar
   const guest = await newParticipant(browser, { locale: 'en-US', viewport: PHONE });
   const code = await createRoom(host, 'Mara');
   await joinRoom(guest, code, 'Noa');
+  // The worst case for the one-row bar: three written words, 30 letters and
+  // spaces, the longest a word may be (spec 006).
+  const longest = Array.from('abcdefghij', (letter) => `enormous raspberry milkshake ${letter}`);
+  await host.getByTestId('setting-customWords').fill(longest.join(', '));
+  await host.getByTestId('setting-customWords').blur();
+  await host.getByTestId('setting-customWordsOnly').check();
   await host.getByTestId('start-game').click();
-  await chooseFirstWord(host);
+  expect(await chooseFirstWord(host)).toHaveLength(30);
   await expect(guest.getByTestId('game')).toHaveAttribute('data-phase', 'drawing');
   await expect(guest.getByTestId('game')).toHaveAttribute('data-viewport', 'full');
   await expect(guest.getByTestId('reaction-bar')).toBeVisible();

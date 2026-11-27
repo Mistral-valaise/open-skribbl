@@ -10,12 +10,13 @@ interface CompactPlayBarProps {
 
 /**
  * The top bar while the on-screen keyboard is open (spec 011): one row with
- * what a guesser reads at a glance. Language, theme, sound and Leave return
- * with the full bar when the keyboard closes.
+ * what a guesser reads at a glance. A long mask wraps and the bar grows with
+ * it; the canvas below takes what is left. Language, theme, sound and Leave
+ * return with the full bar when the keyboard closes.
  */
 export function CompactPlayBar({ progress, word, timer }: CompactPlayBarProps) {
   return (
-    <header className="flex h-10 shrink-0 items-center gap-3 border-b border-line bg-surface-raised px-3">
+    <header className="flex min-h-10 shrink-0 items-center gap-3 border-b border-line bg-surface-raised px-3 py-1">
       {progress}
       <div className="flex min-w-0 flex-1 justify-center">{word}</div>
       {timer}

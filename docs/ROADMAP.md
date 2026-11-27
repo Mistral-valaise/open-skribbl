@@ -2,6 +2,8 @@
 
 A milestone is done when every spec assigned to it is `Implemented`: all its acceptance criteria are covered by passing tests and `pnpm check` is green. Each milestone ends with one push.
 
+**Version 1.0.0** is the first release. It contains the milestones marked `Done` below; the [changelog](../CHANGELOG.md) lists what that means for players and hosts.
+
 | Milestone                      | Content                                                                                                                                                                                                            | Specs                   | Status |
 | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------- | ------ |
 | **M0** Foundation              | PRD, architecture, design guideline, feature specs, ADRs, glossary, agent instructions, workspace scaffold, CI                                                                                                     | —                       | Done   |

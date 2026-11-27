@@ -2,7 +2,7 @@
 
 |           |          |
 | --------- | -------- |
-| Status    | Proposed |
+| Status    | Approved |
 | Milestone | M1       |
 
 ## Intent
@@ -54,12 +54,12 @@ stateDiagram-v2
 
 ### Turn-end reasons
 
-| Reason               | Trigger                                                                           | Effect                                                               |
-| -------------------- | --------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
-| `time_up`            | Drawing time elapsed                                                              | Normal scoring                                                       |
-| `all_guessed`        | Every guesser of the turn who is still connected has guessed                      | Normal scoring                                                       |
-| `drawer_left`        | The drawer was kicked, or stayed disconnected for 10 s during choosing or drawing | Guessers keep their points; the drawer earns 0                       |
-| `not_enough_players` | Fewer than two connected players remain                                           | Guessers keep their points; the game ends after the turn-end display |
+| Reason               | Trigger                                                                                     | Effect                                                               |
+| -------------------- | ------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| `time_up`            | Drawing time elapsed                                                                        | Normal scoring                                                       |
+| `all_guessed`        | Every guesser of the turn who is still connected has guessed                                | Normal scoring                                                       |
+| `drawer_left`        | The drawer was kicked, or stayed disconnected for 10 s during choosing or drawing           | Guessers keep their points; the drawer earns 0                       |
+| `not_enough_players` | Fewer than two connected players for 10 s, or immediately when a player leaves or is kicked | Guessers keep their points; the game ends after the turn-end display |
 
 ### Snapshot contents
 
@@ -80,7 +80,7 @@ Every snapshot contains the phase, the round number and total, the drawer, `phas
 - **AC-002-11** A player who is disconnected when their turn comes is skipped: the room goes directly to choosing for the following player.
 - **AC-002-12** If the drawer disconnects during drawing and does not return within 10 s, the turn ends with reason `drawer_left`.
 - **AC-002-13** If the drawer disconnects during drawing and returns within 10 s, the turn continues with unchanged `phaseEndsAt`.
-- **AC-002-14** If a disconnect leaves fewer than two connected players during a game, the turn ends with reason `not_enough_players` and the next phase is `gameEnd`.
+- **AC-002-14** If a disconnect leaves fewer than two connected players during a game and nobody returns within 10 s, the turn ends with reason `not_enough_players` and the next phase is `gameEnd`; if the player returns within 10 s the turn continues.
 - **AC-002-15** No word is offered twice within one game as long as unused words remain in the pool.
 - **AC-002-16** Every snapshot carries `serverNow`, and a client whose clock is 30 s off still shows a countdown within one second of the server's remaining time.
 - **AC-002-17** Given the same initial state, event sequence, clock values and random sequence, the reducer produces the same final state.

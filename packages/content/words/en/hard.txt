@@ -1,0 +1,112 @@
+# Kritzel word list — English, hard
+# Abstract ideas, compound concepts and professions.
+alarm
+allergy
+applause
+architect
+astronaut
+audience
+autumn
+balance
+blacksmith
+boredom
+brainstorm
+bribe
+camouflage
+celebration
+champion
+chaos
+compromise
+confusion
+construction
+courage
+curiosity
+deadline
+democracy
+detective
+diet
+disguise
+dream
+echo
+electricity
+emergency
+evolution
+exam
+exercise
+fairy tale
+fashion
+freedom
+friendship
+gardener
+gravity
+habit
+harvest
+homework
+honesty
+hurry
+illusion
+imagination
+inflation
+insomnia
+interview
+invention
+jealousy
+journalist
+journey
+judge
+knowledge
+laughter
+lifeguard
+luck
+magician
+marathon
+memory
+mechanic
+midnight
+mistake
+monday
+nightmare
+noise
+orbit
+patience
+pilot
+plumber
+poison
+pollution
+population
+promise
+puzzle
+queue
+rehearsal
+retirement
+rhythm
+rumor
+rush hour
+sculptor
+secret
+shadow
+shortcut
+silence
+sneeze
+software
+solar system
+souvenir
+stress
+surprise
+teamwork
+time travel
+tourist
+traffic jam
+translator
+vacation
+victory
+weather forecast
+weekend
+whisper
+wisdom
+yawn
+password
+video call
+lunch break
+birthday
+passport

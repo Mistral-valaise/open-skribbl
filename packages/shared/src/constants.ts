@@ -1,0 +1,60 @@
+/**
+ * Every number that appears in a spec is defined here, once.
+ * Each group names the spec it comes from.
+ */
+
+/** Spec 001 — rooms and lobby. */
+export const ROOM_CODE_ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+export const ROOM_CODE_LENGTH = 6;
+export const MAX_SPECTATORS = 8;
+
+/** Spec 002 and 007 — phase and presence timing, in milliseconds. */
+export const TIMING = {
+  choosingMs: 15_000,
+  turnEndMs: 6_000,
+  seatGraceMs: 60_000,
+  drawerGraceMs: 10_000,
+  tooFewPlayersGraceMs: 10_000,
+  emptyRoomMs: 5 * 60_000,
+} as const;
+
+/** Spec 003 — drawing. */
+export const CANVAS_WIDTH = 800;
+export const CANVAS_HEIGHT = 600;
+export const CANVAS_BACKGROUND = '#FFFFFF';
+export const BRUSH_SIZES = [4, 8, 14, 24, 40] as const;
+export const DRAW_LIMITS = {
+  pointsPerStroke: 5_000,
+  itemsPerTurn: 2_000,
+  pointsPerTurn: 200_000,
+} as const;
+export const FILL_TOLERANCE = 32;
+
+/** Spec 004 — chat. */
+export const CHAT_MAX_LENGTH = 100;
+
+/** Spec 005 — scoring. */
+export const SCORING = {
+  base: 100,
+  timeBonus: 400,
+  firstGuessBonus: 50,
+} as const;
+
+/** Spec 006 — words. */
+export const WORD_MAX_LENGTH = 30;
+export const CUSTOM_WORDS_MAX = 500;
+export const CUSTOM_WORDS_ONLY_MIN = 10;
+
+/** Spec 010 — identity. */
+export const NICKNAME_MAX_LENGTH = 16;
+export const AVATAR_PARTS = { body: 12, eyes: 8, mouth: 8, accessory: 8 } as const;
+
+/** Architecture §4 — transport limits. */
+export const MAX_FRAME_BYTES = 16 * 1024;
+export const RATE_LIMITS = {
+  draw: { burst: 90, perSecond: 90 },
+  chat: { burst: 5, perSecond: 1 },
+  /** Dropped messages within `windowMs` that close the connection. */
+  dropsToClose: 50,
+  dropWindowMs: 10_000,
+} as const;

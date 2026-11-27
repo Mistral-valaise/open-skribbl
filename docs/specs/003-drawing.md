@@ -2,7 +2,7 @@
 
 |           |          |
 | --------- | -------- |
-| Status    | Proposed |
+| Status    | Approved |
 | Milestone | M1       |
 
 ## Intent

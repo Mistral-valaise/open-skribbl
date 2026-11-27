@@ -1,19 +1,17 @@
-import type { AddressInfo } from 'node:net';
 import { afterEach, describe, expect, it } from 'vitest';
-import { createApp } from './app.js';
+import { createApp, type App } from './app.js';
 
-describe('health endpoint', () => {
-  const app = createApp();
+describe('http', () => {
+  let app: App;
 
-  afterEach(() => new Promise<void>((resolve) => app.close(() => resolve())));
+  afterEach(() => app.server.close());
 
   it('AC-012-05: /healthz returns 200 and {"status":"ok"}', async () => {
-    await new Promise<void>((resolve) => app.listen(0, '127.0.0.1', resolve));
-    const { port } = app.address() as AddressInfo;
+    app = await createApp();
 
-    const response = await fetch(`http://127.0.0.1:${port}/healthz`);
+    const response = await app.server.inject({ method: 'GET', url: '/healthz' });
 
-    expect(response.status).toBe(200);
-    expect(await response.text()).toBe('{"status":"ok"}');
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toBe('{"status":"ok"}');
   });
 });

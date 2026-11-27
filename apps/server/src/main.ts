@@ -1,11 +1,26 @@
-import { PROTOCOL_VERSION } from '@kritzel/shared';
 import { createApp } from './app.js';
+import { ConfigError, loadConfig, type Config } from './config.js';
 
-const port = Number(process.env.PORT ?? 3000);
-const host = process.env.HOST ?? '0.0.0.0';
+function log(level: string, msg: string, context: Record<string, unknown> = {}) {
+  console.log(JSON.stringify({ time: new Date().toISOString(), level, msg, ...context }));
+}
 
-createApp().listen(port, host, () => {
-  console.log(
-    JSON.stringify({ level: 'info', msg: 'listening', host, port, protocol: PROTOCOL_VERSION }),
-  );
-});
+let config: Config;
+try {
+  config = loadConfig();
+} catch (error) {
+  if (!(error instanceof ConfigError)) throw error;
+  log('error', error.message);
+  process.exit(1);
+}
+
+const { server } = await createApp({ maxRooms: config.maxRooms, trustProxy: config.trustProxy });
+await server.listen({ port: config.port, host: config.host });
+log('info', 'listening', { host: config.host, port: config.port, maxRooms: config.maxRooms });
+
+for (const signal of ['SIGTERM', 'SIGINT'] as const) {
+  process.once(signal, () => {
+    log('info', 'shutting down', { signal });
+    void server.close().then(() => process.exit(0));
+  });
+}

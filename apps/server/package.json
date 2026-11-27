@@ -5,14 +5,21 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/main.ts",
-    "build": "esbuild src/main.ts --bundle --platform=node --format=esm --target=node22 --outfile=dist/main.js",
+    "build": "esbuild src/main.ts --bundle --platform=node --format=esm --target=node22 --outfile=dist/main.js --external:fastify --external:@fastify/* --external:ws --external:zod && node -e \"require('node:fs').cpSync('../../packages/content/words','dist/words',{recursive:true})\"",
     "start": "node dist/main.js",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@kritzel/shared": "workspace:*"
+    "@fastify/static": "^11.0.0",
+    "@fastify/websocket": "^11.3.7",
+    "@kritzel/content": "workspace:*",
+    "@kritzel/shared": "workspace:*",
+    "fastify": "^5.12.8",
+    "ws": "^8.23.0",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@types/ws": "^8.18.2",
     "esbuild": "^0.28.2",
     "tsx": "^4.23.15"
   }

@@ -6,7 +6,12 @@ export default tseslint.config(
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
-    files: ['scripts/**/*.mjs', 'deploy/scripts/*.mjs', 'apps/*/build.mjs'],
+    files: [
+      'scripts/**/*.mjs',
+      'deploy/scripts/*.mjs',
+      'apps/*/build.mjs',
+      'marketing/promo/*.mjs',
+    ],
     languageOptions: {
       globals: {
         process: 'readonly',

@@ -1,0 +1,170 @@
+<template>
+  <style>
+    @font-face {
+      font-family: 'Bricolage Grotesque';
+      src: url('assets/fonts/bricolage-grotesque.woff2') format('woff2');
+      font-weight: 200 800;
+    }
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: #ffffff;
+      color: #14151c;
+      font-family: Inter, sans-serif;
+    }
+    .title {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 112px;
+      font-weight: 700;
+      line-height: 1.02;
+      letter-spacing: -0.02em;
+    }
+    #languages-title {
+      position: absolute;
+      left: 960px;
+      top: 150px;
+      width: 900px;
+    }
+    .languages-row {
+      position: absolute;
+      left: 964px;
+      width: 800px;
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 92px;
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: -0.02em;
+    }
+    .languages-name {
+      display: inline-block;
+      color: #c9ccd6;
+    }
+    #languages-window {
+      position: absolute;
+      left: 130px;
+      top: 99px;
+      width: 720px;
+      height: 882px;
+      overflow: hidden;
+      border-radius: 24px;
+      box-shadow: 0 24px 64px rgba(20, 21, 28, 0.18);
+      background: #0e0f14;
+    }
+    #languages-footage {
+      position: absolute;
+      left: -504px;
+      top: -54px;
+      width: 1728px;
+      height: 972px;
+    }
+  </style>
+  <div id="root" data-composition-id="languages" data-width="1920" data-height="1080">
+    <div
+      id="languages-title"
+      class="clip title"
+      data-start="0.1"
+      data-duration="2.5"
+      data-track-index="2"
+    >
+      <span id="languages-title-text">Four languages.</span>
+    </div>
+    <div
+      id="languages-en"
+      class="clip languages-row"
+      data-start="0.25"
+      data-duration="2.35"
+      data-track-index="3"
+      style="top: 372px"
+    >
+      <span class="languages-name">English</span>
+    </div>
+    <div
+      id="languages-de"
+      class="clip languages-row"
+      data-start="0.25"
+      data-duration="2.35"
+      data-track-index="4"
+      style="top: 496px"
+    >
+      <span class="languages-name">Deutsch</span>
+    </div>
+    <div
+      id="languages-es"
+      class="clip languages-row"
+      data-start="0.25"
+      data-duration="2.35"
+      data-track-index="5"
+      style="top: 620px"
+    >
+      <span class="languages-name">Español</span>
+    </div>
+    <div
+      id="languages-fr"
+      class="clip languages-row"
+      data-start="0.25"
+      data-duration="2.35"
+      data-track-index="6"
+      style="top: 744px"
+    >
+      <span class="languages-name">Français</span>
+    </div>
+    <div id="languages-window" data-layout-allow-overflow>
+      <video
+        id="languages-footage"
+        class="clip"
+        data-start="0"
+        data-duration="2.6"
+        data-media-start="0.4"
+        data-playback-rate="2.2"
+        data-track-index="1"
+        src="assets/clips/languages.mp4"
+        muted
+        playsinline
+      ></video>
+    </div>
+  </div>
+  <script>
+    (() => {
+      const tl = gsap.timeline({ paused: true });
+      const INK = '#14151c';
+      const QUIET = '#c9ccd6';
+      const LANGUAGE_SWITCHES = [
+        ['en', 'de', 0.25],
+        ['de', 'es', 0.76],
+        ['es', 'fr', 1.28],
+        ['fr', 'en', 1.8],
+      ];
+      tl.fromTo(
+        '#languages-window',
+        { scale: 0.92, opacity: 0 },
+        { scale: 1, opacity: 1, duration: 0.55, ease: 'power4.out' },
+        0,
+      );
+      tl.fromTo(
+        '#languages-title-text',
+        { opacity: 0, filter: 'blur(10px)' },
+        { opacity: 1, filter: 'blur(0px)', duration: 0.22, ease: 'power2.out' },
+        0.12,
+      );
+      tl.fromTo(
+        '.languages-name',
+        { opacity: 0 },
+        { opacity: 1, duration: 0.2, ease: 'power2.out', stagger: 0.05 },
+        0.28,
+      );
+      // The inked name follows the language the recording switches to.
+      tl.set('#languages-en .languages-name', { color: INK }, 0);
+      LANGUAGE_SWITCHES.forEach(([from, to, at]) => {
+        tl.to(`#languages-${from} .languages-name`, { color: QUIET, duration: 0.12 }, at);
+        tl.to(`#languages-${to} .languages-name`, { color: INK, duration: 0.12 }, at);
+      });
+      tl.to(
+        '#languages-window, #languages-title-text, .languages-name',
+        { opacity: 0, duration: 0.2, ease: 'power2.in' },
+        2.38,
+      );
+      window.__timelines['languages'] = tl;
+    })();
+  </script>
+</template>

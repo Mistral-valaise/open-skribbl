@@ -8,3 +8,10 @@ coverage/
 playwright-report/
 test-results/
 .DS_Store
+
+# Promo film: recorded footage and the tool's working files (see marketing/promo/README.md)
+marketing/promo/assets/clips/
+marketing/promo/.hyperframes/
+marketing/promo/renders/
+# The rendered film is kept: a release attaches it
+!marketing/promo/dist/

@@ -1,0 +1,82 @@
+<template>
+  <style>
+    @font-face {
+      font-family: 'Bricolage Grotesque';
+      src: url('assets/fonts/bricolage-grotesque.woff2') format('woff2');
+      font-weight: 200 800;
+    }
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: #ffffff;
+      color: #14151c;
+      font-family: Inter, sans-serif;
+    }
+    .claim-line {
+      position: absolute;
+      left: 150px;
+      width: 1640px;
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 224px;
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: -0.03em;
+    }
+    .claim-text {
+      display: inline-block;
+      padding: 12px 0 28px;
+    }
+  </style>
+  <div id="root" data-composition-id="claim" data-width="1920" data-height="1080">
+    <div
+      id="claim-1"
+      class="clip claim-line"
+      data-start="0.1"
+      data-duration="2.5"
+      data-track-index="1"
+      style="top: 176px"
+    >
+      <span class="claim-text">No ads.</span>
+    </div>
+    <div
+      id="claim-2"
+      class="clip claim-line"
+      data-start="0.4"
+      data-duration="2.2"
+      data-track-index="2"
+      style="top: 426px"
+    >
+      <span class="claim-text">No accounts.</span>
+    </div>
+    <div
+      id="claim-3"
+      class="clip claim-line"
+      data-start="0.7"
+      data-duration="1.9"
+      data-track-index="3"
+      style="top: 676px"
+    >
+      <span class="claim-text">No tracking.</span>
+    </div>
+  </div>
+  <script>
+    (() => {
+      const tl = gsap.timeline({ paused: true });
+      [1, 2, 3].forEach((line, index) => {
+        tl.fromTo(
+          `#claim-${line} .claim-text`,
+          { clipPath: 'inset(0px 100% 0px 0px)', x: -40 },
+          { clipPath: 'inset(0px 0% 0px 0px)', x: 0, duration: 0.45, ease: 'power4.out' },
+          0.1 + index * 0.3,
+        );
+      });
+      tl.to(
+        '.claim-text',
+        { opacity: 0, filter: 'blur(10px)', duration: 0.2, ease: 'power2.in' },
+        2.38,
+      );
+      window.__timelines['claim'] = tl;
+    })();
+  </script>
+</template>

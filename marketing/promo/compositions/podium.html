@@ -1,0 +1,72 @@
+<template>
+  <style>
+    @font-face {
+      font-family: 'Bricolage Grotesque';
+      src: url('assets/fonts/bricolage-grotesque.woff2') format('woff2');
+      font-weight: 200 800;
+    }
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: transparent;
+      color: #14151c;
+      font-family: Inter, sans-serif;
+    }
+    #podium-stage {
+      position: absolute;
+      inset: 0;
+      background: #0e0f14;
+    }
+    #podium-zoom {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1920px;
+      height: 1080px;
+    }
+    #podium-footage {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1920px;
+      height: 1080px;
+    }
+  </style>
+  <div id="root" data-composition-id="podium" data-width="1920" data-height="1080">
+    <div id="podium-stage" data-layout-allow-overflow>
+      <div id="podium-zoom">
+        <video
+          id="podium-footage"
+          class="clip"
+          data-start="0"
+          data-duration="3.4"
+          data-media-start="6.13"
+          data-track-index="1"
+          src="assets/clips/podium.mp4"
+          muted
+          playsinline
+        ></video>
+      </div>
+    </div>
+  </div>
+  <script>
+    (() => {
+      const tl = gsap.timeline({ paused: true });
+      // The results open from the middle of the paper.
+      tl.fromTo(
+        '#podium-stage',
+        { clipPath: 'circle(0px at 960px 540px)' },
+        { clipPath: 'circle(1150px at 960px 540px)', duration: 0.45, ease: 'power2.in' },
+        0,
+      );
+      tl.fromTo(
+        '#podium-zoom',
+        { scale: 1.5, transformOrigin: '960px 300px' },
+        { scale: 1.34, duration: 0.8, ease: 'expo.out' },
+        0.1,
+      );
+      window.__timelines['podium'] = tl;
+    })();
+  </script>
+</template>

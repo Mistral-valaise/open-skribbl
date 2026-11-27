@@ -1,7 +1,7 @@
 {
   "name": "kritzel",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "Self-hosted, ad-free draw-and-guess party game for teams",
   "license": "MIT",
   "type": "module",

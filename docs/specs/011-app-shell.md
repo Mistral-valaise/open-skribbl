@@ -34,7 +34,8 @@ The shell is everything around the game that makes Kritzel feel finished: themes
 
 - Breakpoints: below 640 px, 640–1279 px, 1280 px and up, with the layouts defined in the design guideline.
 - No horizontal scrolling at any width from 320 px.
-- On phones the chat input remains visible when the on-screen keyboard is open.
+- On phones the game follows the height that is actually visible. While the on-screen keyboard is open, the screen shows one row with round, mask and timer, the whole canvas as large as the remaining height allows, the latest chat message and the input. The shell controls, reactions, likes, scoreboard, drawing tools and older chat messages are hidden until the keyboard closes. Solo mode does the same.
+- The keyboard counts as open at phone width when the visible height is at least 120 px less than the tallest seen at that width, or below 352 px.
 
 ### Accessibility
 
@@ -68,6 +69,9 @@ The shell is everything around the game that makes Kritzel feel finished: themes
 - **AC-011-14** A server error code is shown as a translated toast, never as a raw code.
 - **AC-011-15** During a full game the browser makes no request to any origin other than the app's own.
 - **AC-011-16** The favicon, the page title "Kritzel" and a web app manifest with name and icons are present.
+- **AC-011-17** At 360 px width, when the visible height drops from 740 px to 330 px (a phone whose keyboard opens), a guesser sees the whole canvas, the mask, the timer, the latest chat message and the chat input without scrolling, and the canvas is at least 240 px wide.
+- **AC-011-18** In solo mode at 360 px width, when the visible height drops to 330 px, the whole canvas, the mask, the timer and the guess input are visible without scrolling.
+- **AC-011-19** When the visible height returns to 740 px, the reaction bar, the scoreboard and the chat log are visible again.
 
 ## Out of scope
 

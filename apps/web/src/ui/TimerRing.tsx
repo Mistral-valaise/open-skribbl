@@ -13,11 +13,19 @@ interface TimerRingProps {
   fraction: number;
   /** Only the drawing phase gets the last-seconds warning. */
   warn?: boolean;
+  /** A smaller ring for the one-row bar shown while the on-screen keyboard is open. */
+  compact?: boolean;
   className?: string;
 }
 
 /** Circular countdown with digits. */
-export function TimerRing({ seconds, fraction, warn = false, className }: TimerRingProps) {
+export function TimerRing({
+  seconds,
+  fraction,
+  warn = false,
+  compact = false,
+  className,
+}: TimerRingProps) {
   const urgent = warn && seconds <= URGENT_SECONDS;
   const share = Math.min(1, Math.max(0, fraction));
   return (
@@ -27,7 +35,8 @@ export function TimerRing({ seconds, fraction, warn = false, className }: TimerR
       role="timer"
       aria-label={t('game.timeLeft', { seconds })}
       className={cx(
-        'relative grid size-12 shrink-0 place-items-center',
+        'relative grid shrink-0 place-items-center',
+        compact ? 'size-8' : 'size-12',
         urgent && 'animate-pulse-soft',
         className,
       )}
@@ -52,7 +61,8 @@ export function TimerRing({ seconds, fraction, warn = false, className }: TimerR
       <span
         aria-hidden
         className={cx(
-          'font-mono text-label font-semibold tabular-nums',
+          'font-mono font-semibold tabular-nums',
+          compact ? 'text-caption' : 'text-label',
           urgent ? 'text-warning' : 'text-fg',
         )}
       >

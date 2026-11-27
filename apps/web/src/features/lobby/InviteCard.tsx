@@ -59,7 +59,7 @@ export function InviteCard({ code }: { code: string }) {
           onClick={copy}
           data-testid="copy-link"
         >
-          <span aria-live="polite">{copied ? t('lobby.copied') : t('lobby.copyLink')}</span>
+          {copied ? t('lobby.copied') : t('lobby.copyLink')}
         </Button>
       </div>
     </Panel>

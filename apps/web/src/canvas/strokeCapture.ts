@@ -49,8 +49,7 @@ export function beginStroke(point: Point, tool: Tool, color: string, size: Brush
 export function extendStroke(point: Point): void {
   const stroke = active;
   if (!stroke || !isFarEnough(stroke.last, point)) return;
-  const op = { type: 'stroke.points', id: stroke.id, points: [point.x, point.y] } as const;
-  if (!applyLocalOp(op)) {
+  if (!applyLocalOp({ type: 'stroke.points', id: stroke.id, points: [point.x, point.y] })) {
     // The stroke is full or no longer the open one: finish what was drawn.
     endStroke();
     return;

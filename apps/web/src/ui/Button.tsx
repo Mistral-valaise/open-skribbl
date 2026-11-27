@@ -26,6 +26,17 @@ const SIZES: Record<Size, string> = {
   lg: 'min-h-12 px-6',
 };
 
+/** The look of a button, for links that are styled as one. */
+export function buttonClass(variant: Variant = 'secondary', size: Size = 'md'): string {
+  return cx(
+    'inline-flex items-center justify-center gap-2 rounded-md py-2 text-label select-none',
+    'transition-colors motion-fast active:translate-y-px',
+    'disabled:pointer-events-none disabled:opacity-50',
+    VARIANTS[variant],
+    SIZES[size],
+  );
+}
+
 export function Button({
   variant = 'secondary',
   size = 'md',
@@ -43,15 +54,7 @@ export function Button({
       type={type}
       disabled={disabled || busy}
       aria-busy={busy || undefined}
-      className={cx(
-        'inline-flex items-center justify-center gap-2 rounded-md py-2 text-label select-none',
-        'transition-colors motion-fast active:translate-y-px',
-        'disabled:pointer-events-none disabled:opacity-50',
-        VARIANTS[variant],
-        SIZES[size],
-        block && 'w-full',
-        className,
-      )}
+      className={cx(buttonClass(variant, size), block && 'w-full', className)}
       {...rest}
     >
       {busy ? <Spinner /> : icon}

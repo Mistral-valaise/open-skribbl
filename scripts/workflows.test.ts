@@ -9,7 +9,13 @@ describe('workflows (spec 012)', () => {
   it('AC-012-12: CI runs the full check, the build and the end-to-end tests', () => {
     const ci = read('.github/workflows/ci.yml');
     const check = JSON.parse(read('package.json')).scripts.check as string;
-    for (const step of ['pnpm check', 'pnpm build', 'pnpm e2e', '--frozen-lockfile']) {
+    for (const step of [
+      'pnpm check',
+      'pnpm build',
+      'pnpm e2e',
+      '--frozen-lockfile',
+      'docker build',
+    ]) {
       expect(ci, step).toContain(step);
     }
     for (const part of ['pnpm lint', 'pnpm typecheck', 'pnpm test', 'spec:coverage --strict']) {
@@ -31,5 +37,14 @@ describe('workflows (spec 012)', () => {
     const lastUser = dockerfile.match(/^USER\s+(\S+)/gm)?.at(-1);
     expect(lastUser).toBe('USER node');
     expect(dockerfile).toContain('HEALTHCHECK');
+  });
+
+  it('AC-012-14: the load test is runnable and its result is recorded in the hosting guide', () => {
+    const scripts = JSON.parse(read('package.json')).scripts as Record<string, string>;
+    expect(scripts.loadtest).toContain('scripts/loadtest.mjs');
+    const guide = read('docs/HOSTING.md');
+    expect(guide).toContain('## Capacity');
+    expect(guide).toMatch(/Dropped connections\s*\|\s*0/);
+    expect(guide).toContain('1 CPU and 512 MB');
   });
 });

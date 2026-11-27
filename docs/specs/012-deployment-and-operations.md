@@ -1,9 +1,9 @@
 # 012 — Deployment and operations
 
-|           |          |
-| --------- | -------- |
-| Status    | Proposed |
-| Milestone | M4       |
+|           |             |
+| --------- | ----------- |
+| Status    | Implemented |
+| Milestone | M4          |
 
 ## Intent
 
@@ -12,7 +12,7 @@ Hosting Kritzel must be boring: one image, one port, no state, no secrets. An op
 ## Behaviour
 
 - `docker run -p 3000:3000 ghcr.io/<owner>/<repo>` starts a complete instance: web app, API and WebSocket endpoint on one port.
-- The operator puts a TLS-terminating reverse proxy in front of it. The README has working examples for Caddy, nginx and Traefik, and one-page guides for Fly.io, Railway and Render.
+- The operator puts a TLS-terminating reverse proxy in front of it. The hosting guide (`docs/HOSTING.md`) has examples for Caddy, nginx and Traefik and notes for Fly.io, Railway and Render.
 - Updating is pulling a new image and restarting. Running games end; players are told the server is restarting (spec 007).
 
 ## Rules
@@ -59,7 +59,7 @@ An invalid value stops the process at start-up with a message naming the variabl
 
 ### Capacity check
 
-- A scripted load test (`pnpm loadtest`) simulates 30 rooms of 8 players each playing with drawing and chat traffic against a container limited to 1 vCPU and 512 MB, and reports event-loop delay and memory. The result is recorded in the README.
+- A scripted load test (`pnpm loadtest`) simulates 30 rooms of 8 players each playing with drawing and chat traffic against a container limited to 1 vCPU and 512 MB, and reports event-loop delay and memory. The result is recorded in the hosting guide (`docs/HOSTING.md`).
 
 ## Acceptance criteria
 
@@ -71,12 +71,12 @@ An invalid value stops the process at start-up with a message naming the variabl
 - **AC-012-06** `GET /r/ABCDEF` returns the app's `index.html`; `GET /api/unknown` returns 404 with a JSON body.
 - **AC-012-07** Every response carries the three security headers, and the Content-Security-Policy allows no origin other than the app's own.
 - **AC-012-08** The container's process runs with a non-zero user id.
-- **AC-012-09** A full game is playable through a reverse proxy that terminates TLS, using the documented Caddy configuration.
+- **AC-012-09** A full game is playable through a reverse proxy that terminates TLS, using Caddy as documented in the hosting guide.
 - **AC-012-10** After a full game at `info` level, the logs contain no nickname, chat text or word used in that game.
 - **AC-012-11** The container stops within 10 s of `SIGTERM` with exit code 0.
 - **AC-012-12** The CI workflow fails when lint, type check, any test, strict spec coverage or the build fails.
 - **AC-012-13** The release workflow publishes an image manifest for `linux/amd64` and `linux/arm64`.
-- **AC-012-14** The load test completes against the resource-limited container without a dropped connection, and its result is recorded in the README.
+- **AC-012-14** The load test completes against the resource-limited container without a dropped connection, and its result is recorded in the hosting guide.
 - **AC-012-15** The README's quick start, followed literally on a machine with only Docker installed, results in a playable game.
 
 ## Out of scope

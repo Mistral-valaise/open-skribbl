@@ -50,7 +50,7 @@ kritzel.example.com {
 }
 ```
 
-Caddy obtains the certificate and upgrades WebSockets on its own.
+Caddy obtains the certificate and upgrades WebSockets on its own. CI plays a game through Caddy in front of the image on every change (with Caddy's own local certificate).
 
 ### nginx
 

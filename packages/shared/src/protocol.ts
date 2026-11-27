@@ -68,6 +68,8 @@ export const clientMessageSchema = z.discriminatedUnion('type', [
     role: z.enum(['player', 'spectator']),
     clientId: z.string().min(8).max(64),
     sessionToken: z.string().max(64).optional(),
+    /** W3C trace context of the browser's join measurement (spec 015); ignored unless well-formed. */
+    traceparent: z.string().max(64).optional(),
   }),
   z.object({ type: z.literal('leave') }),
   z.object({ type: z.literal('settings.update'), settings: z.record(z.string(), z.unknown()) }),

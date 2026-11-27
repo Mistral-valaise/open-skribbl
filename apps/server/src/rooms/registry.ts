@@ -42,6 +42,19 @@ export class RoomRegistry {
     return room;
   }
 
+  /** Connected participants across all rooms, by role (spec 015 gauges). */
+  connected(): { players: number; spectators: number } {
+    const counts = { players: 0, spectators: 0 };
+    for (const room of this.rooms.values()) {
+      for (const seat of room.state.seats) {
+        if (seat.connId === null) continue;
+        if (seat.role === 'player') counts.players += 1;
+        else counts.spectators += 1;
+      }
+    }
+    return counts;
+  }
+
   get(code: string): Room | undefined {
     return this.rooms.get(normalizeRoomCode(code));
   }

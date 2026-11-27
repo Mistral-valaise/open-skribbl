@@ -10,6 +10,9 @@ import { systemClock, type Clock } from './clock.js';
 import { handleConnection } from './gateway.js';
 import { TokenBucket } from './rateLimit.js';
 import { RoomRegistry, ServerFullError } from './rooms/registry.js';
+import { SPANS } from './telemetry/contract.js';
+import { instrumentHttp } from './telemetry/http.js';
+import { noopTelemetry, type Telemetry } from './telemetry/telemetry.js';
 
 /** Structured log sink; the default discards everything (tests). */
 export type Logger = (
@@ -22,6 +25,10 @@ export interface AppOptions {
   maxRooms?: number;
   trustProxy?: boolean;
   log?: Logger;
+  /** Records nothing unless given (spec 015). */
+  telemetry?: Telemetry;
+  /** Offer and accept browser measurements (spec 015). */
+  rum?: boolean;
   clock?: Clock;
   random?: () => number;
   words?: (language: Language, difficulty: Difficulty) => readonly string[];
@@ -59,6 +66,7 @@ function defaultWebDir(): string {
 export async function createApp(options: AppOptions = {}): Promise<App> {
   const clock = options.clock ?? systemClock;
   const log: Logger = options.log ?? (() => undefined);
+  const telemetry = options.telemetry ?? noopTelemetry;
   const wordLists = options.words ? null : loadWordLists();
   const registry = new RoomRegistry(
     {
@@ -66,11 +74,14 @@ export async function createApp(options: AppOptions = {}): Promise<App> {
       clock,
       random: options.random ?? Math.random,
       words: options.words ?? ((language, difficulty) => wordLists!.get(language, difficulty)),
+      telemetry,
     },
     options.maxRooms ?? 500,
   );
 
   const server = Fastify({ trustProxy: options.trustProxy ?? false });
+  // Before any route, so every route inherits the hooks.
+  const http = instrumentHttp(server, telemetry);
   await server.register(fastifyWebsocket, {
     options: { maxPayload: MAX_FRAME_BYTES * 4 },
     // Tell participants before their sockets close (spec 007, "Shutdown").
@@ -90,30 +101,52 @@ export async function createApp(options: AppOptions = {}): Promise<App> {
   server.get('/healthz', async () => ({ status: 'ok' }));
 
   const creationBuckets = new Map<string, TokenBucket>();
-  server.post('/api/rooms', async (request, reply) => {
-    const now = clock.now();
-    let bucket = creationBuckets.get(request.ip);
-    if (!bucket) {
-      if (creationBuckets.size > 10_000) creationBuckets.clear();
-      bucket = new TokenBucket(ROOM_CREATIONS_PER_MINUTE, ROOM_CREATIONS_PER_MINUTE / 60, now);
-      creationBuckets.set(request.ip, bucket);
-    }
-    if (!bucket.take(now)) return reply.code(429).send({ error: 'rate_limited' });
+  server.post('/api/rooms', async (request, reply) =>
+    http.within(request, () =>
+      telemetry.span(SPANS.roomCreate, {}, (span) => {
+        const refused = (reason: 'rate_limited' | 'server_full') => {
+          span.setAttribute('kritzel.outcome', 'rejected');
+          span.setAttribute('kritzel.reason', reason);
+          telemetry.count('roomsCreated', {
+            'kritzel.outcome': 'rejected',
+            'kritzel.reason': reason,
+          });
+        };
+        const now = clock.now();
+        let bucket = creationBuckets.get(request.ip);
+        if (!bucket) {
+          if (creationBuckets.size > 10_000) creationBuckets.clear();
+          bucket = new TokenBucket(ROOM_CREATIONS_PER_MINUTE, ROOM_CREATIONS_PER_MINUTE / 60, now);
+          creationBuckets.set(request.ip, bucket);
+        }
+        if (!bucket.take(now)) {
+          refused('rate_limited');
+          telemetry.count('rateLimitHits', { 'kritzel.scope': 'room_create' });
+          return reply.code(429).send({ error: 'rate_limited' });
+        }
 
-    const body = (request.body ?? {}) as { language?: unknown };
-    const language = LANGUAGES.find((candidate) => candidate === body.language) ?? 'en';
-    try {
-      const room = registry.create(language);
-      log('info', 'room created', { room: room.code, rooms: registry.size });
-      return reply.code(201).send({ code: room.code });
-    } catch (error) {
-      if (error instanceof ServerFullError) {
-        log('warn', 'room refused', { reason: 'server_full', rooms: registry.size });
-        return reply.code(503).send({ error: 'server_full' });
-      }
-      throw error;
-    }
-  });
+        const body = (request.body ?? {}) as { language?: unknown };
+        const language = LANGUAGES.find((candidate) => candidate === body.language) ?? 'en';
+        try {
+          const room = registry.create(language);
+          span.setAttribute('kritzel.outcome', 'created');
+          telemetry.count('roomsCreated', {
+            'kritzel.outcome': 'created',
+            'kritzel.reason': 'none',
+          });
+          log('info', 'room created', { room: room.code, rooms: registry.size });
+          return reply.code(201).send({ code: room.code });
+        } catch (error) {
+          if (error instanceof ServerFullError) {
+            refused('server_full');
+            log('warn', 'room refused', { reason: 'server_full', rooms: registry.size });
+            return reply.code(503).send({ error: 'server_full' });
+          }
+          throw error;
+        }
+      }),
+    ),
+  );
 
   server.get<{ Params: { code: string } }>('/api/rooms/:code', async (request, reply) => {
     const room = registry.get(request.params.code);
@@ -122,8 +155,15 @@ export async function createApp(options: AppOptions = {}): Promise<App> {
   });
 
   server.get('/ws', { websocket: true }, (socket) =>
-    handleConnection(socket, registry, clock, log),
+    handleConnection(socket, registry, clock, log, { telemetry }),
   );
+
+  if (telemetry.enabled) {
+    telemetry.observe('roomsActive', () => registry.size);
+    telemetry.observe('playersConnected', () => registry.connected().players);
+    telemetry.observe('spectatorsConnected', () => registry.connected().spectators);
+    telemetry.observe('wsConnectionsActive', () => server.websocketServer.clients.size);
+  }
 
   const webDir = options.webDir ?? defaultWebDir();
   const hasWeb = existsSync(join(webDir, 'index.html'));

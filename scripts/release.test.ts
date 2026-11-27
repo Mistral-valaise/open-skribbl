@@ -33,6 +33,7 @@ interface Job {
   with?: Record<string, unknown>;
   permissions?: Record<string, string>;
   outputs?: Record<string, string>;
+  'timeout-minutes'?: number;
   steps?: Step[];
 }
 interface Workflow {
@@ -516,6 +517,29 @@ describe('permissions (spec 017)', () => {
       sign: { contents: 'read', packages: 'write', 'id-token': 'write', attestations: 'write' },
       promote: { contents: 'read', packages: 'write' },
       release: { contents: 'write', packages: 'read' },
+    });
+  });
+});
+
+describe('time limits (spec 017)', () => {
+  it('AC-017-28: every job of the release workflow ends after a time limit', () => {
+    const limits = Object.fromEntries(
+      Object.entries(release.jobs).map(([name, job]) => [
+        name,
+        // A job that calls a workflow cannot carry a limit; the called job does.
+        job.uses === IMAGE_TEST
+          ? Object.values(imageTest.jobs).map((called) => called['timeout-minutes'])
+          : job['timeout-minutes'],
+      ]),
+    );
+    expect(limits).toEqual({
+      plan: 10,
+      build: 30,
+      test: [20],
+      scan: 10,
+      sign: 10,
+      promote: 10,
+      release: 10,
     });
   });
 });

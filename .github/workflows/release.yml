@@ -16,6 +16,9 @@ name: Release
 #
 # A tag pushed before the run of its commit on main has pushed the image fails
 # in `plan`; start it again once that run has finished.
+#
+# Every job has a time limit, so a step that stalls fails the run instead of
+# holding it open for six hours. Start such a run again.
 on:
   push:
     branches: [main]
@@ -30,6 +33,7 @@ jobs:
   plan:
     name: Plan
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     permissions:
       contents: read
       packages: read
@@ -83,6 +87,7 @@ jobs:
     needs: plan
     if: github.ref_type == 'branch'
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     permissions:
       contents: read
       packages: write
@@ -137,6 +142,7 @@ jobs:
     needs: [plan, build]
     if: ${{ !cancelled() && needs.plan.result == 'success' && (needs.build.result == 'success' || (needs.build.result == 'skipped' && needs.plan.outputs.release == 'true')) }}
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     permissions:
       contents: read
       packages: read
@@ -160,6 +166,7 @@ jobs:
     needs: [plan, build, test, scan]
     if: ${{ !cancelled() && needs.test.result == 'success' && needs.scan.result == 'success' }}
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     permissions:
       contents: read
       packages: write
@@ -198,6 +205,7 @@ jobs:
     needs: [plan, build, sign]
     if: ${{ !cancelled() && needs.sign.result == 'success' }}
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     permissions:
       contents: read
       packages: write
@@ -248,6 +256,7 @@ jobs:
     needs: [plan, promote]
     if: ${{ !cancelled() && needs.promote.result == 'success' && needs.plan.outputs.release == 'true' }}
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     permissions:
       contents: write
       packages: read

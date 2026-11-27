@@ -87,6 +87,18 @@ The default of every workflow is `contents: read`. The reusable image test decla
 
 `id-token: write` and `attestations: write` appear nowhere else. Workflows use the repository's `GITHUB_TOKEN` and the run's OIDC token and no other secret, except the deployment workflow's cluster credentials (spec 016).
 
+### Time limits
+
+Every job of the release workflow has a time limit, so a step that stalls ends the run as failed instead of holding it open for the six hours GitHub allows by default. The limits are several times what a job normally takes:
+
+| Job                                       | Limit      |
+| ----------------------------------------- | ---------- |
+| `build`                                   | 30 minutes |
+| `test` (the job of the reusable workflow) | 20 minutes |
+| every other job                           | 10 minutes |
+
+The limit of `test` is set in `image-test.yml`, because a job that calls a workflow cannot carry one; it therefore applies to CI as well. A run that ends this way has published nothing beyond `sha-<commit>`, and is started again.
+
 ### Security checks
 
 `.github/workflows/security.yml` runs on every pull request, on every push to `main` and every Monday.
@@ -138,6 +150,7 @@ Dependabot proposes updates every week for npm packages, GitHub Actions and the 
 - **AC-017-25** Every container image a workflow or scan script runs as a tool is referenced with a version and a `sha256` digest.
 - **AC-017-26** The runtime image contains no `npm`, `npx`, `corepack` or `yarn`.
 - **AC-017-27** The hosting guide explains what `latest`, `edge`, `sha-<commit>` and version tags mean, how to verify a signature and how to roll back.
+- **AC-017-28** Every job of the release workflow ends after a time limit: 30 minutes for `build`, 20 minutes for the job of the reusable image test, 10 minutes for every other job.
 
 ## Out of scope
 

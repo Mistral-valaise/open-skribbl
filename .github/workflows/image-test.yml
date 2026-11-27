@@ -21,6 +21,8 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    # A calling job cannot carry a limit, so it is set here (spec 017).
+    timeout-minutes: 20
     env:
       IMAGE: ${{ inputs.image || 'kritzel' }}
     steps:

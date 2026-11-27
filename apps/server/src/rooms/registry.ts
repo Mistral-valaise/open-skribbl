@@ -12,7 +12,9 @@ export class RoomRegistry {
   private readonly rooms = new Map<string, Room>();
 
   constructor(
-    private readonly deps: Omit<RoomDeps, 'onDispose'>,
+    private readonly deps: Omit<RoomDeps, 'onDispose'> & {
+      onRoomDisposed?: (code: string, rooms: number) => void;
+    },
     private readonly maxRooms: number,
   ) {}
 
@@ -31,7 +33,10 @@ export class RoomRegistry {
     } while (this.rooms.has(code));
     const room = new Room(code, language, {
       ...this.deps,
-      onDispose: (disposed) => this.rooms.delete(disposed),
+      onDispose: (disposed) => {
+        this.rooms.delete(disposed);
+        this.deps.onRoomDisposed?.(disposed, this.rooms.size);
+      },
     });
     this.rooms.set(code, room);
     return room;

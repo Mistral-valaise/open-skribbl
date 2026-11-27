@@ -11,9 +11,17 @@ import { handleConnection } from './gateway.js';
 import { TokenBucket } from './rateLimit.js';
 import { RoomRegistry, ServerFullError } from './rooms/registry.js';
 
+/** Structured log sink; the default discards everything (tests). */
+export type Logger = (
+  level: 'debug' | 'info' | 'warn' | 'error',
+  msg: string,
+  context?: Record<string, unknown>,
+) => void;
+
 export interface AppOptions {
   maxRooms?: number;
   trustProxy?: boolean;
+  log?: Logger;
   clock?: Clock;
   random?: () => number;
   words?: (language: Language, difficulty: Difficulty) => readonly string[];
@@ -28,6 +36,17 @@ export interface App {
 
 const ROOM_CREATIONS_PER_MINUTE = 10;
 
+/** Spec 012: only the app's own origin, plus data and blob images for avatars and exports. */
+const CONTENT_SECURITY_POLICY = [
+  "default-src 'self'",
+  "img-src 'self' data: blob:",
+  "style-src 'self' 'unsafe-inline'",
+  "connect-src 'self'",
+  "object-src 'none'",
+  "base-uri 'self'",
+  "frame-ancestors 'none'",
+].join('; ');
+
 /** Next to the source in development (`apps/web/dist`), next to the bundle in production. */
 function defaultWebDir(): string {
   const candidates = ['./web', '../../web/dist'].map((path) =>
@@ -39,9 +58,11 @@ function defaultWebDir(): string {
 /** HTTP API, static files and the WebSocket endpoint (docs/ARCHITECTURE.md §4 and §6). */
 export async function createApp(options: AppOptions = {}): Promise<App> {
   const clock = options.clock ?? systemClock;
+  const log: Logger = options.log ?? (() => undefined);
   const wordLists = options.words ? null : loadWordLists();
   const registry = new RoomRegistry(
     {
+      onRoomDisposed: (code, rooms) => log('info', 'room disposed', { room: code, rooms }),
       clock,
       random: options.random ?? Math.random,
       words: options.words ?? ((language, difficulty) => wordLists!.get(language, difficulty)),
@@ -60,6 +81,12 @@ export async function createApp(options: AppOptions = {}): Promise<App> {
     },
   });
 
+  server.addHook('onSend', async (request, reply) => {
+    reply.header('Content-Security-Policy', CONTENT_SECURITY_POLICY);
+    reply.header('X-Content-Type-Options', 'nosniff');
+    reply.header('Referrer-Policy', 'no-referrer');
+  });
+
   server.get('/healthz', async () => ({ status: 'ok' }));
 
   const creationBuckets = new Map<string, TokenBucket>();
@@ -76,9 +103,14 @@ export async function createApp(options: AppOptions = {}): Promise<App> {
     const body = (request.body ?? {}) as { language?: unknown };
     const language = LANGUAGES.find((candidate) => candidate === body.language) ?? 'en';
     try {
-      return reply.code(201).send({ code: registry.create(language).code });
+      const room = registry.create(language);
+      log('info', 'room created', { room: room.code, rooms: registry.size });
+      return reply.code(201).send({ code: room.code });
     } catch (error) {
-      if (error instanceof ServerFullError) return reply.code(503).send({ error: 'server_full' });
+      if (error instanceof ServerFullError) {
+        log('warn', 'room refused', { reason: 'server_full', rooms: registry.size });
+        return reply.code(503).send({ error: 'server_full' });
+      }
       throw error;
     }
   });
@@ -89,14 +121,29 @@ export async function createApp(options: AppOptions = {}): Promise<App> {
     return { exists: true, code: room.code, phase: room.state.phase };
   });
 
-  server.get('/ws', { websocket: true }, (socket) => handleConnection(socket, registry, clock));
+  server.get('/ws', { websocket: true }, (socket) =>
+    handleConnection(socket, registry, clock, log),
+  );
 
   const webDir = options.webDir ?? defaultWebDir();
   const hasWeb = existsSync(join(webDir, 'index.html'));
-  if (hasWeb) await server.register(fastifyStatic, { root: webDir });
+  if (hasWeb) {
+    await server.register(fastifyStatic, {
+      root: webDir,
+      // Hashed assets never change; everything else is revalidated.
+      cacheControl: false,
+      setHeaders(reply, path) {
+        const immutable = path.includes('/assets/');
+        reply.header(
+          'Cache-Control',
+          immutable ? 'public, max-age=31536000, immutable' : 'no-cache',
+        );
+      },
+    });
+  }
   server.setNotFoundHandler((request, reply) => {
     const isPage = request.method === 'GET' && !request.url.startsWith('/api/');
-    if (hasWeb && isPage) return reply.sendFile('index.html');
+    if (hasWeb && isPage) return reply.header('Cache-Control', 'no-cache').sendFile('index.html');
     return reply.code(404).send({ error: 'not_found' });
   });
 

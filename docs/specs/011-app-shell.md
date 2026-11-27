@@ -32,7 +32,7 @@ The shell is everything around the game that makes Kritzel feel finished: themes
 
 ### Layout
 
-- Breakpoints: below 640 px, 640–1023 px, 1024 px and up, with the layouts defined in the design guideline.
+- Breakpoints: below 640 px, 640–1279 px, 1280 px and up, with the layouts defined in the design guideline.
 - No horizontal scrolling at any width from 320 px.
 - On phones the chat input remains visible when the on-screen keyboard is open.
 

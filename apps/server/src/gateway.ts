@@ -10,6 +10,7 @@ import {
   type ServerMessage,
 } from '@kritzel/shared';
 import type { WebSocket } from 'ws';
+import type { Logger } from './app.js';
 import type { Clock } from './clock.js';
 import { TokenBucket, WindowCounter } from './rateLimit.js';
 import type { RoomRegistry } from './rooms/registry.js';
@@ -19,7 +20,12 @@ import type { Room } from './rooms/room.js';
  * One WebSocket connection: parses, validates and rate-limits inbound
  * messages and turns them into room events (docs/ARCHITECTURE.md §4).
  */
-export function handleConnection(socket: WebSocket, registry: RoomRegistry, clock: Clock): void {
+export function handleConnection(
+  socket: WebSocket,
+  registry: RoomRegistry,
+  clock: Clock,
+  log: Logger = () => undefined,
+): void {
   const connId = randomUUID();
   const drawBucket = new TokenBucket(
     RATE_LIMITS.draw.burst,
@@ -38,6 +44,7 @@ export function handleConnection(socket: WebSocket, registry: RoomRegistry, cloc
     if (socket.readyState === socket.OPEN) socket.send(JSON.stringify(message));
   };
   const drop = (code: ErrorCode) => {
+    log('debug', 'message rejected', { code, room: room?.code });
     send({ type: 'error', code });
     if (drops.add(clock.now()) >= RATE_LIMITS.dropsToClose)
       socket.close(1008, 'too many rejected messages');
@@ -65,6 +72,7 @@ export function handleConnection(socket: WebSocket, registry: RoomRegistry, cloc
       if (!target) return refuse('room_not_found');
       room = target;
       room.attach({ id: connId, send, close: () => socket.close(1000) });
+      log('info', 'participant connecting', { room: room.code, seats: room.state.seats.length });
       room.dispatch({
         type: 'join',
         connId,

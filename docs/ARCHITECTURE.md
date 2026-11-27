@@ -108,7 +108,7 @@ Snapshots carry `serverNow` and absolute deadlines (`phaseEndsAt`); the client d
 
 ### Message catalogue
 
-`packages/shared/src/protocol.ts` is authoritative; this table is an overview. Messages marked M2 are not implemented yet.
+`packages/shared/src/protocol.ts` is authoritative; this table is an overview.
 
 | Direction | Type              | Payload                                                                      | Notes                                                                                |
 | --------- | ----------------- | ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
@@ -121,17 +121,17 @@ Snapshots carry `serverNow` and absolute deadlines (`phaseEndsAt`); the client d
 | C→S       | `word.choose`     | `index`                                                                      | Drawer, choosing phase.                                                              |
 | C→S       | `draw.op`         | `op`                                                                         | Drawer, drawing phase.                                                               |
 | C→S       | `chat.send`       | `text`                                                                       | Guess or chat; the server decides.                                                   |
-| C→S       | `reaction.send`   | `emoji`                                                                      | M2.                                                                                  |
-| C→S       | `like.set`        | `value: "up" \| "down"`                                                      | M2.                                                                                  |
-| C→S       | `gallery.get`     | `turnIndex`                                                                  | Game end only. M2.                                                                   |
+| C→S       | `reaction.send`   | `emoji`                                                                      |                                                                                      |
+| C→S       | `like.set`        | `value: "up" \| "down"`                                                      |                                                                                      |
+| C→S       | `gallery.get`     | `turnIndex`                                                                  | Game end only.                                                                       |
 | S→C       | `joined`          | `participantId, sessionToken, state, items, redo`                            | `items` are the effective drawing items of the current turn, `redo` the undone ones. |
 | S→C       | `room.state`      | per-participant snapshot                                                     |                                                                                      |
 | S→C       | `word.choices`    | `words[]`                                                                    | Drawer only.                                                                         |
 | S→C       | `draw.op`         | `op`                                                                         | Everyone except the sender.                                                          |
 | S→C       | `chat.message`    | `id, channel, kind, from?, text?, key?, params?`                             | `kind: "chat" \| "system"`; system messages carry an i18n key.                       |
 | S→C       | `guess.feedback`  | `kind: "correct" \| "close"`, `text`                                         | Sender only.                                                                         |
-| S→C       | `reaction`        | `participantId, emoji`                                                       | M2.                                                                                  |
-| S→C       | `gallery.drawing` | `turnIndex, opLog`                                                           | M2.                                                                                  |
+| S→C       | `reaction`        | `participantId, emoji`                                                       |                                                                                      |
+| S→C       | `gallery.drawing` | `turnIndex, items`                                                           |                                                                                      |
 | S→C       | `kicked`          | —                                                                            | Followed by close.                                                                   |
 | S→C       | `server.shutdown` | —                                                                            | Graceful stop.                                                                       |
 | S→C       | `error`           | `code`                                                                       | Codes map to i18n keys on the client.                                                |

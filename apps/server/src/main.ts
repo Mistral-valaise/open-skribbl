@@ -1,8 +1,14 @@
-import { createApp } from './app.js';
+import { createApp, type Logger } from './app.js';
 import { ConfigError, loadConfig, type Config } from './config.js';
 
-function log(level: string, msg: string, context: Record<string, unknown> = {}) {
-  console.log(JSON.stringify({ time: new Date().toISOString(), level, msg, ...context }));
+const LEVELS = ['debug', 'info', 'warn', 'error'] as const;
+
+/** One JSON object per line on stdout (spec 012, "Logging"). */
+function createLogger(minimum: Config['logLevel']): Logger {
+  return (level, msg, context = {}) => {
+    if (LEVELS.indexOf(level) < LEVELS.indexOf(minimum)) return;
+    console.log(JSON.stringify({ time: new Date().toISOString(), level, msg, ...context }));
+  };
 }
 
 let config: Config;
@@ -10,13 +16,18 @@ try {
   config = loadConfig();
 } catch (error) {
   if (!(error instanceof ConfigError)) throw error;
-  log('error', error.message);
+  createLogger('error')('error', error.message);
   process.exit(1);
 }
 
-const { server } = await createApp({ maxRooms: config.maxRooms, trustProxy: config.trustProxy });
+const log = createLogger(config.logLevel);
+const { server } = await createApp({
+  maxRooms: config.maxRooms,
+  trustProxy: config.trustProxy,
+  log,
+});
 await server.listen({ port: config.port, host: config.host });
-log('info', 'listening', { host: config.host, port: config.port, maxRooms: config.maxRooms });
+log('info', 'listening', { ...config });
 
 for (const signal of ['SIGTERM', 'SIGINT'] as const) {
   process.once(signal, () => {

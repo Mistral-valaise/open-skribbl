@@ -60,6 +60,8 @@ Rules:
 
 The canvas is paper: `#FFFFFF` in both themes, so a drawing looks identical for everyone. It sits on the surface with a 1 px border and the large shadow.
 
+Avatar bodies use a fixed set of twelve colours (`--avatar-body-0` … `--avatar-body-11` in the token file), chosen to stay distinguishable on both themes.
+
 The drawing palette has 24 colours, shown as three rows of eight:
 
 | Row   | Colours                                                                         |
@@ -157,8 +159,8 @@ Two columns from 1024 px. Left: invite card with the room code in mono and a **C
 
 | Width       | Layout                                                                                                                                                                                                                                |
 | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| ≥ 1024 px   | Top bar across. Three columns below: scoreboard (240 px), canvas with toolbar (fluid), chat (320 px).                                                                                                                                 |
-| 640–1023 px | Top bar. Canvas full width with toolbar. Below it, scoreboard and chat side by side.                                                                                                                                                  |
+| ≥ 1280 px   | Top bar across. Three columns below: scoreboard (240 px), canvas with toolbar (fluid), chat (320 px).                                                                                                                                 |
+| 640–1279 px | Top bar. Canvas full width with toolbar. Below it, scoreboard and chat side by side.                                                                                                                                                  |
 | < 640 px    | Compact top bar. Canvas full width. Toolbar as one scrollable row (drawer only). Chat fills the rest; the scoreboard collapses into a horizontal avatar strip that expands on tap. The chat input stays above the on-screen keyboard. |
 
 The top bar shows: round "2 / 3", the mask (or the word for the drawer, or the word choices during choosing), the timer ring, and the mute, theme and leave controls.

@@ -140,7 +140,6 @@ export const en = {
   'game.letterCount': 'Letters per word: {counts}',
   'game.isChoosing': '{name} is choosing a word…',
   'game.isDrawing': '{name} is drawing',
-  'game.youAreDrawing': 'You are drawing',
   'game.getReady': 'Get ready…',
   'game.chooseWord': 'Choose a word',
   'game.chooseHint': 'Pick one before the time runs out.',

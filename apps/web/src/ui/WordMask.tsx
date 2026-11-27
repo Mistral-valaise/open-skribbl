@@ -13,7 +13,8 @@ interface WordMaskProps {
  * written word (DESIGN §4 and §8). A revealed letter pops in.
  */
 export function WordMask({ mask, className }: WordMaskProps) {
-  const counts = letterCounts(mask).join(' + ');
+  // Spec 006 shows the counts as "(3, 5)".
+  const counts = letterCounts(mask).join(', ');
   return (
     <span className={cx('inline-flex max-w-full items-center gap-2', className)}>
       <span

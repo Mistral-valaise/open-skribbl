@@ -266,7 +266,8 @@ class Machine {
 
   private sendJoined(seat: Seat): void {
     const { state } = this;
-    const drawing = state.phase === 'drawing' && state.turn ? state.turn.opLog : null;
+    const showsDrawing = state.phase === 'drawing' || state.phase === 'turnEnd';
+    const drawing = showsDrawing && state.turn ? state.turn.opLog : null;
     this.sendTo(seat, {
       type: 'joined',
       participantId: seat.id,
@@ -604,6 +605,7 @@ class Machine {
             round: game.round,
             drawerId: turn.drawerId,
             drawerName: drawer?.nickname ?? '',
+            drawerAvatar: drawer?.avatar ?? null,
             word: turn.word,
             items: turn.opLog.items,
             guessedCount: Object.keys(turn.guessed).length,

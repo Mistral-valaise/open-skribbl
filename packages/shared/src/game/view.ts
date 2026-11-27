@@ -28,6 +28,7 @@ export function viewFor(state: RoomState, participantId: string, now: number): R
     }));
 
   const wordKnown = turn !== null && turn.word !== null;
+  const inTurn = state.phase === 'drawing' || state.phase === 'turnEnd';
   const turnOver = state.phase === 'turnEnd' || state.phase === 'gameEnd';
   const maySeeWord =
     wordKnown && (turnOver || turn.drawerId === participantId || participantId in turn.guessed);
@@ -37,7 +38,11 @@ export function viewFor(state: RoomState, participantId: string, now: number): R
     code: state.code,
     phase: state.phase,
     hostId: state.hostId,
-    you: { id: participantId, role: seat?.role ?? 'spectator' },
+    you: {
+      id: participantId,
+      role: seat?.role ?? 'spectator',
+      like: (inTurn && turn?.likes[participantId]) || null,
+    },
     settings: isHost ? state.settings : { ...state.settings, customWords: [] },
     customWordCount: state.settings.customWords.length,
     participants,
@@ -93,6 +98,7 @@ export function gallery(state: RoomState): GalleryEntry[] {
     round: turn.round,
     drawerId: turn.drawerId,
     drawerName: turn.drawerName,
+    drawerAvatar: turn.drawerAvatar,
     word: turn.word,
     likesUp: turn.likesUp,
     likesDown: turn.likesDown,

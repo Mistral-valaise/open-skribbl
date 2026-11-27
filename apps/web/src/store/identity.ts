@@ -64,6 +64,11 @@ export function loadAvatar(): Avatar {
   return fallbackAvatar;
 }
 
+export function saveAvatar(avatar: Avatar): void {
+  fallbackAvatar = avatar;
+  write(local, AVATAR_KEY, JSON.stringify(avatar));
+}
+
 /** Replaces the stored avatar with a new random one. */
 export function rerollAvatar(): Avatar {
   fallbackAvatar = randomAvatar(Math.random);

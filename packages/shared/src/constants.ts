@@ -56,7 +56,8 @@ export const NICKNAME_MAX_LENGTH = 16;
 export const AVATAR_PARTS = { body: 12, eyes: 8, mouth: 8, accessory: 8 } as const;
 
 /** Architecture §4 — transport limits. */
-export const MAX_FRAME_BYTES = 16 * 1024;
+/** Large enough for a settings update carrying 500 custom words. */
+export const MAX_FRAME_BYTES = 32 * 1024;
 export const RATE_LIMITS = {
   draw: { burst: 90, perSecond: 90 },
   chat: { burst: 5, perSecond: 1 },
@@ -68,6 +69,8 @@ export const RATE_LIMITS = {
 /** Spec 008 — reactions. */
 export const REACTION_EMOJI = ['😂', '😍', '👏', '🔥', '🤔', '💀'] as const;
 export const REACTION_COOLDOWN_MS = 1_500;
+/** How long a reaction floats over the canvas (design guideline §6). */
+export const REACTION_FLOAT_MS = 1_600;
 /** Spec 008 — PNG export size. */
 export const EXPORT_WIDTH = 1600;
 export const EXPORT_HEIGHT = 1200;

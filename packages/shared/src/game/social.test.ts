@@ -77,6 +77,19 @@ describe('likes (spec 008)', () => {
     expect(h.view(drawer!).turnEnd?.likes).toEqual({ up: 1, down: 1 });
   });
 
+  it('each participant sees only their own like, also after resuming', () => {
+    const { h, players } = startedGame(3);
+    const [drawer, a, b] = players as Participant[];
+    h.choose();
+    like(h, a!, 'down');
+    expect(h.view(a!).you.like).toBe('down');
+    expect(h.view(b!).you.like).toBeNull();
+    expect(h.view(drawer!).you.like).toBeNull();
+    h.disconnect(a!);
+    const back = h.join('ignored', { sessionToken: a!.token });
+    expect(h.received(back, 'joined')[0]!.state.you.like).toBe('down');
+  });
+
   it('AC-008-05: the drawer, spectators and waiting players cannot like', () => {
     const h = createHarness();
     const host = h.join('Mara');
@@ -135,6 +148,7 @@ describe('results and gallery (spec 008)', () => {
     expect(gallery.map((entry) => entry.drawerName)).toEqual(['Player1', 'Player2', 'Player3']);
     expect(gallery.map((entry) => entry.turnIndex)).toEqual([0, 1, 2]);
     expect(gallery[1]).toMatchObject({ round: 1, likesUp: 1, likesDown: 0, guesserCount: 2 });
+    expect(gallery[1]!.drawerAvatar).toEqual({ body: 0, eyes: 0, mouth: 0, accessory: 0 });
   });
 
   it('AC-008-08: gallery.get returns the drawing at game end and is refused otherwise', () => {

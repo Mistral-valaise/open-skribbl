@@ -1,9 +1,9 @@
 # 007 — Presence and resilience
 
-|           |          |
-| --------- | -------- |
-| Status    | Proposed |
-| Milestone | M2       |
+|           |             |
+| --------- | ----------- |
+| Status    | Implemented |
+| Milestone | M2          |
 
 ## Intent
 

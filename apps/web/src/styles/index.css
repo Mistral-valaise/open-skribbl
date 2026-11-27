@@ -74,6 +74,8 @@
   --animate-overlay: overlay var(--motion-slow) var(--easing-slow) both;
   --animate-pop: pop var(--motion-pop) var(--easing-pop) both;
   --animate-pulse-soft: pulse-soft 1s ease-in-out infinite;
+  /* The duration comes from the component that also removes the reaction. */
+  --animate-float-up: float-up var(--easing-out) both;
 
   @keyframes spin {
     to {
@@ -106,6 +108,39 @@
   @keyframes pulse-soft {
     50% {
       opacity: 0.55;
+    }
+  }
+  /* A reaction rises over the canvas and fades (DESIGN §6). */
+  @keyframes float-up {
+    from {
+      bottom: 4%;
+      opacity: 0;
+      scale: 0.5;
+    }
+    15% {
+      opacity: 1;
+      scale: 1.15;
+    }
+    30% {
+      scale: 1;
+    }
+    75% {
+      opacity: 1;
+    }
+    to {
+      bottom: 70%;
+      opacity: 0;
+    }
+  }
+  /* The static equivalent of a floating reaction for reduced motion. */
+  @keyframes appear-in-place {
+    from,
+    to {
+      opacity: 0;
+    }
+    10%,
+    85% {
+      opacity: 1;
     }
   }
 }
@@ -170,17 +205,24 @@
 
 @layer components {
   /*
-   * The canvas frame keeps 4:3 at every size. From the desktop breakpoint the
-   * screen does not scroll, so the frame also has to fit the viewport height
-   * next to the top bar and the toolbar.
+   * The canvas frame keeps 4:3 at every size. From tablet width the screen
+   * does not scroll, so the frame also has to fit the viewport height: next
+   * to the top bar, the toolbar and (until the three-column layout at
+   * 1280 px) the scoreboard and chat below it. It never gets narrower than
+   * 20rem, however short the window is.
    */
   .stage-frame {
     width: 100%;
     aspect-ratio: 4 / 3;
   }
-  @media (min-width: 64rem) {
+  @media (min-width: 40rem) {
     .stage-frame {
-      width: min(100%, calc((100dvh - 15.5rem) * 4 / 3));
+      width: min(100%, max(20rem, calc((100dvh - 29rem) * 4 / 3)));
+    }
+  }
+  @media (min-width: 80rem) {
+    .stage-frame {
+      width: min(100%, max(20rem, calc((100dvh - 15.5rem) * 4 / 3)));
     }
   }
 
@@ -204,6 +246,7 @@
     --animate-overlay: fade-in 120ms ease-out both;
     --animate-pop: fade-in 120ms ease-out both;
     --animate-pulse-soft: none;
+    --animate-float-up: appear-in-place linear both;
   }
 
   *,

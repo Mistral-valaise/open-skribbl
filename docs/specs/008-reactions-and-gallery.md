@@ -1,9 +1,9 @@
 # 008 — Reactions and gallery
 
-|           |          |
-| --------- | -------- |
-| Status    | Proposed |
-| Milestone | M2       |
+|           |             |
+| --------- | ----------- |
+| Status    | Implemented |
+| Milestone | M2          |
 
 ## Intent
 
@@ -29,7 +29,7 @@ The best moments of a drawing game are the drawings themselves. Reactions let th
 
 - One value per player per turn: `up` or `down`; sending again replaces it. Players only; not the drawer, not spectators, not players waiting after a late join.
 - Accepted during the drawing phase and the turn-end display.
-- Totals are part of the turn-end snapshot and of the gallery entry. Individual likes are not disclosed. Likes do not affect points.
+- Totals are part of the turn-end snapshot and of the gallery entry. Individual likes are not disclosed; each participant's snapshot carries only their own like, so it survives a reload. Likes do not affect points.
 
 ### Results and gallery
 

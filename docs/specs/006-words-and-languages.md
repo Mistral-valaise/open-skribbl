@@ -1,9 +1,9 @@
 # 006 — Words and languages
 
-|           |          |
-| --------- | -------- |
-| Status    | Proposed |
-| Milestone | M2       |
+|           |             |
+| --------- | ----------- |
+| Status    | Implemented |
+| Milestone | M2          |
 
 ## Intent
 

@@ -54,7 +54,7 @@ export function LobbyScreen({ view, onLeave }: LobbyScreenProps) {
                 </Button>
                 {canStart ? null : (
                   <p id="start-reason" className="text-center text-caption text-fg-secondary">
-                    {t('lobby.needPlayers')}
+                    {t('lobby.needPlayers', { min: MIN_PLAYERS_TO_START })}
                   </p>
                 )}
               </>

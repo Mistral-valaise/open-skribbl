@@ -35,7 +35,14 @@ export function WordArea({ view }: { view: RoomView }) {
       </span>
     );
   } else if (view.mask !== null) {
-    label = t('game.guessThis');
+    // Spectators and late joiners watch this turn; only its guessers are asked to guess (spec 007).
+    const me = view.participants.find((entry) => entry.id === view.you.id);
+    label =
+      view.you.role === 'spectator'
+        ? t('game.spectating')
+        : me?.waiting
+          ? t('game.waiting')
+          : t('game.guessThis');
     content = <WordMask mask={view.mask} />;
   } else {
     content = (

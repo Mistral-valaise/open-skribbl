@@ -141,7 +141,6 @@ export const fr: Messages = {
   'game.letterCount': 'Lettres par mot : {counts}',
   'game.isChoosing': '{name} choisit un mot…',
   'game.isDrawing': '{name} dessine',
-  'game.youAreDrawing': 'Tu dessines',
   'game.getReady': 'Prépare-toi…',
   'game.chooseWord': 'Choisis un mot',
   'game.chooseHint': 'Décide-toi avant la fin du temps.',

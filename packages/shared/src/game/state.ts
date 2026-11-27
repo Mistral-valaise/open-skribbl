@@ -50,6 +50,8 @@ export interface CompletedTurn {
   round: number;
   drawerId: string;
   drawerName: string;
+  /** Null when the drawer had already left when the turn ended. */
+  drawerAvatar: Avatar | null;
   word: string;
   items: readonly DrawItem[];
   guessedCount: number;

@@ -93,7 +93,7 @@ Phases and transitions are specified in [spec 002](specs/002-game-loop.md).
 ### Transport
 
 - One WebSocket endpoint: `GET /ws`. Messages are UTF-8 JSON objects with a string `type` field.
-- Every inbound message is parsed with its Zod schema. Unknown types, invalid payloads and oversized frames (over 16 KB) are dropped and answered with `error`.
+- Every inbound message is parsed with its Zod schema. Unknown types, invalid payloads and oversized frames (over 32 KB) are dropped and answered with `error`.
 - The first message on a connection must be `join`; it carries `protocolVersion`. On mismatch the server answers `error { code: "version_mismatch" }` and the client reloads.
 - The server sends WebSocket pings every 15 s and closes connections that miss two.
 

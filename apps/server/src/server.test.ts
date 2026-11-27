@@ -100,7 +100,7 @@ describe('gateway (architecture §4)', () => {
     client.sendRaw(JSON.stringify({ type: 'does.not.exist' }));
     client.sendRaw(JSON.stringify({ type: 'chat.send', text: 'before joining' }));
     client.sendRaw(JSON.stringify({ type: 'join', roomCode: code }));
-    client.sendRaw('x'.repeat(17 * 1024));
+    client.sendRaw('x'.repeat(33 * 1024));
     await client.until(() => client.errors.length === 5, 'five errors');
     expect(client.errors).toEqual(Array(5).fill('bad_request'));
 

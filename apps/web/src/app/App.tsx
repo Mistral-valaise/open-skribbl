@@ -1,5 +1,6 @@
 import { Redirect, Route, Switch } from 'wouter';
 import { HomeScreen } from '../features/home/HomeScreen.js';
+import { useLanguageStore } from '../i18n/index.js';
 import { normalizeRoomCode } from '../store/roomCode.js';
 import { Toast } from '../ui/Toast.js';
 import { ReconnectingBanner } from './ReconnectingBanner.js';
@@ -7,6 +8,8 @@ import { RoomRoute } from './RoomRoute.js';
 
 /** The routes of the app (docs/ARCHITECTURE.md §7): `/` and `/r/:code`. */
 export function App() {
+  // Subscribing here re-renders every screen when the interface language changes (spec 006).
+  useLanguageStore((state) => state.language);
   return (
     <>
       <Switch>

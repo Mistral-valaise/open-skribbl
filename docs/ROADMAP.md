@@ -6,7 +6,7 @@ A milestone is done when every spec assigned to it is `Implemented`: all its acc
 | ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- | ------- |
 | **M0** Foundation         | PRD, architecture, design guideline, feature specs, ADRs, glossary, agent instructions, workspace scaffold, CI                          | —                       | Done    |
 | **M1** Core game          | Rooms and lobby, game loop, drawing, guessing and chat, scoring. English interface with a starter word list.                            | 001, 002, 003, 004, 005 | Done    |
-| **M2** Full multiplayer   | Four interface languages and full word lists, custom words, reconnect, spectators, late join, reactions, likes, gallery, avatar builder | 006, 007, 008, 010      | Planned |
+| **M2** Full multiplayer   | Four interface languages and full word lists, custom words, reconnect, spectators, late join, reactions, likes, gallery, avatar builder | 006, 007, 008, 010      | Done    |
 | **M3** Solo mode          | Dataset pipeline, replay engine, solo run, personal best                                                                                | 009                     | Planned |
 | **M4** Polish and release | Themes, sound, responsive and touch polish, accessibility pass, Docker image, GHCR publishing, load test, hosting guides                | 011, 012                | Planned |
 

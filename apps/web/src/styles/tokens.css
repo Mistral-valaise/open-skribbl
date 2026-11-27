@@ -46,6 +46,7 @@
   --avatar-body-10: #ff9ec1;
   --avatar-body-11: #c9cedb;
   --avatar-ink: #14151c;
+  --avatar-white: #ffffff;
 
   /* Depth: subtle in the dark theme, where the lighter surface carries elevation. */
   --elevation-sm: 0 1px 2px rgb(0 0 0 / 0.3);

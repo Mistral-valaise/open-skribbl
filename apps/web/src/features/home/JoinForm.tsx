@@ -3,12 +3,13 @@ import { LogIn } from 'lucide-react';
 import { useState, type FormEvent } from 'react';
 import { Link } from 'wouter';
 import { t } from '../../i18n/index.js';
-import { loadAvatar, loadNickname, saveNickname } from '../../store/identity.js';
+import { loadNickname, saveNickname } from '../../store/identity.js';
 import { Button } from '../../ui/Button.js';
 import { CenteredPage } from '../../ui/CenteredPage.js';
 import { ICON } from '../../ui/IconButton.js';
 import { Wordmark } from '../../ui/Wordmark.js';
 import { IdentityCard } from './IdentityCard.js';
+import { useStoredAvatar } from './useStoredAvatar.js';
 
 interface JoinFormProps {
   code: string;
@@ -19,7 +20,7 @@ interface JoinFormProps {
 
 /** The form a visitor of `/r/<CODE>` fills in to enter the room (spec 001, AC-001-16). */
 export function JoinForm({ code, error, onJoin }: JoinFormProps) {
-  const [avatar] = useState(loadAvatar);
+  const [avatar, setAvatar] = useStoredAvatar();
   const [nickname, setNickname] = useState(loadNickname);
   const [showNicknameError, setShowNicknameError] = useState(false);
   const [spectator, setSpectator] = useState(false);
@@ -59,6 +60,7 @@ export function JoinForm({ code, error, onJoin }: JoinFormProps) {
       <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4">
         <IdentityCard
           avatar={avatar}
+          onAvatarChange={setAvatar}
           nickname={nickname}
           onNicknameChange={setNickname}
           showError={showNicknameError}

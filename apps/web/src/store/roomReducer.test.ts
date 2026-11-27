@@ -16,7 +16,7 @@ function view(phase: Phase, patch: Partial<RoomView> = {}): RoomView {
     code: 'ABC234',
     phase,
     hostId: 'p1',
-    you: { id: 'p2', role: 'player' },
+    you: { id: 'p2', role: 'player', like: null },
     settings: defaultSettings(),
     customWordCount: 0,
     participants: [],
@@ -139,6 +139,51 @@ describe('reduceServerMessage', () => {
       status: 'failed',
       failure: 'room_full',
     });
+  });
+
+  it('AC-008-01: a reaction is shown over the canvas until the drawing phase ends', () => {
+    const drawing = reduceAll([
+      { type: 'room.state', state: view('drawing') },
+      { type: 'reaction', participantId: 'p3', emoji: '🔥' },
+      { type: 'reaction', participantId: 'p2', emoji: '👏' },
+    ]);
+    expect(drawing.reactions.map((reaction) => reaction.emoji)).toEqual(['🔥', '👏']);
+    expect(new Set(drawing.reactions.map((reaction) => reaction.key)).size).toBe(2);
+    for (const reaction of drawing.reactions) {
+      expect(reaction.left).toBeGreaterThanOrEqual(0);
+      expect(reaction.left).toBeLessThanOrEqual(100);
+    }
+    const turnEnd = reduceAll([{ type: 'room.state', state: view('turnEnd') }], drawing);
+    expect(turnEnd.reactions).toHaveLength(0);
+  });
+
+  it('AC-008-04: the own like lasts for the turn and is forgotten when the next one starts', () => {
+    const liked = {
+      ...reduceAll([{ type: 'room.state', state: view('drawing') }]),
+      myLike: 'up' as const,
+    };
+    expect(reduceAll([{ type: 'room.state', state: view('turnEnd') }], liked).myLike).toBe('up');
+    expect(reduceAll([{ type: 'room.state', state: view('choosing') }], liked).myLike).toBeNull();
+  });
+
+  it('AC-008-08: a drawing fetched at game end is kept by turn index', () => {
+    const items = [{ kind: 'fill', x: 5, y: 5, color: '#E5383B' }] as const;
+    const data = reduceAll([
+      { type: 'room.state', state: view('gameEnd') },
+      { type: 'gallery.drawing', turnIndex: 2, items },
+    ]);
+    expect(data.gallery).toEqual({ 2: items });
+  });
+
+  it('AC-008-13: the drawings of a game are dropped when the room returns to the lobby', () => {
+    const data = reduceAll([
+      { type: 'room.state', state: view('gameEnd') },
+      { type: 'gallery.drawing', turnIndex: 0, items: [] },
+      { type: 'room.state', state: view('lobby') },
+      // A late answer to a request from the finished game.
+      { type: 'gallery.drawing', turnIndex: 1, items: [] },
+    ]);
+    expect(data.gallery).toEqual({});
   });
 
   it('reports other error codes without changing the room', () => {

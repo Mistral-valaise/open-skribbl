@@ -48,7 +48,12 @@ test('a full game in two browsers (AC-002-08, AC-003-16, AC-004-16, AC-004-18, A
   const host = await newParticipant(browser);
   const guest = await newParticipant(browser);
   const foreignRequests: string[] = [];
+  const consoleErrors: string[] = [];
   for (const page of [host, guest]) {
+    page.on('console', (message) => {
+      if (message.type() === 'error') consoleErrors.push(message.text());
+    });
+    page.on('pageerror', (error) => consoleErrors.push(error.message));
     page.on('request', (request) => {
       const url = request.url();
       if (!url.startsWith(baseURL!) && !/^(data|blob):/.test(url)) foreignRequests.push(url);
@@ -110,6 +115,8 @@ test('a full game in two browsers (AC-002-08, AC-003-16, AC-004-16, AC-004-18, A
   await expect(guest.getByTestId('lobby')).toBeVisible();
 
   expect(foreignRequests).toEqual([]);
+  // No script error and no Content-Security-Policy violation along the way.
+  expect(consoleErrors).toEqual([]);
 });
 
 test('drawing tools (AC-003-13, AC-003-15) and reload (AC-007-10)', async ({ browser }) => {

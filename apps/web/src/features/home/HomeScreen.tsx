@@ -3,8 +3,8 @@ import { ArrowRight, Plus } from 'lucide-react';
 import { useState, type FormEvent } from 'react';
 import { useLocation } from 'wouter';
 import { createRoom } from '../../connection/api.js';
-import { t, type MessageKey } from '../../i18n/index.js';
-import { loadAvatar, loadNickname, saveNickname } from '../../store/identity.js';
+import { t, useLanguageStore, type MessageKey } from '../../i18n/index.js';
+import { loadNickname, saveNickname } from '../../store/identity.js';
 import { isRoomCodeShaped, normalizeRoomCode } from '../../store/roomCode.js';
 import { requestAutoJoin } from '../../store/session.js';
 import { Button } from '../../ui/Button.js';
@@ -13,6 +13,9 @@ import { TextField } from '../../ui/Field.js';
 import { ICON } from '../../ui/IconButton.js';
 import { Wordmark } from '../../ui/Wordmark.js';
 import { IdentityCard } from './IdentityCard.js';
+import { useStoredAvatar } from './useStoredAvatar.js';
+
+const REPOSITORY_URL = 'https://github.com/mistral-valaise/open-skribbl';
 
 const CREATE_ERRORS: Record<'rate_limited' | 'server_full' | 'failed', MessageKey> = {
   rate_limited: 'home.createRateLimited',
@@ -22,7 +25,7 @@ const CREATE_ERRORS: Record<'rate_limited' | 'server_full' | 'failed', MessageKe
 
 export function HomeScreen() {
   const [, navigate] = useLocation();
-  const [avatar] = useState(loadAvatar);
+  const [avatar, setAvatar] = useStoredAvatar();
   const [nickname, setNickname] = useState(loadNickname);
   const [showNicknameError, setShowNicknameError] = useState(false);
   const [creating, setCreating] = useState(false);
@@ -40,7 +43,7 @@ export function HomeScreen() {
     saveNickname(cleaned);
     setCreating(true);
     setCreateError(null);
-    const result = await createRoom();
+    const result = await createRoom(useLanguageStore.getState().language);
     if (!result.ok) {
       setCreating(false);
       setCreateError(CREATE_ERRORS[result.reason]);
@@ -65,7 +68,25 @@ export function HomeScreen() {
   const codeInvalid = showCodeError && !isRoomCodeShaped(normalizeRoomCode(code));
 
   return (
-    <CenteredPage footer={t('app.footer')}>
+    <CenteredPage
+      footer={
+        <span className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1">
+          <span>{t('app.openSource')}</span>
+          <span aria-hidden>·</span>
+          <a
+            data-testid="repository-link"
+            href={REPOSITORY_URL}
+            target="_blank"
+            rel="noreferrer"
+            className="rounded-sm text-fg-secondary underline underline-offset-2 hover:text-fg"
+          >
+            {t('app.repository')}
+          </a>
+          <span aria-hidden>·</span>
+          <span data-testid="app-version">{t('app.version', { version: __APP_VERSION__ })}</span>
+        </span>
+      }
+    >
       <header className="flex flex-col items-center gap-4 pb-2 text-center">
         <h1>
           <Wordmark />
@@ -76,6 +97,7 @@ export function HomeScreen() {
       <form onSubmit={handleCreate} noValidate className="flex flex-col gap-4">
         <IdentityCard
           avatar={avatar}
+          onAvatarChange={setAvatar}
           nickname={nickname}
           onNicknameChange={setNickname}
           showError={showNicknameError}

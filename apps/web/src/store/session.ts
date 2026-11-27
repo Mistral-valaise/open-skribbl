@@ -1,9 +1,11 @@
 import {
   applyOp,
   CHAT_MAX_LENGTH,
+  MIN_PLAYERS_TO_START,
   PROTOCOL_VERSION,
   type ClientMessage,
   type DrawOp,
+  type LikeValue,
   type Role,
   type ServerMessage,
 } from '@kritzel/shared';
@@ -50,7 +52,7 @@ function receive(room: ActiveRoom, message: ServerMessage): void {
     if (FORGET_SEAT.includes(data.failure)) clearSession(room.code);
     if (data.failure === 'invalid_avatar') rerollAvatar();
   }
-  if (error) showToast(`error.${error}`, { max: CHAT_MAX_LENGTH });
+  if (error) showToast(`error.${error}`, { max: CHAT_MAX_LENGTH, min: MIN_PLAYERS_TO_START });
 }
 
 export interface JoinParams {
@@ -126,6 +128,18 @@ export function drawOp(op: DrawOp): boolean {
   if (!applyLocalOp(op)) return false;
   send({ type: 'draw.op', op });
   return true;
+}
+
+/** Sets this participant's like for the current drawing; sending again replaces it (spec 008). */
+export function setLike(value: LikeValue): void {
+  if (send({ type: 'like.set', value })) useRoomStore.setState({ myLike: value });
+}
+
+/** Removes a reaction from over the canvas once it has floated away. */
+export function dismissReaction(key: string): void {
+  useRoomStore.setState((state) => ({
+    reactions: state.reactions.filter((reaction) => reaction.key !== key),
+  }));
 }
 
 /** A room created on the home screen is joined without showing the join form. */

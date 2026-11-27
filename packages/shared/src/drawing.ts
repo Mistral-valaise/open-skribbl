@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from './zod.js';
 import { BRUSH_SIZES, CANVAS_HEIGHT, CANVAS_WIDTH, DRAW_LIMITS } from './constants.js';
 
 /**

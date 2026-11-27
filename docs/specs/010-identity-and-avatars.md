@@ -1,9 +1,9 @@
 # 010 — Identity and avatars
 
-|           |          |
-| --------- | -------- |
-| Status    | Proposed |
-| Milestone | M2       |
+|           |             |
+| --------- | ----------- |
+| Status    | Implemented |
+| Milestone | M2          |
 
 ## Intent
 

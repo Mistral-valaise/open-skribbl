@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from './zod.js';
 import { CHAT_MAX_LENGTH, CUSTOM_WORDS_MAX, REACTION_EMOJI, WORD_MAX_LENGTH } from './constants.js';
 import { drawOpSchema, type DrawItem, type DrawOp } from './drawing.js';
 import type { Avatar } from './identity.js';
@@ -118,6 +118,7 @@ export interface GalleryEntry {
   round: number;
   drawerId: string;
   drawerName: string;
+  drawerAvatar: Avatar | null;
   word: string;
   likesUp: number;
   likesDown: number;
@@ -172,7 +173,8 @@ export interface RoomView {
   code: string;
   phase: Phase;
   hostId: string | null;
-  you: { id: string; role: Role };
+  /** `like` is this participant's own like for the current drawing. */
+  you: { id: string; role: Role; like: LikeValue | null };
   /** `customWords` is filled for the host only; everyone gets the count. */
   settings: Settings;
   customWordCount: number;

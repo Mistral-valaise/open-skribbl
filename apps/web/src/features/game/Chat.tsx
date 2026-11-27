@@ -90,7 +90,13 @@ export function Chat({ view, className }: { view: RoomView; className?: string }
           value={text}
           onChange={(event) => setText(event.target.value)}
           maxLength={CHAT_MAX_LENGTH}
-          placeholder={isGuessing ? t('chat.guessPlaceholder') : t('chat.chatPlaceholder')}
+          placeholder={
+            isGuessing
+              ? t('chat.guessPlaceholder')
+              : view.you.role === 'spectator'
+                ? t('chat.spectatorPlaceholder')
+                : t('chat.chatPlaceholder')
+          }
           autoComplete="off"
           autoCapitalize="off"
           autoCorrect="off"

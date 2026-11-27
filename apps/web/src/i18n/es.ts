@@ -139,7 +139,6 @@ export const es: Messages = {
   'game.letterCount': 'Letras por palabra: {counts}',
   'game.isChoosing': '{name} está eligiendo una palabra…',
   'game.isDrawing': '{name} está dibujando',
-  'game.youAreDrawing': 'Estás dibujando',
   'game.getReady': 'Prepárate…',
   'game.chooseWord': 'Elige una palabra',
   'game.chooseHint': 'Decídete antes de que se acabe el tiempo.',

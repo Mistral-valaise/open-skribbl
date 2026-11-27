@@ -67,6 +67,16 @@ describe('drawing in a room (spec 003)', () => {
     expect(joined.redo).toMatchObject([{ kind: 'stroke', id: 's1' }]);
   });
 
+  it('a participant joining during the turn-end display still receives the drawing', () => {
+    const { h, players } = startedGame(2, { settings: { drawTime: 30 } });
+    h.choose();
+    h.dispatch({ type: 'drawOp', participantId: players[0]!.id, op: start });
+    h.advance(30_000);
+    expect(h.state.phase).toBe('turnEnd');
+    const late = h.join('Late', { role: 'spectator' });
+    expect(h.received(late, 'joined')[0]!.items).toHaveLength(1);
+  });
+
   it('AC-003-09: an unfinished stroke is stored as finished when the turn ends', () => {
     const { h, players } = startedGame(2, { settings: { drawTime: 30 } });
     h.choose();

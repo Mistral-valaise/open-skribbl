@@ -4,7 +4,9 @@ import {
   type ChatMessage,
   type DrawItem,
   type ErrorCode,
+  type LikeValue,
   type OpLog,
+  type ReactionEmoji,
   type RoomView,
   type ServerMessage,
 } from '@kritzel/shared';
@@ -33,6 +35,15 @@ export type ChatEntry =
   | { entry: 'close'; key: string; text: string }
   | { entry: 'correct'; key: string; word: string };
 
+/** A reaction that is floating over the canvas right now (spec 008). */
+export interface ReactionFloat {
+  key: string;
+  emoji: ReactionEmoji;
+  participantId: string;
+  /** Horizontal position over the canvas, in percent of its width. */
+  left: number;
+}
+
 export type ConnectionStatus = 'idle' | 'connecting' | 'joined' | 'reconnecting' | 'failed';
 
 export interface RoomData {
@@ -48,6 +59,15 @@ export interface RoomData {
   opLog: OpLog;
   /** Word choices offered to this participant as the drawer. */
   wordChoices: readonly string[] | null;
+  reactions: readonly ReactionFloat[];
+  reactionSeq: number;
+  /**
+   * This participant's like for the current drawing. Kept locally: the server
+   * never discloses individual likes, not even to their sender.
+   */
+  myLike: LikeValue | null;
+  /** Drawings of the finished game by turn index, fetched with `gallery.get`. */
+  gallery: Readonly<Record<number, readonly DrawItem[]>>;
 }
 
 export const INITIAL_ROOM_DATA: RoomData = {
@@ -59,9 +79,17 @@ export const INITIAL_ROOM_DATA: RoomData = {
   chatSeq: 0,
   opLog: EMPTY_OP_LOG,
   wordChoices: null,
+  reactions: [],
+  reactionSeq: 0,
+  myLike: null,
+  gallery: {},
 };
 
 const CHAT_LOG_LIMIT = 200;
+/** More reactions than this at once only hide the drawing. */
+const REACTION_LIMIT = 24;
+const NO_REACTIONS: readonly ReactionFloat[] = [];
+const NO_GALLERY: RoomData['gallery'] = {};
 
 export function opLogFromItems(items: readonly DrawItem[], redo: readonly DrawItem[] = []): OpLog {
   const pointCount = items.reduce(
@@ -80,6 +108,10 @@ function withSnapshot(data: RoomData, view: RoomView, localNow: number): RoomDat
     clockOffset: offsetFrom(view.serverNow, localNow),
     opLog: blank ? EMPTY_OP_LOG : data.opLog,
     wordChoices: view.phase === 'choosing' ? data.wordChoices : null,
+    reactions: view.phase === 'drawing' ? data.reactions : NO_REACTIONS,
+    // A like belongs to one turn; the gallery to one finished game (spec 008).
+    myLike: blank ? null : (view.you.like ?? data.myLike),
+    gallery: view.phase === 'gameEnd' ? data.gallery : NO_GALLERY,
   };
 }
 
@@ -137,6 +169,29 @@ export function reduceServerMessage(
           message.kind === 'close'
             ? withChatEntry(data, { entry: 'close', text: message.text })
             : withChatEntry(data, { entry: 'correct', word: message.text }),
+      };
+    case 'reaction': {
+      const float: ReactionFloat = {
+        key: `r${data.reactionSeq}`,
+        emoji: message.emoji,
+        participantId: message.participantId,
+        // Spread over the width without randomness, so the reducer stays pure.
+        left: 8 + ((data.reactionSeq * 37) % 84),
+      };
+      return {
+        data: {
+          ...data,
+          reactionSeq: data.reactionSeq + 1,
+          reactions: [...data.reactions, float].slice(-REACTION_LIMIT),
+        },
+      };
+    }
+    case 'gallery.drawing':
+      return {
+        data:
+          data.view?.phase === 'gameEnd'
+            ? { ...data, gallery: { ...data.gallery, [message.turnIndex]: message.items } }
+            : data,
       };
     case 'kicked':
       return { data: failed(data, 'kicked') };

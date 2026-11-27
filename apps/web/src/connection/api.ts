@@ -1,14 +1,17 @@
+import type { Language } from '@kritzel/shared';
+
 /** The HTTP API (docs/ARCHITECTURE.md §4). Paths are relative: same origin only. */
 
 export type CreateRoomResult =
   { ok: true; code: string } | { ok: false; reason: 'rate_limited' | 'server_full' | 'failed' };
 
-export async function createRoom(): Promise<CreateRoomResult> {
+/** The host's interface language becomes the room's word language (spec 001, "Settings"). */
+export async function createRoom(language: Language): Promise<CreateRoomResult> {
   try {
     const response = await fetch('/api/rooms', {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ language: 'en' }),
+      body: JSON.stringify({ language }),
     });
     if (response.status === 429) return { ok: false, reason: 'rate_limited' };
     if (response.status === 503) return { ok: false, reason: 'server_full' };

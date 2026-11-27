@@ -83,6 +83,74 @@ describe('presence (spec 007, groundwork in M1)', () => {
     expect(announced).toMatchObject({ params: { name: 'Noa' } });
   });
 
+  it('AC-007-04: a player who guessed is still marked as guessed after resuming', () => {
+    const { h, players } = startedGame(3);
+    const guesser = players[1]!;
+    const word = h.choose();
+    h.chat(guesser, word);
+    h.disconnect(guesser);
+    h.advance(5_000);
+    h.join('ignored', { sessionToken: guesser.token });
+    const view = h.view(guesser);
+    expect(view.word).toBe(word);
+    expect(view.participants.find((p) => p.id === guesser.id)?.hasGuessed).toBe(true);
+  });
+
+  it('AC-007-06: an explicit leave removes the seat at once', () => {
+    const h = createHarness();
+    const mara = h.join('Mara');
+    const noa = h.join('Noa');
+    h.dispatch({ type: 'leave', participantId: noa.id });
+    expect(h.view(mara).participants.map((p) => p.id)).toEqual([mara.id]);
+    expect(h.closed).toContain(noa.conn);
+  });
+
+  it('AC-007-13: a spectator is never in the turn order or the ranking and sees only the mask', () => {
+    const h = createHarness({
+      words: ['house', 'zzz1', 'zzz2'],
+      settings: { rounds: 1, drawTime: 30 },
+    });
+    const host = h.join('Mara');
+    const watcher = h.join('Watcher', { role: 'spectator' });
+    h.join('Noa');
+    h.start(host);
+    expect(h.state.game!.order).not.toContain(watcher.id);
+    h.choose('house');
+    expect(h.view(watcher).word).toBeNull();
+    expect(h.view(watcher).mask).toBe('_____');
+    expect(h.view(watcher).participants.find((p) => p.id === watcher.id)?.rank).toBeNull();
+    while (h.state.phase !== 'gameEnd') h.advance(1_000);
+    expect(h.view(host).results!.ranking.map((entry) => entry.id)).not.toContain(watcher.id);
+  });
+
+  it('AC-007-14: a spectator cannot draw, choose a word or like', () => {
+    const h = createHarness();
+    const host = h.join('Mara');
+    h.join('Noa');
+    const watcher = h.join('Watcher', { role: 'spectator' });
+    h.start(host);
+    h.dispatch({ type: 'chooseWord', participantId: watcher.id, index: 0 });
+    h.choose();
+    h.dispatch({
+      type: 'drawOp',
+      participantId: watcher.id,
+      op: { type: 'fill', x: 1, y: 1, color: '#000000' },
+    });
+    h.dispatch({ type: 'like', participantId: watcher.id, value: 'up' });
+    expect(h.errors(watcher)).toEqual(['not_allowed', 'not_allowed', 'not_allowed']);
+    expect(h.state.turn!.opLog.items).toEqual([]);
+  });
+
+  it('AC-007-16: a host who drops and resumes within the grace period stays host', () => {
+    const { h, players } = startedGame(3);
+    const host = players[0]!;
+    h.choose();
+    h.disconnect(host);
+    h.advance(8_000);
+    h.join('ignored', { sessionToken: host.token });
+    expect(h.state.hostId).toBe(host.id);
+  });
+
   it('AC-007-07: a player who left with points appears in the results as left', () => {
     const { h, players } = startedGame(3, { settings: { rounds: 1, drawTime: 30 } });
     const [host, quick] = players as Participant[];

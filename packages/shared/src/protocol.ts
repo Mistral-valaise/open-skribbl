@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { CHAT_MAX_LENGTH, CUSTOM_WORDS_MAX, WORD_MAX_LENGTH } from './constants.js';
+import { CHAT_MAX_LENGTH, CUSTOM_WORDS_MAX, REACTION_EMOJI, WORD_MAX_LENGTH } from './constants.js';
 import { drawOpSchema, type DrawItem, type DrawOp } from './drawing.js';
 import type { Avatar } from './identity.js';
 
@@ -78,6 +78,9 @@ export const clientMessageSchema = z.discriminatedUnion('type', [
   z.object({ type: z.literal('draw.op'), op: drawOpSchema }),
   // Length is checked by the rules so the sender gets `invalid_message` (spec 004).
   z.object({ type: z.literal('chat.send'), text: z.string().max(CHAT_MAX_LENGTH * 20) }),
+  z.object({ type: z.literal('reaction.send'), emoji: z.enum(REACTION_EMOJI) }),
+  z.object({ type: z.literal('like.set'), value: z.enum(['up', 'down']) }),
+  z.object({ type: z.literal('gallery.get'), turnIndex: z.number().int().min(0).max(10_000) }),
 ]);
 export type ClientMessage = z.infer<typeof clientMessageSchema>;
 export type JoinMessage = Extract<ClientMessage, { type: 'join' }>;
@@ -106,6 +109,21 @@ export type SystemMessageKey =
   'joined' | 'left' | 'guessed' | 'turn_ended' | 'drawer_left' | 'new_host' | 'kicked';
 
 export type ChatChannel = 'all' | 'guessed';
+export type ReactionEmoji = (typeof REACTION_EMOJI)[number];
+export type LikeValue = 'up' | 'down';
+
+/** One drawing of the finished game (spec 008). */
+export interface GalleryEntry {
+  turnIndex: number;
+  round: number;
+  drawerId: string;
+  drawerName: string;
+  word: string;
+  likesUp: number;
+  likesDown: number;
+  guessedCount: number;
+  guesserCount: number;
+}
 
 export type ChatMessage =
   | {
@@ -171,8 +189,15 @@ export interface RoomView {
   turnEnd: {
     reason: TurnEndReason;
     deltas: Record<string, number>;
+    /** Like totals for the drawing; individual likes are never disclosed. */
+    likes: { up: number; down: number };
   } | null;
-  results: { ranking: RankingEntry[] } | null;
+  results: {
+    ranking: RankingEntry[];
+    gallery: GalleryEntry[];
+    /** `turnIndex` of the crowd favourite, or null when no drawing got a thumbs-up. */
+    favorite: number | null;
+  } | null;
 }
 
 export type ServerMessage =
@@ -191,6 +216,8 @@ export type ServerMessage =
   | { type: 'draw.op'; op: DrawOp }
   | ChatMessage
   | { type: 'guess.feedback'; kind: 'correct' | 'close'; text: string }
+  | { type: 'reaction'; participantId: string; emoji: ReactionEmoji }
+  | { type: 'gallery.drawing'; turnIndex: number; items: readonly DrawItem[] }
   | { type: 'kicked' }
   | { type: 'server.shutdown' }
   | { type: 'error'; code: ErrorCode };

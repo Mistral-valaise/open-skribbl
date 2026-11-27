@@ -206,3 +206,32 @@ describe('a game over the wire', () => {
     expect(noa.of('server.shutdown')).toHaveLength(1);
   });
 });
+
+describe('word language (spec 006)', () => {
+  it('AC-006-06, AC-006-19: offered words come from the list of the room language and difficulty', async () => {
+    server = await startTestServer({ words: undefined });
+    const { loadWordLists } = await import('@kritzel/content');
+    const easyGerman = loadWordLists().get('de', 'easy');
+
+    const response = await fetch(`${server.url}/api/rooms`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ language: 'en' }),
+    });
+    const { code } = (await response.json()) as { code: string };
+    const mara = await server.connect();
+    const noa = await server.connect();
+    await mara.join(code, 'Mara');
+    await noa.join(code, 'Noa');
+    mara.send({
+      type: 'settings.update',
+      settings: { language: 'de', difficulty: 'easy', wordChoices: 5 },
+    });
+    await noa.until(() => noa.lastState?.settings.language === 'de', 'settings');
+    mara.send({ type: 'game.start' });
+    const choices = await mara.next('word.choices');
+
+    expect(choices.words).toHaveLength(5);
+    expect(choices.words.every((word) => easyGerman.includes(word))).toBe(true);
+  });
+});

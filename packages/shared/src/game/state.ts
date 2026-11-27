@@ -1,6 +1,6 @@
 import type { DrawItem, OpLog } from '../drawing.js';
 import type { Avatar } from '../identity.js';
-import type { Phase, Role, Settings, TurnEndReason } from '../protocol.js';
+import type { LikeValue, Phase, Role, Settings, TurnEndReason } from '../protocol.js';
 
 /**
  * Complete state of one room. Owned by the server runtime, changed only by
@@ -20,6 +20,8 @@ export interface Seat {
   joinedSeq: number;
   score: number;
   waiting: boolean;
+  /** Time of the last reaction this seat sent, for the cooldown. */
+  lastReactionAt: number;
 }
 
 export interface Turn {
@@ -37,6 +39,10 @@ export interface Turn {
   startedAt: number;
   endsAt: number;
   opLog: OpLog;
+  /** One like per guesser of the turn. */
+  likes: Readonly<Record<string, LikeValue>>;
+  /** Index of this turn in `game.turns` once it is completed. */
+  completedIndex: number | null;
   end: { reason: TurnEndReason; deltas: Readonly<Record<string, number>> } | null;
 }
 
@@ -48,6 +54,8 @@ export interface CompletedTurn {
   items: readonly DrawItem[];
   guessedCount: number;
   guesserCount: number;
+  likesUp: number;
+  likesDown: number;
 }
 
 export interface LeftPlayer {

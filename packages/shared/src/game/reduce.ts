@@ -3,6 +3,8 @@ import {
   CUSTOM_WORDS_ONLY_MIN,
   MAX_SPECTATORS,
   MIN_PLAYERS_TO_START,
+  REACTION_COOLDOWN_MS,
+  REACTION_EMOJI,
   SCORING,
   TIMING,
 } from '../constants.js';
@@ -14,6 +16,7 @@ import {
   type Difficulty,
   type ErrorCode,
   type Language,
+  type LikeValue,
   type Role,
   type ServerMessage,
   type SystemMessageKey,
@@ -31,7 +34,7 @@ import {
   type RoomState,
   type Seat,
 } from './state.js';
-import { viewFor } from './view.js';
+import { likeTotals, viewFor } from './view.js';
 
 /**
  * The game engine (docs/adr/0003): a pure function from state and event to
@@ -67,6 +70,9 @@ export type RoomEvent =
   | { type: 'chooseWord'; participantId: string; index: number }
   | { type: 'drawOp'; participantId: string; op: DrawOp }
   | { type: 'chat'; participantId: string; text: string }
+  | { type: 'reaction'; participantId: string; emoji: string }
+  | { type: 'like'; participantId: string; value: LikeValue }
+  | { type: 'galleryGet'; participantId: string; turnIndex: number }
   | { type: 'timer'; key: string };
 
 export type Effect =
@@ -135,6 +141,12 @@ class Machine {
         return this.drawOp(seat, event.op);
       case 'chat':
         return this.chat(seat, event.text);
+      case 'reaction':
+        return this.reaction(seat, event.emoji);
+      case 'like':
+        return this.like(seat, event.value);
+      case 'galleryGet':
+        return this.galleryGet(seat, event.turnIndex);
     }
   }
 
@@ -216,6 +228,7 @@ class Machine {
       joinedSeq: state.nextSeq++,
       score: 0,
       waiting: event.role === 'player' && this.inTurn,
+      lastReactionAt: 0,
     };
     state.seats.push(seat);
     if (state.hostId === null) state.hostId = seat.id;
@@ -483,6 +496,8 @@ class Machine {
       startedAt: ctx.now,
       endsAt: ctx.now,
       opLog: EMPTY_OP_LOG,
+      likes: {},
+      completedIndex: null,
       end: null,
     };
     state.phase = 'choosing';
@@ -581,6 +596,8 @@ class Machine {
         deltas[drawer.id] = earned;
       }
       if (reason !== 'drawer_left' || turn.opLog.items.length > 0) {
+        const likes = likeTotals(turn);
+        turn.completedIndex = game.turns.length;
         game.turns = [
           ...game.turns,
           {
@@ -591,6 +608,8 @@ class Machine {
             items: turn.opLog.items,
             guessedCount: Object.keys(turn.guessed).length,
             guesserCount: turn.guesserIds.length,
+            likesUp: likes.up,
+            likesDown: likes.down,
           },
         ];
       }
@@ -707,6 +726,52 @@ class Machine {
     this.system('guessed', { name: seat.nickname });
     this.changed();
     this.checkAllGuessed();
+  }
+
+  // ── reactions, likes, gallery (spec 008) ───────────────────────────────
+
+  private reaction(seat: Seat, emoji: string): void {
+    const { state, ctx } = this;
+    const known = (REACTION_EMOJI as readonly string[]).includes(emoji);
+    if (state.phase !== 'drawing' || state.turn?.drawerId === seat.id || !known) {
+      return this.error(seat, 'not_allowed');
+    }
+    // Too-frequent reactions are dropped silently.
+    if (ctx.now - seat.lastReactionAt < REACTION_COOLDOWN_MS) return;
+    seat.lastReactionAt = ctx.now;
+    this.send(this.conns(), {
+      type: 'reaction',
+      participantId: seat.id,
+      emoji: emoji as (typeof REACTION_EMOJI)[number],
+    });
+  }
+
+  private like(seat: Seat, value: LikeValue): void {
+    const { state } = this;
+    const turn = state.turn;
+    const open = state.phase === 'drawing' || state.phase === 'turnEnd';
+    if (!open || !turn?.word || !turn.guesserIds.includes(seat.id)) {
+      return this.error(seat, 'not_allowed');
+    }
+    turn.likes = { ...turn.likes, [seat.id]: value };
+    if (state.phase !== 'turnEnd') return;
+
+    // The turn is already in the gallery: keep its totals current.
+    const game = state.game!;
+    const totals = likeTotals(turn);
+    game.turns = game.turns.map((completed, index) =>
+      index === turn.completedIndex
+        ? { ...completed, likesUp: totals.up, likesDown: totals.down }
+        : completed,
+    );
+    this.changed();
+  }
+
+  private galleryGet(seat: Seat, turnIndex: number): void {
+    const { state } = this;
+    const turn = state.phase === 'gameEnd' ? state.game?.turns[turnIndex] : undefined;
+    if (!turn) return this.error(seat, 'not_allowed');
+    this.sendTo(seat, { type: 'gallery.drawing', turnIndex, items: turn.items });
   }
 
   private chatOn(channel: 'all' | 'guessed', seat: Seat, text: string): void {

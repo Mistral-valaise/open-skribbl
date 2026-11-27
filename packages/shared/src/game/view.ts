@@ -1,7 +1,7 @@
-import type { ParticipantView, RankingEntry, RoomView } from '../protocol.js';
+import type { GalleryEntry, ParticipantView, RankingEntry, RoomView } from '../protocol.js';
 import { rank } from '../scoring.js';
 import { buildMask } from '../words/mask.js';
-import type { RoomState } from './state.js';
+import type { RoomState, Turn } from './state.js';
 
 /**
  * The single gate for visibility: projects the room into what one participant
@@ -51,9 +51,12 @@ export function viewFor(state: RoomState, participantId: string, now: number): R
     serverNow: now,
     turnEnd:
       state.phase === 'turnEnd' && turn?.end
-        ? { ...turn.end, deltas: { ...turn.end.deltas } }
+        ? { ...turn.end, deltas: { ...turn.end.deltas }, likes: likeTotals(turn) }
         : null,
-    results: state.phase === 'gameEnd' ? { ranking: finalRanking(state) } : null,
+    results:
+      state.phase === 'gameEnd'
+        ? { ranking: finalRanking(state), gallery: gallery(state), favorite: favorite(state) }
+        : null,
   };
 }
 
@@ -73,4 +76,40 @@ export function finalRanking(state: RoomState): RankingEntry[] {
     rank: entry.rank,
     left: entry.left,
   }));
+}
+
+export function likeTotals(turn: Turn): { up: number; down: number } {
+  const values = Object.values(turn.likes);
+  return {
+    up: values.filter((value) => value === 'up').length,
+    down: values.filter((value) => value === 'down').length,
+  };
+}
+
+/** One entry per completed turn, in play order (spec 008). */
+export function gallery(state: RoomState): GalleryEntry[] {
+  return (state.game?.turns ?? []).map((turn, turnIndex) => ({
+    turnIndex,
+    round: turn.round,
+    drawerId: turn.drawerId,
+    drawerName: turn.drawerName,
+    word: turn.word,
+    likesUp: turn.likesUp,
+    likesDown: turn.likesDown,
+    guessedCount: turn.guessedCount,
+    guesserCount: turn.guesserCount,
+  }));
+}
+
+/** The drawing with the most thumbs-up; ties go to the earlier turn. */
+export function favorite(state: RoomState): number | null {
+  let best: number | null = null;
+  let bestLikes = 0;
+  (state.game?.turns ?? []).forEach((turn, turnIndex) => {
+    if (turn.likesUp > bestLikes) {
+      best = turnIndex;
+      bestLikes = turn.likesUp;
+    }
+  });
+  return best;
 }

@@ -65,6 +65,13 @@ export const RATE_LIMITS = {
   dropWindowMs: 10_000,
 } as const;
 
+/** Spec 008 — reactions. */
+export const REACTION_EMOJI = ['😂', '😍', '👏', '🔥', '🤔', '💀'] as const;
+export const REACTION_COOLDOWN_MS = 1_500;
+/** Spec 008 — PNG export size. */
+export const EXPORT_WIDTH = 1600;
+export const EXPORT_HEIGHT = 1200;
+
 /** Spec 009 — solo mode. */
 export const SOLO = {
   drawingsPerRun: 10,

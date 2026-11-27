@@ -113,5 +113,11 @@ function toEvent(
       return { type: 'drawOp', participantId, op: message.op };
     case 'chat.send':
       return { type: 'chat', participantId, text: message.text };
+    case 'reaction.send':
+      return { type: 'reaction', participantId, emoji: message.emoji };
+    case 'like.set':
+      return { type: 'like', participantId, value: message.value };
+    case 'gallery.get':
+      return { type: 'galleryGet', participantId, turnIndex: message.turnIndex };
   }
 }

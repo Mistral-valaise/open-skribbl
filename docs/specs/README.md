@@ -18,6 +18,7 @@ Specs are the source of truth for behaviour. Code implements a spec; a test prov
 | 010 | [Identity and avatars](010-identity-and-avatars.md)           | M2        |
 | 011 | [App shell](011-app-shell.md)                                 | M4        |
 | 012 | [Deployment and operations](012-deployment-and-operations.md) | M4        |
+| 015 | [Observability](015-observability.md)                         | M6        |
 | 101 | [Bots](roadmap/101-bots.md)                                   | after v1  |
 | 102 | [Team mode](roadmap/102-team-mode.md)                         | after v1  |
 

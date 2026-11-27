@@ -29,6 +29,8 @@ All configuration is by environment variable; every variable is optional.
 | `TRUST_PROXY` | `false`   | Read the client address from `X-Forwarded-For` (set when behind a reverse proxy) |
 | `LOG_LEVEL`   | `info`    | `debug`, `info`, `warn`, `error`                                                 |
 
+Telemetry adds its own variables, all optional and off by default; they are listed in [spec 015](015-observability.md).
+
 An invalid value stops the process at start-up with a message naming the variable.
 
 ### Image
@@ -50,6 +52,7 @@ An invalid value stops the process at start-up with a message naming the variabl
 - One JSON object per line on stdout: time, level, message, context.
 - Logged: start-up configuration, room created and disposed (code only), participant counts, rejected messages by error code, shutdown.
 - Never logged: nicknames, chat text, words, session tokens, IP addresses at `info` level.
+- Inside a traced operation the line also carries `trace_id` and `span_id` (spec 015).
 
 ### CI and release
 
@@ -81,4 +84,4 @@ An invalid value stops the process at start-up with a message naming the variabl
 
 ## Out of scope
 
-Kubernetes manifests and Helm charts, built-in TLS, metrics endpoints, multi-instance deployments, automatic updates.
+Kubernetes manifests and Helm charts, built-in TLS, a scrape endpoint for metrics (telemetry is pushed, spec 015), multi-instance deployments, automatic updates.

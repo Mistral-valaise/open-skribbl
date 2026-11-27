@@ -7,6 +7,7 @@ export const fr: Messages = {
   'app.openSource': 'Open source',
   'app.repository': 'Code source sur GitHub',
   'app.version': 'Version {version}',
+  'app.createdBy': 'Créé par {name}',
 
   'language.label': 'Langue',
   'language.en': 'English',

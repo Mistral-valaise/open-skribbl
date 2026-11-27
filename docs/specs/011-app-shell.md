@@ -37,6 +37,11 @@ The shell is everything around the game that makes Kritzel feel finished: themes
 - On phones the game follows the height that is actually visible. While the on-screen keyboard is open, the screen shows one row with round, mask and timer, the whole canvas as large as the remaining height allows, the latest chat message and the input. The shell controls, reactions, likes, scoreboard, drawing tools and older chat messages are hidden until the keyboard closes. Solo mode does the same.
 - The keyboard counts as open at phone width when the visible height is at least 120 px less than the tallest seen at that width, or below 352 px.
 
+### Credit
+
+- Every centred page (home, join, solo start, status pages) ends with "Created by Mistral N"; the name links to the author's site, `https://mistraln.de/`. The game screen does not carry it: the canvas is the stage.
+- The link is plain navigation, opened in a new tab without a referrer. Nothing is loaded from that site.
+
 ### Accessibility
 
 - All interactive elements are reachable by Tab in visual order, operable with Enter or Space, and show the focus ring.
@@ -72,6 +77,7 @@ The shell is everything around the game that makes Kritzel feel finished: themes
 - **AC-011-17** At 360 px width, when the visible height drops from 740 px to 330 px (a phone whose keyboard opens), a guesser sees the whole canvas, the mask, the timer, the latest chat message and the chat input without scrolling, and the canvas is at least 240 px wide.
 - **AC-011-18** In solo mode at 360 px width, when the visible height drops to 330 px, the whole canvas, the mask, the timer and the guess input are visible without scrolling.
 - **AC-011-19** When the visible height returns to 740 px, the reaction bar, the scoreboard and the chat log are visible again.
+- **AC-011-20** The home, join and solo start pages show "Created by Mistral N" in the interface language, with the name linking to `https://mistraln.de/` in a new tab without a referrer; loading those pages sends no request to that site.
 
 ## Out of scope
 

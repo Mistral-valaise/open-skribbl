@@ -6,11 +6,15 @@ export function guessPoints(remainingMs: number, drawTimeMs: number): number {
   return SCORING.base + Math.floor((SCORING.timeBonus * remaining) / drawTimeMs);
 }
 
-/** drawerPoints = floor(sum of guess points, bonus included / guessers of the turn). */
+/**
+ * drawerPoints = floor(sum of guess points, bonus included / (2 × guessers of the turn))
+ * (spec 005). Half the guessers' average: with a single guesser the drawer
+ * would otherwise earn exactly what the guesser earned, turn after turn.
+ */
 export function drawerPoints(guessPointsEarned: readonly number[], guesserCount: number): number {
   if (guesserCount <= 0) return 0;
   const sum = guessPointsEarned.reduce((total, points) => total + points, 0);
-  return Math.floor(sum / guesserCount);
+  return Math.floor(sum / (SCORING.drawerDivisor * guesserCount));
 }
 
 export interface Rankable {

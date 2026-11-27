@@ -7,7 +7,7 @@ export function ReconnectingBanner() {
   const reconnecting = useRoomStore((state) => state.status === 'reconnecting');
   if (!reconnecting) return null;
   return (
-    <div className="pointer-events-none fixed inset-x-0 top-3 z-50 flex justify-center px-4">
+    <div className="pointer-events-none fixed inset-x-0 top-18 z-50 flex justify-center px-4">
       <div
         data-testid="reconnecting"
         role="status"

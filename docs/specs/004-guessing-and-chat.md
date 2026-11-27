@@ -1,9 +1,9 @@
 # 004 — Guessing and chat
 
-|           |          |
-| --------- | -------- |
-| Status    | Approved |
-| Milestone | M1       |
+|           |             |
+| --------- | ----------- |
+| Status    | Implemented |
+| Milestone | M1          |
 
 ## Intent
 

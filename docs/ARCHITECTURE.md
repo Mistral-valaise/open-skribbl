@@ -110,40 +110,40 @@ Snapshots carry `serverNow` and absolute deadlines (`phaseEndsAt`); the client d
 
 `packages/shared/src/protocol.ts` is authoritative; this table is an overview. Messages marked M2 are not implemented yet.
 
-| Direction | Type              | Payload                                                                      | Notes                                                          |
-| --------- | ----------------- | ---------------------------------------------------------------------------- | -------------------------------------------------------------- |
-| C→S       | `join`            | `protocolVersion, roomCode, nickname, avatar, role, clientId, sessionToken?` | First message. `sessionToken` resumes a seat.                  |
-| C→S       | `leave`           | —                                                                            | Gives up the seat at once.                                     |
-| C→S       | `settings.update` | partial settings                                                             | Host, lobby only.                                              |
-| C→S       | `game.start`      | —                                                                            | Host, lobby only.                                              |
-| C→S       | `game.playAgain`  | —                                                                            | Host, game end only.                                           |
-| C→S       | `player.kick`     | `playerId`                                                                   | Host.                                                          |
-| C→S       | `word.choose`     | `index`                                                                      | Drawer, choosing phase.                                        |
-| C→S       | `draw.op`         | `op`                                                                         | Drawer, drawing phase.                                         |
-| C→S       | `chat.send`       | `text`                                                                       | Guess or chat; the server decides.                             |
-| C→S       | `reaction.send`   | `emoji`                                                                      | M2.                                                            |
-| C→S       | `like.set`        | `value: "up" \| "down"`                                                      | M2.                                                            |
-| C→S       | `gallery.get`     | `turnIndex`                                                                  | Game end only. M2.                                             |
-| S→C       | `joined`          | `participantId, sessionToken, state, items`                                  | `items` are the effective drawing items of the current turn.   |
-| S→C       | `room.state`      | per-participant snapshot                                                     |                                                                |
-| S→C       | `word.choices`    | `words[]`                                                                    | Drawer only.                                                   |
-| S→C       | `draw.op`         | `op`                                                                         | Everyone except the sender.                                    |
-| S→C       | `chat.message`    | `id, channel, kind, from?, text?, key?, params?`                             | `kind: "chat" \| "system"`; system messages carry an i18n key. |
-| S→C       | `guess.feedback`  | `kind: "correct" \| "close"`, `text`                                         | Sender only.                                                   |
-| S→C       | `reaction`        | `participantId, emoji`                                                       | M2.                                                            |
-| S→C       | `gallery.drawing` | `turnIndex, opLog`                                                           | M2.                                                            |
-| S→C       | `kicked`          | —                                                                            | Followed by close.                                             |
-| S→C       | `server.shutdown` | —                                                                            | Graceful stop.                                                 |
-| S→C       | `error`           | `code`                                                                       | Codes map to i18n keys on the client.                          |
+| Direction | Type              | Payload                                                                      | Notes                                                                                |
+| --------- | ----------------- | ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| C→S       | `join`            | `protocolVersion, roomCode, nickname, avatar, role, clientId, sessionToken?` | First message. `sessionToken` resumes a seat.                                        |
+| C→S       | `leave`           | —                                                                            | Gives up the seat at once.                                                           |
+| C→S       | `settings.update` | partial settings                                                             | Host, lobby only.                                                                    |
+| C→S       | `game.start`      | —                                                                            | Host, lobby only.                                                                    |
+| C→S       | `game.playAgain`  | —                                                                            | Host, game end only.                                                                 |
+| C→S       | `player.kick`     | `playerId`                                                                   | Host.                                                                                |
+| C→S       | `word.choose`     | `index`                                                                      | Drawer, choosing phase.                                                              |
+| C→S       | `draw.op`         | `op`                                                                         | Drawer, drawing phase.                                                               |
+| C→S       | `chat.send`       | `text`                                                                       | Guess or chat; the server decides.                                                   |
+| C→S       | `reaction.send`   | `emoji`                                                                      | M2.                                                                                  |
+| C→S       | `like.set`        | `value: "up" \| "down"`                                                      | M2.                                                                                  |
+| C→S       | `gallery.get`     | `turnIndex`                                                                  | Game end only. M2.                                                                   |
+| S→C       | `joined`          | `participantId, sessionToken, state, items, redo`                            | `items` are the effective drawing items of the current turn, `redo` the undone ones. |
+| S→C       | `room.state`      | per-participant snapshot                                                     |                                                                                      |
+| S→C       | `word.choices`    | `words[]`                                                                    | Drawer only.                                                                         |
+| S→C       | `draw.op`         | `op`                                                                         | Everyone except the sender.                                                          |
+| S→C       | `chat.message`    | `id, channel, kind, from?, text?, key?, params?`                             | `kind: "chat" \| "system"`; system messages carry an i18n key.                       |
+| S→C       | `guess.feedback`  | `kind: "correct" \| "close"`, `text`                                         | Sender only.                                                                         |
+| S→C       | `reaction`        | `participantId, emoji`                                                       | M2.                                                                                  |
+| S→C       | `gallery.drawing` | `turnIndex, opLog`                                                           | M2.                                                                                  |
+| S→C       | `kicked`          | —                                                                            | Followed by close.                                                                   |
+| S→C       | `server.shutdown` | —                                                                            | Graceful stop.                                                                       |
+| S→C       | `error`           | `code`                                                                       | Codes map to i18n keys on the client.                                                |
 
 ### HTTP API
 
-| Method | Path               | Purpose                                                                                          |
-| ------ | ------------------ | ------------------------------------------------------------------------------------------------ |
-| `POST` | `/api/rooms`       | Create a room; returns `{ code }`. Rate-limited per IP.                                          |
-| `GET`  | `/api/rooms/:code` | `200 { exists: true, joinable }` or `404`; lets the client show a clear error before connecting. |
-| `GET`  | `/healthz`         | Liveness: `200 { "status": "ok" }`.                                                              |
-| `GET`  | `/*`               | Static web app with SPA fallback; `/content/*` serves solo data.                                 |
+| Method | Path               | Purpose                                                                                       |
+| ------ | ------------------ | --------------------------------------------------------------------------------------------- |
+| `POST` | `/api/rooms`       | Create a room; returns `{ code }`. Rate-limited per IP.                                       |
+| `GET`  | `/api/rooms/:code` | `200 { exists, code, phase }` or `404`; lets the client show a clear error before connecting. |
+| `GET`  | `/healthz`         | Liveness: `200 { "status": "ok" }`.                                                           |
+| `GET`  | `/*`               | Static web app with SPA fallback; `/content/*` serves solo data.                              |
 
 ### Abuse limits
 

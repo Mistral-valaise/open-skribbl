@@ -67,7 +67,8 @@ export function Stage({ view, className }: { view: RoomView; className?: string 
 
   return (
     <section className={cx('flex min-w-0 flex-col items-center gap-1 sm:gap-3', className)}>
-      <div className="stage-frame relative shrink-0 overflow-hidden border-y border-line bg-paper shadow-lg sm:rounded-lg sm:border">
+      {/* A ring instead of a border: the frame's box, and with it the canvas, stays exactly 4:3. */}
+      <div className="stage-frame relative shrink-0 overflow-hidden bg-paper shadow-lg ring-1 ring-line sm:rounded-lg">
         <DrawingCanvas interactive={canDraw} />
         {overlay}
       </div>

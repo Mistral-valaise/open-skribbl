@@ -69,7 +69,6 @@ export const en = {
   'lobby.copyFailed': 'The link could not be copied. Select it and copy it by hand.',
   'lobby.players': 'Players',
   'lobby.playerCount': '{count} / {max}',
-  'lobby.spectators': 'Spectators',
   'lobby.emptySeat': 'Free seat',
   'lobby.you': 'You',
   'lobby.host': 'Host',

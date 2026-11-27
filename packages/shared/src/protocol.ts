@@ -181,7 +181,10 @@ export type ServerMessage =
       participantId: string;
       sessionToken: string;
       state: RoomView;
+      /** Effective drawing items of the current turn. */
       items: readonly DrawItem[];
+      /** Undone items, so a resumed drawer can still redo them. */
+      redo: readonly DrawItem[];
     }
   | { type: 'room.state'; state: RoomView }
   | { type: 'word.choices'; words: string[] }

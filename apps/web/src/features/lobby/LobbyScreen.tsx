@@ -1,4 +1,4 @@
-import type { RoomView } from '@kritzel/shared';
+import { MIN_PLAYERS_TO_START, type RoomView } from '@kritzel/shared';
 import { Play } from 'lucide-react';
 import { t } from '../../i18n/index.js';
 import { send } from '../../store/session.js';
@@ -10,9 +10,6 @@ import { Spinner } from '../../ui/Spinner.js';
 import { InviteCard } from './InviteCard.js';
 import { PlayerGrid } from './PlayerGrid.js';
 import { SettingsPanel } from './SettingsPanel.js';
-
-/** A game needs two connected players to start (spec 001, AC-001-09). */
-const MIN_PLAYERS_TO_START = 2;
 
 interface LobbyScreenProps {
   view: RoomView;

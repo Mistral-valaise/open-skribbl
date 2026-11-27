@@ -29,7 +29,6 @@ export function WordChoiceOverlay({ words }: { words: readonly string[] }) {
               key={word}
               type="button"
               data-testid="word-choice"
-              autoFocus={index === 0}
               onClick={() => send({ type: 'word.choose', index })}
               className="min-h-11 flex-1 basis-32 rounded-md border border-line bg-surface-overlay px-4 py-2 text-body font-semibold text-fg transition-colors motion-fast hover:border-accent hover:bg-accent hover:text-on-accent sm:min-h-14 sm:text-subheading"
             >

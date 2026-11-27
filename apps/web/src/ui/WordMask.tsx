@@ -33,7 +33,7 @@ export function WordMask({ mask, className }: WordMaskProps) {
               key={`${index}${char}`}
               className={cx(
                 'mx-[0.15em] inline-block',
-                char === MASK_BLANK ? 'text-fg-muted' : 'animate-pop',
+                char === MASK_BLANK ? 'text-fg-secondary' : 'animate-pop',
               )}
             >
               {char}

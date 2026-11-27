@@ -161,6 +161,15 @@ test('drawing tools (AC-003-13, AC-003-15) and reload (AC-007-10)', async ({ bro
   await expect(guest.getByTestId('game')).toBeVisible();
   await expect.poll(async () => (await ink(guest)).count).toBeGreaterThan(1000);
   await expect(host.getByTestId('score-row')).toHaveCount(2);
+
+  // The drawer can still redo an undone item after reloading.
+  await host.getByTestId('undo').click();
+  await expect.poll(async () => (await ink(guest)).count).toBe(0);
+  await host.reload();
+  await expect(host.getByTestId('toolbar')).toBeVisible();
+  await host.getByTestId('redo').click();
+  await expect.poll(async () => (await ink(guest)).count).toBeGreaterThan(1000);
+  expect((await ink(host)).count).toBeGreaterThan(1000);
 });
 
 test('AC-003-14: touch drawing on a phone draws and does not scroll', async ({ browser }) => {

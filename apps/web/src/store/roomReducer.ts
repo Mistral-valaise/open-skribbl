@@ -63,12 +63,12 @@ export const INITIAL_ROOM_DATA: RoomData = {
 
 const CHAT_LOG_LIMIT = 200;
 
-export function opLogFromItems(items: readonly DrawItem[]): OpLog {
+export function opLogFromItems(items: readonly DrawItem[], redo: readonly DrawItem[] = []): OpLog {
   const pointCount = items.reduce(
     (sum, item) => sum + (item.kind === 'stroke' ? item.points.length / 2 : 0),
     0,
   );
-  return { items, redo: [], pointCount };
+  return { items, redo, pointCount };
 }
 
 function withSnapshot(data: RoomData, view: RoomView, localNow: number): RoomData {
@@ -118,7 +118,7 @@ export function reduceServerMessage(
           ...withSnapshot(data, message.state, localNow),
           status: 'joined',
           failure: null,
-          opLog: opLogFromItems(message.items),
+          opLog: opLogFromItems(message.items, message.redo),
         },
       };
     case 'room.state':

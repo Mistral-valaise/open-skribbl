@@ -64,10 +64,12 @@ describe('reduceServerMessage', () => {
           },
           { kind: 'fill', x: 5, y: 5, color: '#E5383B' },
         ],
+        redo: [{ kind: 'clear' }],
       },
     ]);
     expect(data.status).toBe('joined');
     expect(data.opLog.items).toHaveLength(2);
+    expect(data.opLog.redo).toEqual([{ kind: 'clear' }]);
     expect(data.opLog.pointCount).toBe(2);
   });
 

@@ -2,6 +2,7 @@ import {
   CHAT_MAX_LENGTH,
   CUSTOM_WORDS_ONLY_MIN,
   MAX_SPECTATORS,
+  MIN_PLAYERS_TO_START,
   SCORING,
   TIMING,
 } from '../constants.js';
@@ -240,7 +241,7 @@ class Machine {
     if (state.turn?.drawerId === seat.id) {
       this.fx.push({ type: 'clearTimer', key: TIMER.drawerGrace });
     }
-    if (connectedPlayers(state).length >= 2) {
+    if (connectedPlayers(state).length >= MIN_PLAYERS_TO_START) {
       this.fx.push({ type: 'clearTimer', key: TIMER.tooFewPlayers });
     }
     this.sendJoined(seat);
@@ -252,12 +253,14 @@ class Machine {
 
   private sendJoined(seat: Seat): void {
     const { state } = this;
+    const drawing = state.phase === 'drawing' && state.turn ? state.turn.opLog : null;
     this.sendTo(seat, {
       type: 'joined',
       participantId: seat.id,
       sessionToken: seat.token,
       state: viewFor(state, seat.id, this.ctx.now),
-      items: state.phase === 'drawing' && state.turn ? state.turn.opLog.items : [],
+      items: drawing ? drawing.items : [],
+      redo: drawing ? drawing.redo : [],
     });
   }
 
@@ -281,7 +284,7 @@ class Machine {
           at: ctx.now + TIMING.drawerGraceMs,
         });
       }
-      if (seat.role === 'player' && connectedPlayers(state).length < 2) {
+      if (seat.role === 'player' && connectedPlayers(state).length < MIN_PLAYERS_TO_START) {
         this.fx.push({
           type: 'setTimer',
           key: TIMER.tooFewPlayers,
@@ -321,7 +324,11 @@ class Machine {
     if (this.inTurn) {
       if (state.turn?.drawerId === seat.id) {
         this.endTurn('drawer_left');
-      } else if (wasConnected && seat.role === 'player' && connectedPlayers(state).length < 2) {
+      } else if (
+        wasConnected &&
+        seat.role === 'player' &&
+        connectedPlayers(state).length < MIN_PLAYERS_TO_START
+      ) {
         this.endTurn('not_enough_players');
       } else {
         this.checkAllGuessed();
@@ -388,7 +395,8 @@ class Machine {
   private startGame(seat: Seat): void {
     const { state } = this;
     if (state.hostId !== seat.id || state.phase !== 'lobby') return this.error(seat, 'not_allowed');
-    if (connectedPlayers(state).length < 2) return this.error(seat, 'not_enough_players');
+    if (connectedPlayers(state).length < MIN_PLAYERS_TO_START)
+      return this.error(seat, 'not_enough_players');
 
     for (const other of state.seats) other.score = 0;
     state.game = {
@@ -432,7 +440,7 @@ class Machine {
     const { state } = this;
     const game = state.game!;
     for (const seat of state.seats) seat.waiting = false;
-    if (connectedPlayers(state).length < 2) return this.endGame();
+    if (connectedPlayers(state).length < MIN_PLAYERS_TO_START) return this.endGame();
 
     for (;;) {
       game.orderIndex += 1;
@@ -630,7 +638,8 @@ class Machine {
       return;
     }
     if (key === TIMER.tooFewPlayers) {
-      if (this.inTurn && connectedPlayers(state).length < 2) this.endTurn('not_enough_players');
+      if (this.inTurn && connectedPlayers(state).length < MIN_PLAYERS_TO_START)
+        this.endTurn('not_enough_players');
       return;
     }
     if (key === TIMER.empty) {

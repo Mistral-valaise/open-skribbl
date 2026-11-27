@@ -103,7 +103,11 @@ export function PlayerGrid({ view }: { view: RoomView }) {
           <li
             key={`free-${index}`}
             aria-hidden
-            className="flex min-h-36 flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-line text-caption text-fg-muted"
+            // Phones show two free seats at most, so the settings stay within reach.
+            className={cx(
+              'min-h-36 flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-line text-caption text-fg-muted',
+              index < 2 ? 'flex' : 'hidden sm:flex',
+            )}
           >
             <span className="size-10 rounded-full border border-dashed border-line" />
             {t('lobby.emptySeat')}

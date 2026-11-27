@@ -1,9 +1,9 @@
-import { CANVAS_HEIGHT, CANVAS_WIDTH } from '@kritzel/shared';
+import { CANVAS_HEIGHT, CANVAS_WIDTH, CAPTURE } from '@kritzel/shared';
 
 /** Capture rule (spec 003): points closer than this to the previous one are dropped. */
-export const MIN_POINT_DISTANCE = 2;
+export const MIN_POINT_DISTANCE = CAPTURE.minPointDistance;
 /** Capture rule (spec 003): stroke points are sent in batches at this interval. */
-export const POINT_BATCH_MS = 33;
+export const POINT_BATCH_MS = CAPTURE.batchMs;
 
 export interface Point {
   x: number;

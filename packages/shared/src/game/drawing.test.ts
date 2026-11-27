@@ -53,6 +53,20 @@ describe('drawing in a room (spec 003)', () => {
     expect(h.received(late, 'joined')[0]!.items).toHaveLength(1);
   });
 
+  it('a drawer who resumes mid-turn receives the redo stack as well', () => {
+    const { h, players } = startedGame(2);
+    const drawer = players[0]!;
+    h.choose();
+    h.dispatch({ type: 'drawOp', participantId: drawer.id, op: start });
+    h.dispatch({ type: 'drawOp', participantId: drawer.id, op: { type: 'stroke.end', id: 's1' } });
+    h.dispatch({ type: 'drawOp', participantId: drawer.id, op: { type: 'undo' } });
+    h.disconnect(drawer);
+    const back = h.join('ignored', { sessionToken: drawer.token });
+    const joined = h.received(back, 'joined')[0]!;
+    expect(joined.items).toEqual([]);
+    expect(joined.redo).toMatchObject([{ kind: 'stroke', id: 's1' }]);
+  });
+
   it('AC-003-09: an unfinished stroke is stored as finished when the turn ends', () => {
     const { h, players } = startedGame(2, { settings: { drawTime: 30 } });
     h.choose();

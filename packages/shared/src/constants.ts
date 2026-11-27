@@ -7,6 +7,7 @@
 export const ROOM_CODE_ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
 export const ROOM_CODE_LENGTH = 6;
 export const MAX_SPECTATORS = 8;
+export const MIN_PLAYERS_TO_START = 2;
 
 /** Spec 002 and 007 — phase and presence timing, in milliseconds. */
 export const TIMING = {
@@ -17,6 +18,9 @@ export const TIMING = {
   tooFewPlayersGraceMs: 10_000,
   emptyRoomMs: 5 * 60_000,
 } as const;
+
+/** Spec 007 — client reconnect backoff: the listed delays, then `steadyMs` for every further try. */
+export const RECONNECT = { delaysMs: [500, 1_000, 2_000, 4_000], steadyMs: 5_000 } as const;
 
 /** Spec 003 — drawing. */
 export const CANVAS_WIDTH = 800;
@@ -29,6 +33,8 @@ export const DRAW_LIMITS = {
   pointsPerTurn: 200_000,
 } as const;
 export const FILL_TOLERANCE = 32;
+/** Capture: drop points closer than `minPointDistance`, send batches every `batchMs`. */
+export const CAPTURE = { minPointDistance: 2, batchMs: 33 } as const;
 
 /** Spec 004 — chat. */
 export const CHAT_MAX_LENGTH = 100;

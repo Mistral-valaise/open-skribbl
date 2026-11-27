@@ -91,7 +91,7 @@ function GalleryCard({ entry, drawer, favorite }: GalleryCardProps) {
           <div
             role="status"
             aria-label={t('results.drawingLoading')}
-            className="absolute inset-0 grid place-items-center text-ink/40"
+            className="absolute inset-0 grid place-items-center text-ink/60"
           >
             <Spinner />
           </div>

@@ -1,7 +1,10 @@
 /*
  * Design tokens (docs/DESIGN.md §3–6). This file and the drawing palette are
- * the only places where raw colour values appear. Dark is the default theme;
- * light follows the system preference until the theme toggle arrives (M4).
+ * the only places where raw colour values appear.
+ *
+ * Dark is the default theme. `public/theme.js` sets `data-theme` on `<html>`
+ * before the first paint, from the stored choice or the system preference
+ * (spec 011). `contrast.test.ts` checks the pairs the components use.
  */
 
 :root {
@@ -15,11 +18,11 @@
   --border: #2a2e3f;
   --text-primary: #f2f3f7;
   --text-secondary: #a6abbd;
-  --text-muted: #6e748a;
+  --text-muted: #8a91a8;
 
   /* Accent and semantics */
   --accent: #6a5af9;
-  --accent-hover: #7d6ffa;
+  --accent-hover: #5b4bef;
   --accent-text: #a99fff;
   --on-accent: #ffffff;
   --success: #34d17a;
@@ -63,32 +66,30 @@
   --easing-pop: cubic-bezier(0.34, 1.4, 0.64, 1);
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color-scheme: light;
+:root[data-theme='light'] {
+  color-scheme: light;
 
-    --bg-base: #f6f6fa;
-    --bg-raised: #ffffff;
-    --bg-overlay: #ffffff;
-    --bg-hover: #eeeff5;
-    --border: #e1e3ec;
-    --text-primary: #14151c;
-    --text-secondary: #4c5166;
-    --text-muted: #7a8096;
+  --bg-base: #f6f6fa;
+  --bg-raised: #ffffff;
+  --bg-overlay: #ffffff;
+  --bg-hover: #eeeff5;
+  --border: #e1e3ec;
+  --text-primary: #14151c;
+  --text-secondary: #4c5166;
+  --text-muted: #646a80;
 
-    --accent: #6a5af9;
-    --accent-hover: #5546e0;
-    --accent-text: #5546e0;
-    --on-accent: #ffffff;
-    --success: #15803d;
-    --warning: #b45309;
-    --danger: #b91c1c;
-    --info: #0369a1;
+  --accent: #6a5af9;
+  --accent-hover: #5546e0;
+  --accent-text: #5546e0;
+  --on-accent: #ffffff;
+  --success: #126f34;
+  --warning: #9c4708;
+  --danger: #b91c1c;
+  --info: #0369a1;
 
-    --scrim: rgb(246 246 250 / 0.8);
+  --scrim: rgb(246 246 250 / 0.8);
 
-    --elevation-sm: 0 1px 2px rgb(20 21 28 / 0.06);
-    --elevation-md: 0 6px 20px rgb(20 21 28 / 0.1);
-    --elevation-lg: 0 18px 48px rgb(20 21 28 / 0.14);
-  }
+  --elevation-sm: 0 1px 2px rgb(20 21 28 / 0.06);
+  --elevation-md: 0 6px 20px rgb(20 21 28 / 0.1);
+  --elevation-lg: 0 18px 48px rgb(20 21 28 / 0.14);
 }

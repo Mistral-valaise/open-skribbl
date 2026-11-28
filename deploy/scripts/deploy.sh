@@ -75,19 +75,79 @@ if [[ ! -d "$OBS_CHART/charts" ]] || [[ -z "$(ls -A "$OBS_CHART/charts" 2>/dev/n
   helm dependency build "$OBS_CHART"
 fi
 
-helm upgrade --install "$OBS_RELEASE" "$OBS_CHART" --namespace "$NAMESPACE" \
+# Upgrades or installs a release in the namespace while snapshotting unready or
+# crashing pods before `--rollback-on-failure` uninstalls a failed release.
+deploy_release() {
+  local release_name="$1"
+  shift
+  local diag_file
+  diag_file="$(mktemp)"
+
+  (
+    local sleep_pid="" pod_list snapshot
+    trap '[[ -n "$sleep_pid" ]] && kill "$sleep_pid" 2>/dev/null || true; exit 0' TERM INT
+    while true; do
+      sleep 10 &
+      sleep_pid=$!
+      wait "$sleep_pid" 2>/dev/null || true
+      pod_list="$(
+        oc get pods --namespace "$NAMESPACE" \
+          --selector "app.kubernetes.io/instance=${release_name}" \
+          --output jsonpath='{range .items[*]}{.metadata.name}{"|"}{range .status.containerStatuses[*]}{.ready}{","}{.restartCount}{";"}{end}{"\n"}{end}' \
+          2>/dev/null || true
+      )"
+      if [[ -z "$pod_list" ]]; then
+        continue
+      fi
+      if printf '%s\n' "$pod_list" | grep -Eq '\|.*false|,[1-9][0-9]*;'; then
+        snapshot="$(
+          {
+            echo "=== Pod snapshot before Helm rollback (${release_name}) ==="
+            oc get pods --namespace "$NAMESPACE" \
+              --selector "app.kubernetes.io/instance=${release_name}" \
+              --output wide 2>&1 || true
+            for pod in $(
+              oc get pods --namespace "$NAMESPACE" \
+                --selector "app.kubernetes.io/instance=${release_name}" \
+                --output name 2>/dev/null || true
+            ); do
+              echo "--- $pod"
+              oc logs --namespace "$NAMESPACE" "$pod" --all-containers=true --tail=40 2>&1 |
+                sed -E 's/"room":"[A-Z0-9]+"/"room":"…"/g' || true
+            done
+          }
+        )"
+        printf '%s\n' "$snapshot" > "$diag_file"
+      fi
+    done
+  ) &
+  local watcher_pid=$!
+
+  local status=0
+  helm upgrade --install "$release_name" "$@" --namespace "$NAMESPACE" \
+    --wait --timeout "$TIMEOUT" --rollback-on-failure || status=$?
+
+  kill "$watcher_pid" >/dev/null 2>&1 || true
+  wait "$watcher_pid" 2>/dev/null || true
+
+  if [[ "$status" -ne 0 && -s "$diag_file" ]]; then
+    cat "$diag_file" >&2
+  fi
+  rm -f "$diag_file"
+  return "$status"
+}
+
+deploy_release "$OBS_RELEASE" "$OBS_CHART" \
   --values "$OBS_CHART/values-demo.yaml" \
   --set-string "grafana.admin.existingSecret=$SECRET" \
-  --set "grafanaRoute.enabled=$GRAFANA_ROUTE" \
-  --wait --timeout "$TIMEOUT" --rollback-on-failure
+  --set "grafanaRoute.enabled=$GRAFANA_ROUTE"
 
-helm upgrade --install "$RELEASE" "$CHART" --namespace "$NAMESPACE" \
+deploy_release "$RELEASE" "$CHART" \
   --values "$CHART/values-demo.yaml" \
   --set-string "image.repository=$IMAGE_REPOSITORY" \
   --set-string "image.digest=$IMAGE_DIGEST" \
   --set-string "telemetry.otlpEndpoint=http://${OBS_RELEASE}-opentelemetry-collector:4318" \
-  --set "traffic.enabled=$TRAFFIC" \
-  --wait --timeout "$TIMEOUT" --rollback-on-failure
+  --set "traffic.enabled=$TRAFFIC"
 
 # Grafana reads the password when it starts. A changed Secret alone does not
 # restart it, so an already running Grafana would keep the old password.

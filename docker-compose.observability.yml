@@ -60,6 +60,7 @@ services:
     command: ['-config.file=/etc/loki/loki.yaml', '-config.expand-env=true']
     environment:
       LOKI_RETENTION: ${LOKI_RETENTION:-24h}
+      LOKI_DATA_DIR: /loki
     volumes:
       - ./deploy/helm/kritzel-observability/files/loki/loki.yaml:/etc/loki/loki.yaml:ro
       - loki-data:/loki

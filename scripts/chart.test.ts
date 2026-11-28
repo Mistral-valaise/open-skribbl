@@ -39,7 +39,7 @@ interface Container {
   readinessProbe?: { httpGet?: { path: string } };
   livenessProbe?: { httpGet?: { path: string } };
   startupProbe?: { httpGet?: { path: string } };
-  volumeMounts?: { name: string; mountPath: string; subPath?: string }[];
+  volumeMounts?: { name: string; mountPath: string; readOnly?: boolean; subPath?: string }[];
 }
 interface Manifest {
   apiVersion: string;
@@ -572,6 +572,103 @@ describe('chart networking (spec 016)', () => {
     ]) {
       expect(overlay).toContain(`./${files}/${path}:`);
     }
+  });
+
+  it('AC-016-05 AC-016-13: every backend writable storage path maps to a writable emptyDir mount and Compose volume', () => {
+    const normalizePath = (value: string) => value.replace(/\/+$/, '') || '/';
+    const isInside = (target: string, mount: string) => {
+      const normalizedTarget = normalizePath(target);
+      const normalizedMount = normalizePath(mount);
+      return (
+        normalizedTarget === normalizedMount || normalizedTarget.startsWith(`${normalizedMount}/`)
+      );
+    };
+    const expectWritableMount = (
+      kind: 'Deployment' | 'StatefulSet',
+      name: string,
+      targetPath: string,
+    ) => {
+      const podSpec = pod(named(obsDemo, kind, name));
+      const emptyDirs = new Set(
+        (podSpec.volumes ?? [])
+          .filter((volume) => volume.emptyDir !== undefined)
+          .map((volume) => volume.name),
+      );
+      const container = podSpec.containers[0]!;
+      const mounted = (container.volumeMounts ?? []).some(
+        (mount) =>
+          !mount.readOnly &&
+          !mount.subPath &&
+          emptyDirs.has(mount.name) &&
+          isInside(targetPath, mount.mountPath),
+      );
+      expect(mounted, `${name} writable emptyDir mount for ${targetPath}`).toBe(true);
+    };
+
+    const lokiConfig = parse(
+      named(obsDemo, 'ConfigMap', 'kritzel-obs-loki-config').data!['config.yaml']!,
+    ) as {
+      common: {
+        path_prefix: string;
+        storage: { filesystem: { chunks_directory: string; rules_directory: string } };
+      };
+      compactor: { working_directory: string };
+    };
+    for (const lokiPath of [
+      lokiConfig.common.path_prefix,
+      lokiConfig.common.storage.filesystem.chunks_directory,
+      lokiConfig.common.storage.filesystem.rules_directory,
+      lokiConfig.compactor.working_directory,
+    ]) {
+      expectWritableMount('StatefulSet', 'kritzel-obs-loki', lokiPath);
+    }
+
+    const tempoConfig = parse(
+      named(obsDemo, 'ConfigMap', 'kritzel-tempo-config').data!['tempo.yaml']!,
+    ) as {
+      storage: { trace: { wal: { path: string }; local: { path: string } } };
+    };
+    for (const tempoPath of [
+      tempoConfig.storage.trace.wal.path,
+      tempoConfig.storage.trace.local.path,
+    ]) {
+      expectWritableMount('StatefulSet', 'kritzel-obs-tempo', tempoPath);
+    }
+
+    const prometheus = pod(named(obsDemo, 'Deployment', 'kritzel-obs-prometheus-server'))
+      .containers[0]!;
+    const tsdbArg = (prometheus.args ?? []).find((arg) => arg.startsWith('--storage.tsdb.path='));
+    expect(tsdbArg).toBeDefined();
+    expectWritableMount(
+      'Deployment',
+      'kritzel-obs-prometheus-server',
+      tsdbArg!.slice('--storage.tsdb.path='.length),
+    );
+
+    const grafanaEnv = env(pod(named(obsDemo, 'Deployment', 'kritzel-obs-grafana')).containers[0]!);
+    expect(grafanaEnv.GF_PATHS_DATA).toBeTruthy();
+    expect(grafanaEnv.GF_UNIFIED_STORAGE_INDEX_PATH).toBeTruthy();
+    expectWritableMount('Deployment', 'kritzel-obs-grafana', grafanaEnv.GF_PATHS_DATA!);
+    expectWritableMount(
+      'Deployment',
+      'kritzel-obs-grafana',
+      grafanaEnv.GF_UNIFIED_STORAGE_INDEX_PATH!,
+    );
+
+    const overlay = parse(read('docker-compose.observability.yml')) as {
+      services: Record<string, { volumes?: string[] }>;
+    };
+    const lokiMount = (overlay.services.loki?.volumes ?? []).find((v) =>
+      v.startsWith('loki-data:'),
+    );
+    expect(lokiMount).toBe(`loki-data:${lokiConfig.common.path_prefix}`);
+    const tempoMount = (overlay.services.tempo?.volumes ?? []).find((v) =>
+      v.startsWith('tempo-data:'),
+    );
+    expect(tempoMount).toBeDefined();
+    const tempoTarget = tempoMount!.split(':')[1]!;
+    expect(isInside(tempoConfig.storage.trace.wal.path, tempoTarget)).toBe(true);
+    expect(isInside(tempoConfig.storage.trace.local.path, tempoTarget)).toBe(true);
   });
 
   it('AC-016-14: the game is probed on /healthz only and gets time to say goodbye', () => {

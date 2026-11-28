@@ -62,7 +62,7 @@ services:
       LOKI_RETENTION: ${LOKI_RETENTION:-24h}
     volumes:
       - ./deploy/helm/kritzel-observability/files/loki/loki.yaml:/etc/loki/loki.yaml:ro
-      - loki-data:/loki
+      - loki-data:/var/loki
     restart: unless-stopped
     read_only: true
     cap_drop: [ALL]

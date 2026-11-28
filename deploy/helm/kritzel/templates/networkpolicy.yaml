@@ -1,17 +1,12 @@
 {{- /*
-Who may connect to what (spec 016, "Chart"). Each policy selects one
-component and lists its callers; a pod selected by a policy accepts nothing
-else. Egress is left open: restricting it needs the cluster's DNS selectors,
-which differ between platforms.
+Who may connect to the standalone game release (spec 016, "Chart").
+Each policy selects one component and lists its callers; a pod selected by a
+policy accepts nothing else. Egress is left open: restricting it needs the
+cluster's DNS selectors, which differ between platforms.
 */ -}}
 {{- if .Values.networkPolicy.enabled }}
 {{- $game := dict "root" . "component" "game" }}
 {{- $traffic := dict "root" . "component" "traffic" }}
-{{- $collector := dict "root" . "component" "collector" }}
-{{- $prometheus := dict "root" . "component" "prometheus" }}
-{{- $loki := dict "root" . "component" "loki" }}
-{{- $tempo := dict "root" . "component" "tempo" }}
-{{- $grafana := dict "root" . "component" "grafana" }}
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
@@ -27,13 +22,13 @@ spec:
   ingress:
     # Players, through the ingress controller or router.
     - ports:
-        - port: 3000
+        - port: {{ .Values.service.port }}
           protocol: TCP
       {{- include "kritzel.ingressFrom" . | nindent 6 }}
     {{- if .Values.traffic.enabled }}
     # Synthetic players.
     - ports:
-        - port: 3000
+        - port: {{ .Values.service.port }}
           protocol: TCP
       from:
         {{- include "kritzel.peer" $traffic | nindent 8 }}
@@ -54,121 +49,5 @@ spec:
   policyTypes:
     - Ingress
   ingress: []
-{{- end }}
-{{- if .Values.observability.enabled }}
----
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  name: {{ include "kritzel.componentName" $collector }}
-  labels:
-    {{- include "kritzel.labels" $collector | nindent 4 }}
-spec:
-  podSelector:
-    matchLabels:
-      {{- include "kritzel.selectorLabels" $collector | nindent 6 }}
-  policyTypes:
-    - Ingress
-  ingress:
-    # OTLP from the game only. Browsers never reach the collector.
-    - ports:
-        - port: 4318
-          protocol: TCP
-      from:
-        {{- include "kritzel.peer" $game | nindent 8 }}
----
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  name: {{ include "kritzel.componentName" $prometheus }}
-  labels:
-    {{- include "kritzel.labels" $prometheus | nindent 4 }}
-spec:
-  podSelector:
-    matchLabels:
-      {{- include "kritzel.selectorLabels" $prometheus | nindent 6 }}
-  policyTypes:
-    - Ingress
-  ingress:
-    - ports:
-        - port: 9090
-          protocol: TCP
-      from:
-        {{- include "kritzel.peer" $collector | nindent 8 }}
-        {{- include "kritzel.peer" $grafana | nindent 8 }}
----
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  name: {{ include "kritzel.componentName" $loki }}
-  labels:
-    {{- include "kritzel.labels" $loki | nindent 4 }}
-spec:
-  podSelector:
-    matchLabels:
-      {{- include "kritzel.selectorLabels" $loki | nindent 6 }}
-  policyTypes:
-    - Ingress
-  ingress:
-    - ports:
-        - port: 3100
-          protocol: TCP
-      from:
-        {{- include "kritzel.peer" $collector | nindent 8 }}
-        {{- include "kritzel.peer" $grafana | nindent 8 }}
----
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  name: {{ include "kritzel.componentName" $tempo }}
-  labels:
-    {{- include "kritzel.labels" $tempo | nindent 4 }}
-spec:
-  podSelector:
-    matchLabels:
-      {{- include "kritzel.selectorLabels" $tempo | nindent 6 }}
-  policyTypes:
-    - Ingress
-  ingress:
-    # Traces from the collector.
-    - ports:
-        - port: 4318
-          protocol: TCP
-      from:
-        {{- include "kritzel.peer" $collector | nindent 8 }}
-    # Queries from Grafana, and the collector's scrape of Tempo's own metrics.
-    - ports:
-        - port: 3200
-          protocol: TCP
-      from:
-        {{- include "kritzel.peer" $collector | nindent 8 }}
-        {{- include "kritzel.peer" $grafana | nindent 8 }}
----
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  name: {{ include "kritzel.componentName" $grafana }}
-  labels:
-    {{- include "kritzel.labels" $grafana | nindent 4 }}
-spec:
-  podSelector:
-    matchLabels:
-      {{- include "kritzel.selectorLabels" $grafana | nindent 6 }}
-  policyTypes:
-    - Ingress
-  ingress:
-    # The collector's scrape of Grafana's own metrics.
-    - ports:
-        - port: 3000
-          protocol: TCP
-      from:
-        {{- include "kritzel.peer" $collector | nindent 8 }}
-    {{- if .Values.grafana.route.enabled }}
-    # People, through the router, with Grafana's login.
-    - ports:
-        - port: 3000
-          protocol: TCP
-      {{- include "kritzel.ingressFrom" . | nindent 6 }}
-    {{- end }}
 {{- end }}
 {{- end }}

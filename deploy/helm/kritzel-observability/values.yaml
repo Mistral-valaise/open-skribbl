@@ -1,0 +1,417 @@
+# Kritzel observability umbrella chart (spec 016).
+#
+# Composes the official upstream charts:
+# - open-telemetry/opentelemetry-collector
+# - prometheus-community/prometheus
+# - grafana-community/loki (Monolithic)
+# - grafana-community/tempo (Single binary)
+# - grafana-community/grafana
+#
+# All five run in one namespace with no cluster-wide RBAC/CRDs and under
+# OpenShift restricted-v2 SCC. Pass --set grafana.admin.existingSecret=<name>
+# (a Secret with key `admin-password`).
+
+grafanaRoute:
+  enabled: false
+  host: ''
+
+networkPolicy:
+  enabled: true
+  # Pods allowed to send OTLP/HTTP to the collector.
+  gamePodSelector:
+    matchLabels:
+      app.kubernetes.io/name: kritzel
+      app.kubernetes.io/component: game
+  # Who may reach Grafana when grafanaRoute.enabled=true.
+  ingressFrom: []
+
+# Subchart keys below match Chart.yaml dependency names.
+opentelemetry-collector:
+  mode: deployment
+  replicaCount: 1
+  image:
+    repository: otel/opentelemetry-collector-contrib
+    tag: 0.166.0
+    digest: sha256:3e18fe04181de50bdd72e23ad4a4d6214b54351e63d496f1c58127cc4541ad7f
+  useGOMEMLIMIT: false
+  configMap:
+    create: false
+    existingName: '{{ .Release.Name }}-collector-config'
+  serviceAccount:
+    create: true
+    automountServiceAccountToken: false
+  clusterRole:
+    create: false
+  podSecurityContext:
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
+  securityContext:
+    runAsNonRoot: true
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+    capabilities:
+      drop:
+        - ALL
+  extraEnvs:
+    - name: PROMETHEUS_HOST
+      value: '{{ .Release.Name }}-prometheus-server'
+    - name: LOKI_HOST
+      value: '{{ .Release.Name }}-loki'
+    - name: TEMPO_HOST
+      value: '{{ .Release.Name }}-tempo'
+    - name: GRAFANA_HOST
+      value: '{{ .Release.Name }}-grafana'
+  ports:
+    jaeger-compact:
+      enabled: false
+    jaeger-thrift:
+      enabled: false
+    jaeger-grpc:
+      enabled: false
+    zipkin:
+      enabled: false
+    otlp:
+      enabled: false
+    otlp-http:
+      enabled: true
+      containerPort: 4318
+      servicePort: 4318
+    metrics:
+      enabled: true
+      containerPort: 8888
+      servicePort: 8888
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+      ephemeral-storage: 32Mi
+    limits:
+      cpu: 500m
+      memory: 256Mi
+      ephemeral-storage: 128Mi
+
+prometheus:
+  rbac:
+    create: false
+  serviceAccounts:
+    server:
+      create: true
+      automountServiceAccountToken: false
+  alertmanager:
+    enabled: false
+  kube-state-metrics:
+    enabled: false
+  prometheus-node-exporter:
+    enabled: false
+  prometheus-pushgateway:
+    enabled: false
+  configmapReload:
+    prometheus:
+      enabled: false
+  scrapeConfigs:
+    prometheus:
+      enabled: false
+    kubernetes-api-servers:
+      enabled: false
+    kubernetes-nodes:
+      enabled: false
+    kubernetes-nodes-cadvisor:
+      enabled: false
+    kubernetes-service-endpoints:
+      enabled: false
+    kubernetes-service-endpoints-slow:
+      enabled: false
+    kubernetes-services:
+      enabled: false
+    kubernetes-pods:
+      enabled: false
+    kubernetes-pods-slow:
+      enabled: false
+  server:
+    replicaCount: 1
+    automountServiceAccountToken: false
+    configMapOverrideName: prometheus-config
+    configPath: /etc/config/prometheus.yml
+    retention: 24h
+    retentionSize: 1GB
+    extraFlags:
+      - web.enable-remote-write-receiver
+      - enable-feature=exemplar-storage
+    image:
+      repository: prom/prometheus
+      tag: v3.16.0
+      digest: sha256:e04987641b57704f408e31f6373ba4138ecf27cb4a165d24aabb6c38fddd0f06
+    securityContext:
+      runAsUser: null
+      runAsNonRoot: true
+      runAsGroup: null
+      fsGroup: null
+      seccompProfile:
+        type: RuntimeDefault
+    containerSecurityContext:
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      capabilities:
+        drop:
+          - ALL
+    service:
+      servicePort: 9090
+    persistentVolume:
+      enabled: false
+    emptyDir:
+      sizeLimit: 2Gi
+    extraConfigmapMounts:
+      - name: kritzel-rules
+        mountPath: /etc/prometheus/rules
+        configMap: kritzel-prometheus-rules
+        readOnly: true
+    resources:
+      requests:
+        cpu: 200m
+        memory: 256Mi
+        ephemeral-storage: 256Mi
+      limits:
+        cpu: 1000m
+        memory: 768Mi
+        ephemeral-storage: 2Gi
+
+loki:
+  deploymentMode: Monolithic
+  rbac:
+    pspEnabled: false
+    sccEnabled: false
+    namespaced: true
+  serviceAccount:
+    create: true
+    automountServiceAccountToken: false
+  defaults:
+    automountServiceAccountToken: false
+  loki:
+    auth_enabled: false
+    generatedConfigObjectName: ''
+    configStorageType: ConfigMap
+    configObjectName: '{{ .Release.Name }}-loki-config'
+    image:
+      repository: grafana/loki
+      tag: 3.7.10
+      digest: sha256:b43c257ccfc925d4a50b8717cac61a3b51df8c48d01847936057e5c4075a24a7
+    schemaConfig:
+      configs:
+        - from: '2024-01-01'
+          store: tsdb
+          object_store: filesystem
+          schema: v13
+          index:
+            prefix: index_
+            period: 24h
+    limits_config:
+      retention_period: 24h
+    podSecurityContext:
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+    containerSecurityContext:
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      capabilities:
+        drop:
+          - ALL
+  singleBinary:
+    replicas: 1
+    automountServiceAccountToken: false
+    extraEnv:
+      - name: LOKI_RETENTION
+        value: '24h'
+    persistence:
+      enabled: false
+      dataVolumeParameters:
+        emptyDir:
+          sizeLimit: 2Gi
+    resources:
+      requests:
+        cpu: 200m
+        memory: 256Mi
+        ephemeral-storage: 256Mi
+      limits:
+        cpu: 1000m
+        memory: 768Mi
+        ephemeral-storage: 2Gi
+    podSecurityContext:
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+    containerSecurityContext:
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      capabilities:
+        drop:
+          - ALL
+  read:
+    replicas: 0
+  write:
+    replicas: 0
+  backend:
+    replicas: 0
+  gateway:
+    enabled: false
+  chunksCache:
+    enabled: false
+  resultsCache:
+    enabled: false
+  memcached:
+    enabled: false
+  lokiCanary:
+    enabled: false
+  test:
+    enabled: false
+  sidecar:
+    rules:
+      enabled: false
+  monitoring:
+    selfMonitoring:
+      enabled: false
+      grafanaAgent:
+        installOperator: false
+    dashboards:
+      enabled: false
+    rules:
+      enabled: false
+    serviceMonitor:
+      enabled: false
+
+tempo:
+  serviceAccount:
+    create: true
+    automountServiceAccountToken: false
+  securityContext:
+    runAsUser: null
+    runAsGroup: null
+    fsGroup: null
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
+  tempo:
+    repository: grafana/tempo
+    tag: 3.1.1@sha256:64e2fbd56d9c2b3412a4b430a58ea59e91a670b1e75f920a0c702213ad145044
+    retention: 24h
+    reportingEnabled: false
+    metricsGenerator:
+      enabled: false
+    extraArgs:
+      config.file: /etc/tempo-kritzel/tempo.yaml
+      config.expand-env: 'true'
+    extraEnv:
+      - name: TEMPO_RETENTION
+        value: '24h'
+    extraVolumeMounts:
+      - name: kritzel-tempo-conf
+        mountPath: /etc/tempo-kritzel
+        readOnly: true
+      - name: tempo-data
+        mountPath: /var/tempo
+    securityContext:
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      capabilities:
+        drop:
+          - ALL
+    resources:
+      requests:
+        cpu: 200m
+        memory: 256Mi
+        ephemeral-storage: 256Mi
+      limits:
+        cpu: 1000m
+        memory: 768Mi
+        ephemeral-storage: 2Gi
+  extraVolumes:
+    - name: kritzel-tempo-conf
+      configMap:
+        name: kritzel-tempo-config
+    - name: tempo-data
+      emptyDir:
+        sizeLimit: 2Gi
+  persistence:
+    enabled: false
+
+grafana:
+  replicas: 1
+  rbac:
+    create: false
+    namespaced: false
+  serviceAccount:
+    create: true
+    automountServiceAccountToken: false
+  automountServiceAccountToken: false
+  initChownData:
+    enabled: false
+  testFramework:
+    enabled: false
+  persistence:
+    enabled: false
+  service:
+    port: 3000
+    targetPort: 3000
+  image:
+    repository: grafana/grafana
+    tag: 13.3.2
+    sha: 81556409ba48b2b922e0adb69a2511337d8ba7578f11962eefa6149a2d815101
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: null
+    runAsGroup: null
+    fsGroup: null
+    seccompProfile:
+      type: RuntimeDefault
+  containerSecurityContext:
+    runAsNonRoot: true
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+    capabilities:
+      drop:
+        - ALL
+  admin:
+    existingSecret: ''
+    userKey: admin-user
+    passwordKey: admin-password
+  env:
+    PROMETHEUS_HOST: '{{ .Release.Name }}-prometheus-server'
+    LOKI_HOST: '{{ .Release.Name }}-loki'
+    TEMPO_HOST: '{{ .Release.Name }}-tempo'
+    GF_AUTH_ANONYMOUS_ENABLED: 'false'
+    GF_USERS_ALLOW_SIGN_UP: 'false'
+    GF_ANALYTICS_REPORTING_ENABLED: 'false'
+    GF_ANALYTICS_CHECK_FOR_UPDATES: 'false'
+    GF_ANALYTICS_CHECK_FOR_PLUGIN_UPDATES: 'false'
+    GF_PLUGINS_PREINSTALL_DISABLED: 'true'
+    GF_NEWS_NEWS_FEED_ENABLED: 'false'
+    GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /var/lib/grafana/dashboards/kritzel-overview.json
+  extraConfigmapMounts:
+    - name: kritzel-datasources
+      mountPath: /etc/grafana/provisioning/datasources/datasources.yaml
+      subPath: datasources.yaml
+      configMap: '{{ .Release.Name }}-grafana-provisioning'
+      readOnly: true
+    - name: kritzel-dashboards-provider
+      mountPath: /etc/grafana/provisioning/dashboards/dashboards.yaml
+      subPath: dashboards.yaml
+      configMap: '{{ .Release.Name }}-grafana-provisioning'
+      readOnly: true
+    - name: kritzel-dashboards
+      mountPath: /var/lib/grafana/dashboards
+      configMap: '{{ .Release.Name }}-grafana-dashboards'
+      readOnly: true
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+      ephemeral-storage: 64Mi
+    limits:
+      cpu: 500m
+      memory: 768Mi
+      ephemeral-storage: 512Mi

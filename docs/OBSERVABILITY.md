@@ -438,13 +438,13 @@ Two Sloth SLO dashboards are provisioned as well.
 | `high-level-sloth-slos` | High level Sloth SLOs | Every objective at a glance: which are burning budget, how fast, and how much of each budget is left                              |
 | `slo-detail`            | SLO / Detail          | One objective: the measured ratio against its target, the burn rate per window, the remaining budget and the state of both alerts |
 
-They are the dashboards published by the Sloth project (grafana.com 14643 and 14348), stored in `deploy/helm/kritzel/files/grafana/dashboards/sloth-*.json` and changed only so that Grafana can load them from a file (see `NOTICE.md`). They read the series the generated rules record: `sloth_slo_info`, `slo:objective:ratio`, `slo:sli_error:ratio_rate*`, `slo:error_budget:ratio` and the burn-rate series. An objective without traffic has no ratio and shows "No data" there, which is correct.
+They are the dashboards published by the Sloth project (grafana.com 14643 and 14348), stored in `deploy/helm/kritzel-observability/files/grafana/dashboards/sloth-*.json` and changed only so that Grafana can load them from a file (see `NOTICE.md`). They read the series the generated rules record: `sloth_slo_info`, `slo:objective:ratio`, `slo:sli_error:ratio_rate*`, `slo:error_budget:ratio` and the burn-rate series. An objective without traffic has no ratio and shows "No data" there, which is correct.
 
 Not shown, because nothing collects it: node, pod and container metrics, network and disk I/O, connection attempts per address, heartbeat timeouts and backpressure evictions.
 
 ## Service level objectives
 
-A service level objective is a target for a measured share of good events over a period. Four are defined in `deploy/helm/kritzel/files/slo/kritzel.slo.yaml`, over a period of 30 days.
+A service level objective is a target for a measured share of good events over a period. Four are defined in `deploy/helm/kritzel-observability/files/slo/kritzel.slo.yaml`, over a period of 30 days.
 
 **These are proposed targets for a team instance. They are not guarantees, and none of them has been measured against production traffic.** Adjust them to what your instance shows before you rely on them.
 
@@ -457,15 +457,15 @@ A service level objective is a target for a measured share of good events over a
 
 ### Rules and alerts
 
-Sloth turns the file into Prometheus recording rules and multi-window burn-rate alerts, written to `deploy/helm/kritzel/files/prometheus/rules/sloth-kritzel.yaml`:
+Sloth turns the file into Prometheus recording rules and multi-window burn-rate alerts, written to `deploy/helm/kritzel-observability/files/prometheus/rules/sloth-kritzel.yaml`:
 
 ```bash
 pnpm slo:generate
 ```
 
-The command runs Sloth from a pinned container image and needs Docker. Do not edit the generated file. `node scripts/slo.mjs --check` exits with 1 when the committed rules differ from what the file produces. The rules have unit tests in `deploy/helm/kritzel/files/prometheus/tests/alerts.test.yaml`, run with `promtool test rules`.
+The command runs Sloth from a pinned container image and needs Docker. Do not edit the generated file. `node scripts/slo.mjs --check` exits with 1 when the committed rules differ from what the file produces. The rules have unit tests in `deploy/helm/kritzel-observability/files/prometheus/tests/alerts.test.yaml`, run with `promtool test rules`.
 
-Each objective has one alert name. `join-success`, `ws-processing-latency` and `api-availability` have a page and a ticket variant; `reconnect-latency` has a ticket variant only. The [runbook](RUNBOOK.md) explains the severities and each alert. Threshold alerts for what an objective cannot see (missing data, saturation, abuse) are in `deploy/helm/kritzel/files/prometheus/rules/kritzel-alerts.yaml`.
+Each objective has one alert name. `join-success`, `ws-processing-latency` and `api-availability` have a page and a ticket variant; `reconnect-latency` has a ticket variant only. The [runbook](RUNBOOK.md) explains the severities and each alert. Threshold alerts for what an objective cannot see (missing data, saturation, abuse) are in `deploy/helm/kritzel-observability/files/prometheus/rules/kritzel-alerts.yaml`.
 
 **Alerts are evaluated by Prometheus, every 30 s, and shown in Grafana. There is no Alertmanager in the stack, so nothing is sent to anyone.** Prometheus exposes pending and firing alerts as the `ALERTS` series; the Sloth dashboards read it, and `ALERTS{alertstate="firing"}` in Explore lists what fires now. To be notified, connect Prometheus to an Alertmanager of your own or use the rules in your existing monitoring.
 

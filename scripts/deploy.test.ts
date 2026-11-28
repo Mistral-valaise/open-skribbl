@@ -14,6 +14,7 @@ import { parse } from 'yaml';
 const root = fileURLToPath(new URL('..', import.meta.url));
 const read = (path: string) => readFileSync(`${root}${path}`, 'utf8');
 const CHART = 'deploy/helm/kritzel';
+const OBS_CHART = 'deploy/helm/kritzel-observability';
 
 /** An `oc` that answers from a script, so every refusal can be provoked. */
 const fakeBin = mkdtempSync(join(tmpdir(), 'kritzel-fake-oc-'));
@@ -64,6 +65,19 @@ esac
 chmodSync(join(fakeBin, 'oc'), 0o755);
 
 const manifests = join(fakeBin, 'rendered.yaml');
+const obsRendered = spawnSync(
+  'helm',
+  [
+    'template',
+    'kritzel-obs',
+    OBS_CHART,
+    '-f',
+    `${OBS_CHART}/values-demo.yaml`,
+    '--set-string',
+    'grafana.admin.existingSecret=kritzel-grafana',
+  ],
+  { cwd: root, encoding: 'utf8' },
+);
 const rendered = spawnSync(
   'helm',
   [
@@ -74,12 +88,10 @@ const rendered = spawnSync(
     `${CHART}/values-demo.yaml`,
     '--set',
     `image.digest=sha256:${'a'.repeat(64)}`,
-    '--set',
-    'grafana.existingSecret=kritzel-grafana',
   ],
   { cwd: root, encoding: 'utf8' },
 );
-writeFileSync(manifests, rendered.stdout);
+writeFileSync(manifests, `${obsRendered.stdout}\n---\n${rendered.stdout}`);
 
 function preflight(scenario: string, ...extra: string[]) {
   const result = spawnSync(
@@ -96,6 +108,7 @@ function preflight(scenario: string, ...extra: string[]) {
 
 describe('preflight (spec 016)', () => {
   it('AC-016-19: passes when login, namespace, permissions and quota hold', () => {
+    expect(obsRendered.status, obsRendered.stderr).toBe(0);
     expect(rendered.status, rendered.stderr).toBe(0);
     const result = preflight('ok');
     expect(result.status, result.output).toBe(0);
@@ -168,10 +181,10 @@ describe('deployment workflow (spec 016)', () => {
     read('deploy/scripts/deploy.sh'),
   ];
 
-  it('AC-016-17: started by hand or after CI on main, never for pull requests', () => {
+  it('AC-016-17: started by hand or after Release on main, never for pull requests', () => {
     expect(Object.keys(workflow.on).sort()).toEqual(['workflow_dispatch', 'workflow_run']);
     expect(workflow.on.workflow_run).toMatchObject({
-      workflows: ['CI'],
+      workflows: ['Release'],
       types: ['completed'],
       branches: ['main'],
     });
@@ -206,10 +219,16 @@ describe('deployment workflow (spec 016)', () => {
   it('AC-016-18: third-party actions are pinned to a commit, tools to a checksum', () => {
     const uses = steps.map((step) => step.uses).filter((value): value is string => Boolean(value));
     expect(uses.length).toBeGreaterThan(2);
-    for (const action of uses) expect(action, action).toMatch(/@[0-9a-f]{40}$/);
+    for (const action of uses) {
+      if (action.startsWith('./')) continue;
+      expect(action, action).toMatch(/@[0-9a-f]{40}$/);
+    }
+    expect(uses).toContain('./.github/actions/setup-helm');
     expect(text).toMatch(/OC_VERSION: '?\d+\.\d+\.\d+/);
-    expect(text).toMatch(/HELM_VERSION: '?v\d+\.\d+\.\d+/);
-    expect(text.match(/sha256sum --check/g)?.length).toBeGreaterThanOrEqual(2);
+    expect(text).toContain('sha256sum --check');
+    const setupHelm = read('.github/actions/setup-helm/action.yml');
+    expect(setupHelm).toMatch(/HELM_VERSION: '?v\d+\.\d+\.\d+/);
+    expect(setupHelm).toContain('sha256sum --check');
   });
 
   it('AC-016-18: no script traces its commands or prints a credential', () => {

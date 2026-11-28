@@ -42,7 +42,7 @@ const headers = {
  * 016), reached with `oc` and the current login.
  */
 const openshiftNamespace = process.env.KRITZEL_OPENSHIFT_NAMESPACE;
-const collectorHost = openshiftNamespace ? 'kritzel-collector' : 'otel-collector';
+const collectorHost = openshiftNamespace ? 'kritzel-obs-opentelemetry-collector' : 'otel-collector';
 
 /** Runs a command in the game container. */
 function inGame(...command: string[]): string {

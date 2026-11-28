@@ -261,15 +261,16 @@ describe('checks on the digest (spec 017)', () => {
       'push-to-registry': true,
     });
 
-    // Only the signing job may ask for an identity token or write attestations.
+    // Only release.yml#sign and scorecard.yml#analysis may request id-token; only release.yml#sign may write attestations.
     for (const file of workflowFiles) {
       const workflow = load(file);
-      for (const scope of ['id-token', 'attestations']) {
-        expect(workflow.permissions?.[scope], `${file} ${scope}`).toBeUndefined();
-        for (const [name, job] of Object.entries(workflow.jobs)) {
-          if (file === 'release.yml' && name === 'sign') continue;
-          expect(job.permissions?.[scope], `${file} ${name} ${scope}`).toBeUndefined();
-        }
+      expect(workflow.permissions?.['id-token'], `${file} id-token`).toBeUndefined();
+      expect(workflow.permissions?.attestations, `${file} attestations`).toBeUndefined();
+      for (const [name, job] of Object.entries(workflow.jobs)) {
+        if (file === 'release.yml' && name === 'sign') continue;
+        expect(job.permissions?.attestations, `${file} ${name} attestations`).toBeUndefined();
+        if (file === 'scorecard.yml' && name === 'analysis') continue;
+        expect(job.permissions?.['id-token'], `${file} ${name} id-token`).toBeUndefined();
       }
     }
   });
@@ -468,8 +469,11 @@ describe('GitHub Release (spec 017)', () => {
     expect(verify).toContain(
       '--certificate-identity https://github.com/Owner/Repo/.github/workflows/release.yml@refs/tags/v1.2.3',
     );
+    expect(notes).toContain(
+      'helm install kritzel oci://ghcr.io/owner/charts/kritzel --version 1.2.3',
+    );
     expect(() => releaseNotes({ version: '1.2.3', digest: 'latest' } as never)).toThrow(/digest/);
-    expect(runs(job)).toMatch(/node scripts\/release\.mjs notes --digest "\$DIGEST" > /);
+    expect(runs(job)).toMatch(/node scripts\/release\.mjs notes --digest "\$DIGEST"/);
   });
 
   it('AC-017-14: created on a tag after promotion, with SBOMs, the chart and the promo files', () => {
@@ -492,11 +496,13 @@ describe('GitHub Release (spec 017)', () => {
         expect(runs(other), `${file} ${name}`).not.toContain('gh release');
       }
     }
-    // helm comes from the same checksum-verified download as in CI.
-    const pin = (source: string) =>
-      /HELM_VERSION: (\S+)\s+HELM_SHA256: ([0-9a-f]{64})/.exec(source);
-    expect(pin(text('release.yml'))?.slice(1)).toEqual(pin(text('ci.yml'))!.slice(1));
-    expect(script).toContain('sha256sum --check --strict');
+    // Both CI and Release install helm via the same checksum-verified composite action.
+    expect(uses(job)).toContain('./.github/actions/setup-helm');
+    expect(uses(ci.jobs.check!)).toContain('./.github/actions/setup-helm');
+    const setupHelm = read('.github/actions/setup-helm/action.yml');
+    expect(setupHelm).toMatch(/HELM_VERSION:\s*v\d+\.\d+\.\d+/);
+    expect(setupHelm).toMatch(/HELM_SHA256:\s*[0-9a-f]{64}/);
+    expect(setupHelm).toContain('sha256sum --check --strict');
   });
 
   it('AC-017-15: the packaged chart installs the released image', () => {
@@ -531,7 +537,7 @@ describe('permissions (spec 017)', () => {
       scan: { contents: 'read', packages: 'read' },
       sign: { contents: 'read', packages: 'write', 'id-token': 'write', attestations: 'write' },
       promote: { contents: 'read', packages: 'write' },
-      release: { contents: 'write', packages: 'read' },
+      release: { contents: 'write', packages: 'write' },
     });
   });
 });
@@ -665,12 +671,16 @@ describe('security checks (spec 017)', () => {
 
 describe('pinning (spec 017)', () => {
   it('AC-017-24: every third-party action is pinned to a commit, with its version as a comment', () => {
+    const actionFiles = readdirSync(`${root}.github/actions`, { withFileTypes: true })
+      .filter((entry) => entry.isDirectory())
+      .map((entry) => `.github/actions/${entry.name}/action.yml`);
+    const sources = [...workflowFiles.map((file) => `${WORKFLOWS}${file}`), ...actionFiles];
     let pinned = 0;
-    for (const file of workflowFiles) {
-      for (const line of text(file).split('\n')) {
+    for (const file of sources) {
+      for (const line of read(file).split('\n')) {
         const reference = /^\s*(?:-\s+)?uses:\s*(.*)$/.exec(line)?.[1];
         if (reference === undefined) continue;
-        // A workflow of this repository is referenced by path and versioned with it.
+        // A workflow or composite action of this repository is referenced by path.
         if (reference.startsWith('./')) continue;
         expect(reference, `${file}: ${line.trim()}`).toMatch(
           /^[\w.-]+\/[\w.-]+(\/[\w./-]+)?@[0-9a-f]{40} # v\d+\.\d+\.\d+$/,
@@ -682,8 +692,8 @@ describe('pinning (spec 017)', () => {
     // The same action is the same commit everywhere outside the deployment workflow,
     // which is raised on its own (spec 016).
     const commits = new Map<string, Set<string>>();
-    for (const file of workflowFiles.filter((name) => name !== 'deploy-openshift-demo.yml')) {
-      for (const [, action, commit] of text(file).matchAll(
+    for (const file of sources.filter((name) => !name.endsWith('deploy-openshift-demo.yml'))) {
+      for (const [, action, commit] of read(file).matchAll(
         /uses:\s*([\w.-]+\/[\w.-]+)[\w./-]*@([0-9a-f]{40})/g,
       )) {
         commits.set(action!, (commits.get(action!) ?? new Set()).add(commit!));
@@ -739,5 +749,63 @@ describe('hosting guide (spec 017)', () => {
     );
     // The untested tag is called what it is.
     expect(section).toMatch(/`sha-<commit>`[^\n]*before/);
+  });
+});
+
+describe('hardening and OCI chart (spec 017)', () => {
+  it('AC-017-30: every job of every workflow sets a timeout-minutes limit', () => {
+    for (const file of workflowFiles) {
+      const workflow = load(file);
+      for (const [name, job] of Object.entries(workflow.jobs)) {
+        if (job.uses) continue;
+        expect(job['timeout-minutes'], `${file}#${name}`).toBeGreaterThan(0);
+      }
+    }
+  });
+
+  it('AC-017-31: a tag release pushes the standalone Helm chart as an OCI artifact to GHCR', () => {
+    const script = runs(release.jobs.release!);
+    expect(script).toContain('helm registry login ghcr.io');
+    expect(script).toContain('helm push');
+    expect(script).toContain('oci://ghcr.io/${owner}/charts');
+    const notes = releaseNotes({
+      version: '1.2.3',
+      chartVersion: '2.0.0',
+      image: 'ghcr.io/owner/repo',
+      digest: DIGEST,
+      repository: 'Owner/Repo',
+      serverUrl: 'https://github.com',
+      sha: SHA,
+      changelog: '- Release.',
+    });
+    expect(notes).toContain(
+      'helm install kritzel oci://ghcr.io/owner/charts/kritzel --version 2.0.0',
+    );
+  });
+
+  it('AC-017-32: OpenSSF Scorecard runs on main and weekly and README displays the badge', () => {
+    const scorecard = load('scorecard.yml');
+    expect(scorecard.on.push).toEqual({ branches: ['main'] });
+    expect(scorecard.on.schedule).toBeDefined();
+    const job = scorecard.jobs.analysis!;
+    expect(uses(job).some((action) => action.startsWith('ossf/scorecard-action@'))).toBe(true);
+    const step = job.steps!.find((s) => s.uses?.startsWith('ossf/scorecard-action@'))!;
+    expect(step.with).toMatchObject({ publish_results: true, results_format: 'sarif' });
+    expect(
+      uses(job).some((action) => action.startsWith('github/codeql-action/upload-sarif@')),
+    ).toBe(true);
+    expect(read('README.md')).toContain(
+      'api.scorecard.dev/projects/github.com/Mistral-valaise/open-skribbl/badge',
+    );
+  });
+
+  it('AC-017-33: both stages of Dockerfile pin the base image by sha256 digest', () => {
+    const fromLines = read('Dockerfile')
+      .split('\n')
+      .filter((line) => line.startsWith('FROM '));
+    expect(fromLines).toHaveLength(2);
+    for (const line of fromLines) {
+      expect(line, line).toMatch(/@sha256:[0-9a-f]{64}(\s+AS\s+\w+)?$/);
+    }
   });
 });

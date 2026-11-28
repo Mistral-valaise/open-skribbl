@@ -3,7 +3,8 @@
 // game over wss:// with a reconnect, and the telemetry that game produced.
 //
 // Usage: node deploy/scripts/verify.mjs --namespace <ns> [--release kritzel]
-//                                       [--summary <file>] [--traffic "<command>"]
+//                                       [--obs-release kritzel-obs] [--summary <file>]
+//                                       [--traffic "<command>"]
 //
 // `oc` must be logged in (KUBECONFIG). The Grafana admin password is read
 // from GRAFANA_ADMIN_PASSWORD or from the release's Secret; it is used for
@@ -21,6 +22,7 @@ for (let index = 2; index < process.argv.length; index += 2) {
 }
 const namespace = args.get('namespace') ?? process.env.OPENSHIFT_NAMESPACE ?? '';
 const release = args.get('release') ?? 'kritzel';
+const obsRelease = args.get('obs-release') ?? `${release}-obs`;
 const summaryFile = args.get('summary') ?? '';
 const root = fileURLToPath(new URL('../..', import.meta.url));
 if (!namespace) {
@@ -62,7 +64,7 @@ async function until(check, timeoutMs, everyMs = 3000) {
 }
 
 // ── 1. Pods ──────────────────────────────────────────────────────────────
-const selector = `app.kubernetes.io/instance=${release}`;
+const selector = `app.kubernetes.io/instance in (${release},${obsRelease})`;
 const pods = json(oc('get', 'pods', '--selector', selector, '--output', 'json'))?.items ?? [];
 const range =
   json(oc('get', 'namespace', namespace, '--output', 'json'))?.metadata?.annotations?.[
@@ -196,7 +198,9 @@ if (gameUrl) {
 
 // ── 4. Telemetry and Grafana ─────────────────────────────────────────────
 const hasStack = pods.some(
-  (pod) => pod.metadata.labels?.['app.kubernetes.io/component'] === 'grafana',
+  (pod) =>
+    pod.metadata.labels?.['app.kubernetes.io/name'] === 'grafana' ||
+    pod.metadata.labels?.['app.kubernetes.io/component'] === 'grafana',
 );
 let grafanaUrl = '';
 if (hasStack) {
@@ -313,7 +317,7 @@ if (summaryFile) {
     grafanaUrl
       ? `Grafana: ${grafanaUrl} (user admin, password from the Secret ${release}-grafana)`
       : hasStack
-        ? `Grafana: oc port-forward --namespace ${namespace} service/${release}-grafana 3001:3000`
+        ? `Grafana: oc port-forward --namespace ${namespace} service/${obsRelease}-grafana 3001:3000`
         : '',
     '',
   ];

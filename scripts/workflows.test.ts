@@ -8,10 +8,13 @@ const read = (path: string) =>
 describe('workflows (spec 012)', () => {
   it('AC-012-12: CI runs the full check, the build and the end-to-end tests', () => {
     const ci = read('.github/workflows/ci.yml');
+    const setupNode = read('.github/actions/setup-node-pnpm/action.yml');
     const check = JSON.parse(read('package.json')).scripts.check as string;
-    for (const step of ['pnpm check', 'pnpm build', 'pnpm e2e', '--frozen-lockfile']) {
+    for (const step of ['pnpm check', 'pnpm build', 'pnpm e2e']) {
       expect(ci, step).toContain(step);
     }
+    expect(ci).toContain('./.github/actions/setup-node-pnpm');
+    expect(setupNode).toContain('--frozen-lockfile');
     // The image is built and played through in the workflow the release shares (spec 017).
     const imageTest = read('.github/workflows/image-test.yml');
     expect(ci).toContain('uses: ./.github/workflows/image-test.yml');

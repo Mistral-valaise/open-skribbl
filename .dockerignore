@@ -1,10 +1,12 @@
 .git
 .github
+.claude
 **/node_modules
 **/dist
 **/coverage
 e2e
 docs
+marketing
 playwright-report
 test-results
 *.md

@@ -1,11 +1,13 @@
 name: Deploy OpenShift demo
 
-# Deploys the demo profile of the Helm chart to the OpenShift namespace of the
-# GitHub environment `dev` and checks the result (spec 016).
+# Deploys the observability stack and the demo profile of the Kritzel chart to
+# the OpenShift namespace of the GitHub environment `dev` and checks the result
+# (spec 016).
 #
-# Started by hand, or after a successful CI run on main when the repository
-# variable DEPLOY_DEMO_ON_MAIN is `true`. It never runs for pull requests, so
-# code from a fork never meets the cluster credentials.
+# Started by hand, or after a successful Release run on main when the repository
+# variable DEPLOY_DEMO_ON_MAIN is `true` (so the `sha-<commit>` digest is
+# already pushed). It never runs for pull requests, so code from a fork never
+# meets the cluster credentials.
 #
 # Configuration, all in the environment `dev` (Settings → Environments):
 #   secret   OPENSHIFT_TOKEN          login token for the namespace
@@ -35,7 +37,7 @@ on:
         type: boolean
         default: true
   workflow_run:
-    workflows: [CI]
+    workflows: [Release]
     types: [completed]
     branches: [main]
 
@@ -51,8 +53,6 @@ concurrency:
 env:
   OC_VERSION: '4.22.22'
   OC_SHA256: dafaca983ff4a1de782fc0f281552789955a2020cdbddd8f505d16f0f7d879aa
-  HELM_VERSION: v4.3.1
-  HELM_SHA256: 0403a88ae20913d11b10a2467b50087721fea7581736da6b9d3992f5357fe54b
   IMAGE_REPOSITORY: ghcr.io/mistral-valaise/open-skribbl
 
 jobs:
@@ -64,6 +64,7 @@ jobs:
        github.event.workflow_run.conclusion == 'success' &&
        github.event.workflow_run.event == 'push')
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     permissions:
       contents: read
       actions: read
@@ -140,14 +141,9 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ needs.guard.outputs.sha }}
-      - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
-      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
-        with:
-          node-version-file: .nvmrc
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-
-      - name: Install oc and helm, verified by checksum
+      - uses: ./.github/actions/setup-node-pnpm
+      - uses: ./.github/actions/setup-helm
+      - name: Install oc, verified by checksum
         run: |
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/bin" && cd "$RUNNER_TEMP"
@@ -155,10 +151,7 @@ jobs:
             "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/${OC_VERSION}/openshift-client-linux-${OC_VERSION}.tar.gz"
           echo "${OC_SHA256}  oc.tar.gz" | sha256sum --check --strict
           tar --extract --gzip --file oc.tar.gz --directory bin oc
-          curl --fail --silent --show-error --location --output helm.tar.gz \
-            "https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz"
-          echo "${HELM_SHA256}  helm.tar.gz" | sha256sum --check --strict
-          tar --extract --gzip --file helm.tar.gz --strip-components 1 --directory bin linux-amd64/helm
+          rm -f oc.tar.gz
           echo "$RUNNER_TEMP/bin" >> "$GITHUB_PATH"
 
       - name: Log in with a temporary kubeconfig
@@ -177,30 +170,36 @@ jobs:
           esac
           umask 077
           # A kubeconfig of this run only, outside the checkout; removed at the end.
-          # (The runner context is not available in a job's env, so it is set here.)
           export KUBECONFIG="$RUNNER_TEMP/kubeconfig"
           echo "KUBECONFIG=$KUBECONFIG" >> "$GITHUB_ENV"
-          # Certificates are verified against the runner's trust store; the token
-          # goes into the kubeconfig file only.
           oc config set-cluster demo --server="$OPENSHIFT_SERVER" >/dev/null
           oc config set-credentials demo --token="$OPENSHIFT_TOKEN" >/dev/null
           oc config set-context demo --cluster=demo --user=demo --namespace="$NAMESPACE" >/dev/null
           oc config use-context demo >/dev/null
 
-      - name: Render the chart
+      - name: Build observability dependencies and render both charts
         run: |
           set -euo pipefail
+          helm dependency build deploy/helm/kritzel-observability
+          helm lint deploy/helm/kritzel-observability --strict \
+            --values deploy/helm/kritzel-observability/values-demo.yaml \
+            --set-string grafana.admin.existingSecret=kritzel-grafana
           helm lint deploy/helm/kritzel --strict \
             --values deploy/helm/kritzel/values-demo.yaml \
-            --set-string "image.digest=$IMAGE_DIGEST" --set-string grafana.existingSecret=kritzel-grafana
-          helm template kritzel deploy/helm/kritzel --namespace "$NAMESPACE" \
-            --values deploy/helm/kritzel/values-demo.yaml \
-            --set-string "image.repository=$IMAGE_REPOSITORY" \
-            --set-string "image.digest=$IMAGE_DIGEST" \
-            --set-string grafana.existingSecret=kritzel-grafana \
-            --set "grafana.route.enabled=${{ github.event_name != 'workflow_dispatch' || inputs.grafana_route }}" \
-            --set "traffic.enabled=${{ github.event_name != 'workflow_dispatch' || inputs.traffic }}" \
-            > "$RUNNER_TEMP/rendered.yaml"
+            --set-string "image.digest=$IMAGE_DIGEST"
+          {
+            helm template kritzel-obs deploy/helm/kritzel-observability --namespace "$NAMESPACE" \
+              --values deploy/helm/kritzel-observability/values-demo.yaml \
+              --set-string grafana.admin.existingSecret=kritzel-grafana \
+              --set "grafanaRoute.enabled=${{ github.event_name != 'workflow_dispatch' || inputs.grafana_route }}"
+            echo "---"
+            helm template kritzel deploy/helm/kritzel --namespace "$NAMESPACE" \
+              --values deploy/helm/kritzel/values-demo.yaml \
+              --set-string "image.repository=$IMAGE_REPOSITORY" \
+              --set-string "image.digest=$IMAGE_DIGEST" \
+              --set-string telemetry.otlpEndpoint=http://kritzel-obs-opentelemetry-collector:4318 \
+              --set "traffic.enabled=${{ github.event_name != 'workflow_dispatch' || inputs.traffic }}"
+          } > "$RUNNER_TEMP/rendered.yaml"
 
       - name: Preflight (login, namespace, permissions, quota)
         run: node deploy/scripts/preflight.mjs --namespace "$NAMESPACE" --manifests "$RUNNER_TEMP/rendered.yaml"
@@ -233,7 +232,8 @@ jobs:
             echo "| --- | --- |"
             echo "| Commit | \`$SHA\` |"
             echo "| Image | \`${IMAGE_REPOSITORY}@${IMAGE_DIGEST}\` |"
-            echo "| Chart | $(sed -n 's/^version: //p' deploy/helm/kritzel/Chart.yaml) |"
+            echo "| App chart | $(sed -n 's/^version: //p' deploy/helm/kritzel/Chart.yaml) |"
+            echo "| Observability chart | $(sed -n 's/^version: //p' deploy/helm/kritzel-observability/Chart.yaml) |"
             echo "| Namespace | \`$NAMESPACE\` |"
             echo
             echo "A deployment that changes the game restarts it: games in progress ended, and players were told the server is restarting."
@@ -248,12 +248,13 @@ jobs:
       - name: Diagnostics
         if: failure()
         run: |
-          # Scoped to the namespace and the release. Room codes are removed from
+          # Scoped to the namespace and both releases. Room codes are removed from
           # log lines; no token, password or kubeconfig is printed.
+          helm status kritzel-obs --namespace "$NAMESPACE" 2>&1 | sed -n '1,8p' || true
           helm status kritzel --namespace "$NAMESPACE" 2>&1 | sed -n '1,8p' || true
-          oc get pods --namespace "$NAMESPACE" --selector app.kubernetes.io/instance=kritzel --output wide 2>&1 || true
+          oc get pods --namespace "$NAMESPACE" --selector 'app.kubernetes.io/instance in (kritzel,kritzel-obs)' --output wide 2>&1 || true
           oc get events --namespace "$NAMESPACE" --sort-by=.lastTimestamp 2>&1 | tail -n 30 || true
-          for pod in $(oc get pods --namespace "$NAMESPACE" --selector app.kubernetes.io/instance=kritzel --output name 2>/dev/null); do
+          for pod in $(oc get pods --namespace "$NAMESPACE" --selector 'app.kubernetes.io/instance in (kritzel,kritzel-obs)' --output name 2>/dev/null); do
             echo "--- $pod"
             oc logs --namespace "$NAMESPACE" "$pod" --tail=40 2>&1 | sed -E 's/"room":"[A-Z0-9]+"/"room":"…"/g' || true
           done

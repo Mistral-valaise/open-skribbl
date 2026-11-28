@@ -13,6 +13,7 @@ Kritzel is a self-hosted, ad-free draw-and-guess party game: a pnpm TypeScript m
 | [`docs/ROADMAP.md`](docs/ROADMAP.md)           | To find the current milestone and what is next.                                                   |
 | [`docs/adr/`](docs/adr/)                       | When a design choice looks odd. The reasons are recorded there.                                   |
 | [`docs/PRD.md`](docs/PRD.md)                   | For goals, non-goals and the decision log.                                                        |
+| [`CONTRIBUTING.md`](CONTRIBUTING.md)           | For the ticket-to-PR workflow, issue/PR templates, and commit/release conventions.                |
 
 ## The loop
 

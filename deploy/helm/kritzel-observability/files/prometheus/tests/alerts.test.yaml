@@ -1,6 +1,6 @@
 # Unit tests for Kritzel's alert rules (spec 015, AC-015-36):
 #
-#   promtool test rules deploy/helm/kritzel/files/prometheus/tests/alerts.test.yaml
+#   promtool test rules deploy/helm/kritzel-observability/files/prometheus/tests/alerts.test.yaml
 #
 # They cover the no-data behaviour, the minimum-volume guards and one
 # Sloth-generated burn-rate alert end to end.

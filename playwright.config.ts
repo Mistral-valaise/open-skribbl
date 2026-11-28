@@ -19,7 +19,8 @@ export default defineConfig({
   use: {
     baseURL: external ?? `http://127.0.0.1:${port}`,
     ignoreHTTPSErrors: external !== undefined,
-    trace: 'off',
+    trace: 'retain-on-failure',
+    screenshot: 'only-on-failure',
   },
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
   webServer: external

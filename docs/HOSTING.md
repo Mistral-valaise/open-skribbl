@@ -190,7 +190,7 @@ Grafana is published on `127.0.0.1:3001` only, with a login. [OBSERVABILITY.md](
 
 ## Kubernetes and OpenShift
 
-`docker run` is the way Kritzel is meant to be hosted. For a cluster there is a Helm chart in `deploy/helm/kritzel`: the game alone by default, or with the observability stack in its demo profile. It runs exactly one replica of the game and needs nothing beyond a namespace. See [DEPLOYMENT-OPENSHIFT.md](DEPLOYMENT-OPENSHIFT.md).
+`docker run` is the way Kritzel is meant to be hosted. For a cluster there are two Helm charts: `deploy/helm/kritzel` (also published to `oci://ghcr.io/mistral-valaise/charts/kritzel`) installs the game alone, and `deploy/helm/kritzel-observability` installs the observability stack using official upstream charts. It runs exactly one replica of the game and needs nothing beyond a namespace. See [DEPLOYMENT-OPENSHIFT.md](DEPLOYMENT-OPENSHIFT.md).
 
 ## Capacity
 

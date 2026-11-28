@@ -1,0 +1,45 @@
+name: DevOps / Infrastructure Task
+description: Track CI/CD, supply chain, Helm/OpenShift, or observability work
+title: '[DevOps]: '
+labels: ['area: ci']
+body:
+  - type: dropdown
+    id: component
+    attributes:
+      label: Component
+      description: Primary infrastructure or operations area.
+      options:
+        - CI/CD
+        - Release/Supply Chain
+        - Helm/OpenShift
+        - Observability
+    validations:
+      required: true
+
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal
+      description: What operational, security, or deployment outcome should this task achieve?
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance_criteria
+    attributes:
+      label: Acceptance Criteria
+      description: Concrete, verifiable criteria (cite `AC-012-XX`, `AC-015-XX`, `AC-016-XX`, or `AC-017-XX` if applicable).
+      placeholder: |
+        - [ ] ...
+        - [ ] ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: verification_plan
+    attributes:
+      label: Verification Plan
+      description: Commands, workflow runs, or cluster/stack checks that prove the change works.
+      placeholder: e.g., `pnpm check`, `actionlint`, `helm lint`, `helm template`, `pnpm obs:up`
+    validations:
+      required: true

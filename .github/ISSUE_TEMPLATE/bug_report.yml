@@ -1,0 +1,79 @@
+name: Bug report
+description: Report a reproducible defect in Kritzel
+title: '[Bug]: '
+labels: ['bug']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a bug in Kritzel. Please fill out the fields below so we can reproduce and fix it quickly.
+        If this is a security issue, **do not open a public issue** — report it privately via Security Advisories (`SECURITY.md`).
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      description: Which part of Kritzel is affected?
+      options:
+        - Web Client
+        - Server / WebSocket
+        - Game Rules / Shared
+        - Drawing / Canvas
+        - Solo Mode
+        - Observability
+        - Helm / OpenShift
+        - CI / Release
+    validations:
+      required: true
+
+  - type: input
+    id: environment
+    attributes:
+      label: Deployment / Environment
+      description: How and where is Kritzel running?
+      placeholder: e.g., Docker (ghcr.io), Helm / OpenShift, Local pnpm dev, Chrome 131 on macOS
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Version or Digest
+      description: Release version, tag, image digest, or commit SHA (see `/healthz` or `package.json`).
+      placeholder: e.g., 1.0.0, edge, sha256:..., or commit 3f2a9c1
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction Steps
+      description: Clear, numbered steps to trigger the issue.
+      placeholder: |
+        1. Start room with ...
+        2. Join as second player ...
+        3. Observe ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected_actual
+    attributes:
+      label: Expected vs Actual
+      description: Describe what you expected to happen and what actually happened.
+      placeholder: |
+        **Expected:** ...
+        **Actual:** ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Sanitized Logs / Screenshots
+      description: |
+        Paste relevant server logs, browser console errors, or screenshots.
+        **WARNING:** Do NOT paste session tokens, passwords, secrets, or live room codes!
+      render: text
+    validations:
+      required: false

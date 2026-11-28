@@ -1,0 +1,60 @@
+name: Feature / Spec Proposal
+description: Propose a new feature or behaviour change following Kritzel's spec-driven loop
+title: '[Feature]: '
+labels: ['enhancement']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Kritzel is spec-driven (`AGENTS.md`, `docs/specs/README.md`). Behaviour changes start in `docs/specs/` with concrete acceptance criteria (`AC-NNN-XX`).
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem Statement
+      description: What problem does this solve for players or self-hosters, and why is it needed?
+    validations:
+      required: true
+
+  - type: input
+    id: affected_spec
+    attributes:
+      label: Affected Spec (`docs/specs/`)
+      description: Path to the existing spec to update, or propose a new spec number/title.
+      placeholder: e.g., docs/specs/001-rooms-and-lobby.md (or New spec)
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance_criteria
+    attributes:
+      label: Proposed Acceptance Criteria (`AC-NNN-XX`)
+      description: Observable, testable statements with concrete values so tests can be written directly from them.
+      placeholder: |
+        - **AC-NNN-01** ...
+        - **AC-NNN-02** ...
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: architecture_scope
+    attributes:
+      label: Architecture & Scope Check
+      description: Confirm alignment with Kritzel's core architectural constraints.
+      options:
+        - label: Fits single-process, in-memory state (ADR 0001 — no external database)
+          required: true
+        - label: Preserves same-origin only (no external runtime fonts, CDNs, trackers, or third-party hosts)
+          required: true
+        - label: Accounts for 4-locale i18n (`en`, `de`, `es`, `fr`) for all visible UI strings
+          required: true
+        - label: Uses canonical vocabulary from `CONTEXT.md`
+          required: true
+
+  - type: textarea
+    id: out_of_scope
+    attributes:
+      label: Out of Scope
+      description: Explicitly list what this proposal will not address.
+    validations:
+      required: false

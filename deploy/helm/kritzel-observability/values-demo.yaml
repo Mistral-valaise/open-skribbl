@@ -1,0 +1,32 @@
+# Demo overrides for the OpenShift Developer Sandbox (spec 016).
+# Still pass: --set-string grafana.admin.existingSecret=kritzel-grafana
+
+grafanaRoute:
+  enabled: true
+
+networkPolicy:
+  ingressFrom:
+    - namespaceSelector:
+        matchLabels:
+          network.openshift.io/policy-group: ingress
+
+# Clear subchart default UIDs/GIDs so OpenShift restricted-v2 SCC assigns them
+# from the namespace range (Helm applies null overrides cleanly from -f files).
+prometheus:
+  server:
+    securityContext:
+      runAsUser: null
+      runAsGroup: null
+      fsGroup: null
+
+tempo:
+  securityContext:
+    runAsUser: null
+    runAsGroup: null
+    fsGroup: null
+
+grafana:
+  securityContext:
+    runAsUser: null
+    runAsGroup: null
+    fsGroup: null

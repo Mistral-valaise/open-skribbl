@@ -1,13 +1,11 @@
-# Kritzel Helm chart: default values (spec 016).
+# Kritzel Helm chart: standalone application defaults (spec 016).
 #
-# The defaults install the game alone. For the game with the observability
-# stack and synthetic traffic, add values-demo.yaml:
+# Installs Kritzel alone. To deploy the optional OpenTelemetry observability
+# stack (OpenTelemetry Collector, Prometheus, Loki, Tempo and Grafana), install
+# the companion chart `deploy/helm/kritzel-observability` and point
+# `telemetry.otlpEndpoint` at its collector Service.
 #
-#   helm upgrade --install kritzel deploy/helm/kritzel -f deploy/helm/kritzel/values-demo.yaml \
-#     --set image.digest=sha256:...
-#
-# Nothing here is a secret, and nothing here should become one: passwords are
-# read from Secrets that already exist in the namespace.
+# Nothing here is a secret, and nothing here should become one.
 
 nameOverride: ''
 fullnameOverride: ''
@@ -54,10 +52,9 @@ game:
 service:
   port: 3000
 
-# Telemetry of the game (spec 015). Turned on automatically when the stack
-# below is enabled; set an endpoint to send to a collector of your own instead.
+# Telemetry of the game (spec 015). Off when `otlpEndpoint` is empty; set to an
+# OTLP/HTTP collector endpoint (for example http://kritzel-obs-opentelemetry-collector:4318).
 telemetry:
-  # OTLP/HTTP endpoint of an external collector, for example http://collector:4318
   otlpEndpoint: ''
   # Standard OpenTelemetry sampler names and argument.
   sampler: parentbased_traceidratio
@@ -68,14 +65,13 @@ route:
   enabled: false
   # Empty lets the cluster choose the host name.
   host: ''
-  # How long an idle WebSocket is kept open by the router. The game has no
-  # heartbeat yet; a client whose socket is cut reconnects on its own.
+  # How long an idle WebSocket is kept open by the router.
   tunnelTimeout: 1h
 
 networkPolicy:
   enabled: true
-  # Who may reach the game and Grafana from outside the release. Empty allows
-  # any source, which suits an ingress controller the chart does not know.
+  # Who may reach the game from outside the release. Empty allows any source,
+  # which suits an ingress controller the chart does not know.
   # OpenShift: [{ namespaceSelector: { matchLabels: { network.openshift.io/policy-group: ingress } } }]
   ingressFrom: []
 
@@ -84,99 +80,6 @@ networkPolicy:
 # range, so leave this empty there.
 securityContext:
   runAsUser: null
-
-# The observability stack of spec 015: collector, Prometheus, Loki, Tempo and
-# Grafana in single-binary mode with ephemeral storage. A demo, not a
-# monitoring platform.
-observability:
-  enabled: false
-
-collector:
-  image: otel/opentelemetry-collector-contrib:0.166.0@sha256:3e18fe04181de50bdd72e23ad4a4d6214b54351e63d496f1c58127cc4541ad7f
-  resources:
-    requests:
-      cpu: 100m
-      memory: 128Mi
-      ephemeral-storage: 32Mi
-    limits:
-      cpu: 500m
-      memory: 256Mi
-      ephemeral-storage: 128Mi
-
-prometheus:
-  image: prom/prometheus:v3.16.0@sha256:e04987641b57704f408e31f6373ba4138ecf27cb4a165d24aabb6c38fddd0f06
-  retention: 24h
-  retentionSize: 1GB
-  storage:
-    # emptyDir size; data is lost when the pod restarts.
-    size: 2Gi
-    # Use a PersistentVolumeClaim instead (regular installations).
-    persistent: false
-    storageClassName: ''
-  resources:
-    requests:
-      cpu: 200m
-      memory: 256Mi
-      ephemeral-storage: 256Mi
-    limits:
-      cpu: 1000m
-      memory: 768Mi
-      ephemeral-storage: 2Gi
-
-loki:
-  image: grafana/loki:3.7.10@sha256:b43c257ccfc925d4a50b8717cac61a3b51df8c48d01847936057e5c4075a24a7
-  retention: 24h
-  storage:
-    size: 2Gi
-    persistent: false
-    storageClassName: ''
-  resources:
-    requests:
-      cpu: 200m
-      memory: 256Mi
-      ephemeral-storage: 256Mi
-    limits:
-      cpu: 1000m
-      memory: 768Mi
-      ephemeral-storage: 2Gi
-
-tempo:
-  image: grafana/tempo:3.1.1@sha256:64e2fbd56d9c2b3412a4b430a58ea59e91a670b1e75f920a0c702213ad145044
-  retention: 24h
-  storage:
-    size: 2Gi
-    persistent: false
-    storageClassName: ''
-  resources:
-    requests:
-      cpu: 200m
-      memory: 256Mi
-      ephemeral-storage: 256Mi
-    limits:
-      cpu: 1000m
-      memory: 768Mi
-      ephemeral-storage: 2Gi
-
-grafana:
-  image: grafana/grafana:13.3.2@sha256:81556409ba48b2b922e0adb69a2511337d8ba7578f11962eefa6149a2d815101
-  # Required when the stack is enabled: a Secret in the namespace with the key
-  # `admin-password`. The chart never creates it and never holds the password.
-  existingSecret: ''
-  route:
-    # A public HTTPS Route with Grafana's own login. Off: use port-forward.
-    enabled: false
-    host: ''
-  # Measured on the Developer Sandbox: about 350 Mi with seven dashboards
-  # provisioned. A limit of 384 Mi got the pod killed for memory.
-  resources:
-    requests:
-      cpu: 100m
-      memory: 256Mi
-      ephemeral-storage: 64Mi
-    limits:
-      cpu: 500m
-      memory: 768Mi
-      ephemeral-storage: 512Mi
 
 # Synthetic traffic (spec 015): plays seeded games so dashboards and
 # objectives have data. Its games count like any others.

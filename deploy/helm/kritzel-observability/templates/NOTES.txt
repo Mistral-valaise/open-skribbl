@@ -1,0 +1,17 @@
+Kritzel observability stack is installed in namespace {{ .Release.Namespace }} as release {{ .Release.Name }}.
+
+Point Kritzel at the OpenTelemetry Collector by installing `deploy/helm/kritzel` with:
+  --set telemetry.otlpEndpoint=http://{{ include "kritzel-obs.collectorService" . }}:4318
+
+{{- if .Values.grafanaRoute.enabled }}
+
+Grafana (user admin, password in Secret {{ .Values.grafana.admin.existingSecret }}):
+  oc get route {{ include "kritzel-obs.grafanaService" . }} --namespace {{ .Release.Namespace }} -o jsonpath='https://{.spec.host}{"\n"}'
+{{- else }}
+
+Grafana (user admin, password in Secret {{ .Values.grafana.admin.existingSecret }}):
+  kubectl port-forward --namespace {{ .Release.Namespace }} service/{{ include "kritzel-obs.grafanaService" . }} 3001:3000
+{{- end }}
+
+The collector, Prometheus, Loki and Tempo are reachable only inside the namespace.
+Their data is kept for a short time and lost when a pod restarts unless persistent storage is enabled.

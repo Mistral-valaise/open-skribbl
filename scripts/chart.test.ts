@@ -605,6 +605,15 @@ describe('chart networking (spec 016)', () => {
       expect(mounted, `${name} writable emptyDir mount for ${targetPath}`).toBe(true);
     };
 
+    const expandEnv = (value: string, vars: Record<string, string | undefined>) =>
+      value.replace(
+        /\$\{([A-Z0-9_]+)(?::-([^}]*))?\}/g,
+        (_, key: string, fallback?: string) => vars[key] || fallback || '',
+      );
+
+    const lokiContainer = pod(named(obsDemo, 'StatefulSet', 'kritzel-obs-loki')).containers[0]!;
+    expect(lokiContainer.args).toContain('-config.expand-env=true');
+    const lokiHelmEnv = env(lokiContainer);
     const lokiConfig = parse(
       named(obsDemo, 'ConfigMap', 'kritzel-obs-loki-config').data!['config.yaml']!,
     ) as {
@@ -614,13 +623,14 @@ describe('chart networking (spec 016)', () => {
       };
       compactor: { working_directory: string };
     };
-    for (const lokiPath of [
+    const lokiRawPaths = [
       lokiConfig.common.path_prefix,
       lokiConfig.common.storage.filesystem.chunks_directory,
       lokiConfig.common.storage.filesystem.rules_directory,
       lokiConfig.compactor.working_directory,
-    ]) {
-      expectWritableMount('StatefulSet', 'kritzel-obs-loki', lokiPath);
+    ];
+    for (const rawPath of lokiRawPaths) {
+      expectWritableMount('StatefulSet', 'kritzel-obs-loki', expandEnv(rawPath, lokiHelmEnv));
     }
 
     const tempoConfig = parse(
@@ -656,12 +666,21 @@ describe('chart networking (spec 016)', () => {
     );
 
     const overlay = parse(read('docker-compose.observability.yml')) as {
-      services: Record<string, { volumes?: string[] }>;
+      services: Record<
+        string,
+        { command?: string[]; environment?: Record<string, string>; volumes?: string[] }
+      >;
     };
+    expect(overlay.services.loki?.command).toContain('-config.expand-env=true');
+    const lokiComposeEnv = overlay.services.loki?.environment ?? {};
     const lokiMount = (overlay.services.loki?.volumes ?? []).find((v) =>
       v.startsWith('loki-data:'),
     );
-    expect(lokiMount).toBe(`loki-data:${lokiConfig.common.path_prefix}`);
+    expect(lokiMount).toBe(`loki-data:${expandEnv(lokiConfig.common.path_prefix, lokiComposeEnv)}`);
+    const lokiTarget = lokiMount!.split(':')[1]!;
+    for (const rawPath of lokiRawPaths) {
+      expect(isInside(expandEnv(rawPath, lokiComposeEnv), lokiTarget)).toBe(true);
+    }
     const tempoMount = (overlay.services.tempo?.volumes ?? []).find((v) =>
       v.startsWith('tempo-data:'),
     );

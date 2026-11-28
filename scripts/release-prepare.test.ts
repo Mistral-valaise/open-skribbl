@@ -327,22 +327,49 @@ describe('release preparation helpers (spec 017)', () => {
   });
 
   it('AC-017-34: prepare-release workflow dispatches release preparation with pinned actions', () => {
-    const workflow = parse(
-      readFileSync(`${root}.github/workflows/prepare-release.yml`, 'utf8'),
-    ) as {
+    const workflowText = readFileSync(`${root}.github/workflows/prepare-release.yml`, 'utf8');
+    const workflow = parse(workflowText) as {
       name: string;
       on: { workflow_dispatch: { inputs: Record<string, { default?: string; type: string }> } };
       permissions: Record<string, string>;
-      jobs: { prepare: { 'timeout-minutes': number; permissions: Record<string, string> } };
+      concurrency?: { group: string; 'cancel-in-progress': boolean };
+      jobs: {
+        prepare: {
+          'timeout-minutes': number;
+          permissions: Record<string, string>;
+          steps: { uses?: string; with?: Record<string, string>; run?: string }[];
+        };
+      };
     };
     expect(workflow.name).toBe('Prepare Release');
     expect(workflow.on.workflow_dispatch.inputs.bump?.default).toBe('patch');
     expect(workflow.on.workflow_dispatch.inputs.version?.type).toBe('string');
     expect(workflow.permissions).toEqual({ contents: 'read' });
+    expect(workflow.concurrency).toEqual({
+      group: 'prepare-release',
+      'cancel-in-progress': false,
+    });
     expect(workflow.jobs.prepare['timeout-minutes']).toBe(15);
     expect(workflow.jobs.prepare.permissions).toEqual({
       contents: 'write',
       'pull-requests': 'write',
     });
+
+    const cacheStep = workflow.jobs.prepare.steps.find((step) =>
+      step.uses?.startsWith('actions/cache@'),
+    );
+    expect(cacheStep).toBeDefined();
+    expect(cacheStep!.with?.path).toBe('deploy/helm/kritzel-observability/charts');
+    expect(cacheStep!.with?.key).toContain('Chart.lock');
+
+    expect(workflowText).toContain('--add-label release');
+    expect(workflowText).toContain('GITHUB_STEP_SUMMARY');
+    expect(workflowText).toContain('not permitted to create or approve pull requests');
+    expect(workflowText).toContain('compare/main...');
+
+    const settingsScript = readFileSync(`${root}scripts/gh-repo-settings.sh`, 'utf8');
+    expect(settingsScript).toContain('actions/permissions/workflow');
+    expect(settingsScript).toContain('default_workflow_permissions=read');
+    expect(settingsScript).toContain('can_approve_pull_request_reviews=true');
   });
 });

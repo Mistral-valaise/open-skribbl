@@ -21,6 +21,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: prepare-release
+  cancel-in-progress: false
+
 jobs:
   prepare:
     name: Prepare release PR
@@ -51,11 +55,19 @@ jobs:
             node scripts/release-prepare.mjs --bump "$INPUT_BUMP"
           fi
 
-      - name: Build observability chart dependencies and run checks
-        run: |
-          set -euo pipefail
-          helm dependency build deploy/helm/kritzel-observability
-          pnpm check
+      - name: Cache observability Helm dependencies
+        id: helm-deps
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: deploy/helm/kritzel-observability/charts
+          key: ${{ runner.os }}-helm-obs-${{ hashFiles('deploy/helm/kritzel-observability/Chart.lock') }}
+
+      - name: Build observability Helm dependencies
+        if: steps.helm-deps.outputs.cache-hit != 'true'
+        run: helm dependency build deploy/helm/kritzel-observability
+
+      - name: Run full verification checks
+        run: pnpm check
 
       - name: Commit, push release branch, and open pull request
         env:
@@ -64,6 +76,7 @@ jobs:
         run: |
           set -euo pipefail
           branch="release/v$VERSION"
+          compare_url="https://github.com/${GITHUB_REPOSITORY}/compare/main...${branch}?expand=1"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git checkout -B "$branch"
@@ -94,6 +107,28 @@ jobs:
           existing="$(gh pr list --head "$branch" --base main --state open --json number --jq '.[0].number // empty')"
           if [ -n "$existing" ]; then
             gh pr edit "$existing" --title "chore(release): prepare v$VERSION" --body-file "$RUNNER_TEMP/pr-body.md"
+            pr_url="$(gh pr view "$existing" --json url --jq .url)"
           else
-            gh pr create --base main --head "$branch" --title "chore(release): prepare v$VERSION" --body-file "$RUNNER_TEMP/pr-body.md"
+            pr_create_status=0
+            pr_output="$(gh pr create --base main --head "$branch" --title "chore(release): prepare v$VERSION" --body-file "$RUNNER_TEMP/pr-body.md" 2>&1)" || pr_create_status=$?
+            if [ "$pr_create_status" -ne 0 ]; then
+              printf '%s\n' "$pr_output" >&2
+              if printf '%s' "$pr_output" | grep -q 'not permitted to create or approve pull requests'; then
+                echo "::error::GitHub Actions is not permitted to create pull requests for this repository. Enable Settings -> Actions -> General -> Allow GitHub Actions to create and approve pull requests (or run scripts/gh-repo-settings.sh), or open the PR manually: $compare_url"
+              fi
+              exit "$pr_create_status"
+            fi
+            pr_url="$pr_output"
           fi
+
+          gh pr edit "$pr_url" --add-label release >/dev/null 2>&1 || true
+
+          cat >> "$GITHUB_STEP_SUMMARY" <<EOF
+          ## Prepare Release \`v$VERSION\`
+
+          - **Branch:** \`$branch\`
+          - **Pull Request:** $pr_url
+
+          > [!NOTE]
+          > Pull requests opened by \`GITHUB_TOKEN\` do not trigger \`on: pull_request\` workflows automatically due to GitHub's anti-recursion rule. If required checks have not started on the PR, close and reopen it (or push an empty commit) to trigger CI.
+          EOF

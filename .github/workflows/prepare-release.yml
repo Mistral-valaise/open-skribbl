@@ -1,0 +1,99 @@
+name: Prepare Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: SemVer bump kind (ignored if explicit version is provided)
+        type: choice
+        required: true
+        default: patch
+        options:
+          - patch
+          - minor
+          - major
+      version:
+        description: Explicit target version X.Y.Z (overrides bump)
+        type: string
+        required: false
+        default: ''
+
+permissions:
+  contents: read
+
+jobs:
+  prepare:
+    name: Prepare release PR
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - uses: ./.github/actions/setup-node-pnpm
+
+      - uses: ./.github/actions/setup-helm
+
+      - name: Bump versions and draft changelog
+        id: prepare
+        env:
+          INPUT_BUMP: ${{ inputs.bump }}
+          INPUT_VERSION: ${{ inputs.version }}
+        run: |
+          set -euo pipefail
+          if [ -n "$INPUT_VERSION" ]; then
+            node scripts/release-prepare.mjs --version "$INPUT_VERSION"
+          else
+            node scripts/release-prepare.mjs --bump "$INPUT_BUMP"
+          fi
+
+      - name: Build observability chart dependencies and run checks
+        run: |
+          set -euo pipefail
+          helm dependency build deploy/helm/kritzel-observability
+          pnpm check
+
+      - name: Commit, push release branch, and open pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.prepare.outputs.version }}
+        run: |
+          set -euo pipefail
+          branch="release/v$VERSION"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B "$branch"
+          git add package.json CHANGELOG.md deploy/helm/kritzel/Chart.yaml
+          if [ -f deploy/helm/kritzel-observability/Chart.yaml ]; then
+            git add deploy/helm/kritzel-observability/Chart.yaml
+          fi
+          git commit -m "chore(release): prepare v$VERSION"
+          git push --force origin "$branch"
+
+          cat > "$RUNNER_TEMP/pr-body.md" <<EOF
+          Prepares release \`v$VERSION\`.
+
+          ## Next steps
+
+          1. Review the drafted \`CHANGELOG.md\` entries, \`package.json\`, and Helm \`Chart.yaml\` version bumps.
+          2. Merge this pull request into \`main\`.
+          3. Wait for the **Release** workflow on \`main\` to build, test, scan, and sign \`sha-<commit>\`.
+          4. Create and push the release tag from that commit on \`main\`:
+
+             \`\`\`bash
+             git fetch origin main
+             git tag v$VERSION origin/main
+             git push origin v$VERSION
+             \`\`\`
+          EOF
+
+          existing="$(gh pr list --head "$branch" --base main --state open --json number --jq '.[0].number // empty')"
+          if [ -n "$existing" ]; then
+            gh pr edit "$existing" --title "chore(release): prepare v$VERSION" --body-file "$RUNNER_TEMP/pr-body.md"
+          else
+            gh pr create --base main --head "$branch" --title "chore(release): prepare v$VERSION" --body-file "$RUNNER_TEMP/pr-body.md"
+          fi

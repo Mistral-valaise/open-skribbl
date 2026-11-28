@@ -25,7 +25,7 @@ services:
       TEMPO_HOST: tempo
       GRAFANA_HOST: grafana
     volumes:
-      - ./deploy/helm/kritzel/files/collector/config.yaml:/etc/otelcol/config.yaml:ro
+      - ./deploy/helm/kritzel-observability/files/collector/config.yaml:/etc/otelcol/config.yaml:ro
     depends_on:
       - prometheus
       - loki
@@ -46,8 +46,8 @@ services:
       - --web.enable-remote-write-receiver
       - --enable-feature=exemplar-storage
     volumes:
-      - ./deploy/helm/kritzel/files/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
-      - ./deploy/helm/kritzel/files/prometheus/rules:/etc/prometheus/rules:ro
+      - ./deploy/helm/kritzel-observability/files/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./deploy/helm/kritzel-observability/files/prometheus/rules:/etc/prometheus/rules:ro
       - prometheus-data:/prometheus
     restart: unless-stopped
     read_only: true
@@ -61,7 +61,7 @@ services:
     environment:
       LOKI_RETENTION: ${LOKI_RETENTION:-24h}
     volumes:
-      - ./deploy/helm/kritzel/files/loki/loki.yaml:/etc/loki/loki.yaml:ro
+      - ./deploy/helm/kritzel-observability/files/loki/loki.yaml:/etc/loki/loki.yaml:ro
       - loki-data:/loki
     restart: unless-stopped
     read_only: true
@@ -75,7 +75,7 @@ services:
     environment:
       TEMPO_RETENTION: ${TEMPO_RETENTION:-24h}
     volumes:
-      - ./deploy/helm/kritzel/files/tempo/tempo.yaml:/etc/tempo/tempo.yaml:ro
+      - ./deploy/helm/kritzel-observability/files/tempo/tempo.yaml:/etc/tempo/tempo.yaml:ro
       - tempo-data:/var/tempo
     restart: unless-stopped
     read_only: true
@@ -99,8 +99,8 @@ services:
       GF_NEWS_NEWS_FEED_ENABLED: 'false'
       GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /var/lib/grafana/dashboards/kritzel-overview.json
     volumes:
-      - ./deploy/helm/kritzel/files/grafana/provisioning:/etc/grafana/provisioning:ro
-      - ./deploy/helm/kritzel/files/grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - ./deploy/helm/kritzel-observability/files/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./deploy/helm/kritzel-observability/files/grafana/dashboards:/var/lib/grafana/dashboards:ro
       - grafana-data:/var/lib/grafana
     ports:
       - '127.0.0.1:3001:3000'

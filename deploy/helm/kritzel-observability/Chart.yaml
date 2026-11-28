@@ -1,0 +1,33 @@
+apiVersion: v2
+name: kritzel-observability
+description: Optional OpenTelemetry observability stack for Kritzel built from official upstream Helm charts
+type: application
+version: 1.0.0
+appVersion: '1.0.0'
+home: https://github.com/Mistral-valaise/open-skribbl
+sources:
+  - https://github.com/Mistral-valaise/open-skribbl
+keywords:
+  - observability
+  - opentelemetry
+  - prometheus
+  - loki
+  - tempo
+  - grafana
+kubeVersion: '>=1.27.0-0'
+dependencies:
+  - name: opentelemetry-collector
+    version: 0.183.2
+    repository: oci://ghcr.io/open-telemetry/opentelemetry-helm-charts
+  - name: prometheus
+    version: 31.0.0
+    repository: oci://ghcr.io/prometheus-community/charts
+  - name: loki
+    version: 21.6.3
+    repository: oci://ghcr.io/grafana-community/helm-charts
+  - name: tempo
+    version: 3.2.1
+    repository: oci://ghcr.io/grafana-community/helm-charts
+  - name: grafana
+    version: 14.6.1
+    repository: oci://ghcr.io/grafana-community/helm-charts

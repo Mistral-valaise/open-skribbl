@@ -1,0 +1,25 @@
+name: Setup Playwright Chromium
+description: Restore cached Playwright Chromium browser binaries keyed to the pinned @playwright/test version and install OS dependencies.
+runs:
+  using: composite
+  steps:
+    - name: Resolve Playwright version
+      id: pw
+      shell: bash
+      run: |
+        set -euo pipefail
+        version="$(node -e "console.log(JSON.parse(require('fs').readFileSync('package.json','utf8')).devDependencies['@playwright/test'])")"
+        echo "version=$version" >> "$GITHUB_OUTPUT"
+    - name: Cache Playwright browsers
+      id: cache
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: ~/.cache/ms-playwright
+        key: ${{ runner.os }}-playwright-chromium-${{ steps.pw.outputs.version }}
+    - name: Install Playwright Chromium
+      if: steps.cache.outputs.cache-hit != 'true'
+      shell: bash
+      run: pnpm exec playwright install chromium
+    - name: Install Playwright system dependencies
+      shell: bash
+      run: pnpm exec playwright install-deps chromium

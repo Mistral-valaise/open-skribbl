@@ -19,3 +19,10 @@ The chart needs nothing beyond a namespace: no operator, no custom resource defi
 - The demo keeps no telemetry across restarts and is not highly available.
 - Network policies restrict who may connect to each pod, but only as far as the cluster lets them: a platform policy that allows all traffic inside the namespace, as on the Developer Sandbox, cannot be taken away by the chart.
 - Kubernetes cannot verify that a named image user is not root. OpenShift assigns a user id itself; elsewhere `securityContext.runAsUser` has to be set.
+
+## Addendum — Splitting the application chart from the official observability stack
+
+Keeping the five observability components as hand-written templates inside `deploy/helm/kritzel` conflated the application's release lifecycle with upstream collector, Prometheus, Loki, Tempo and Grafana packaging. The deployment is therefore split into two independent charts:
+
+- `deploy/helm/kritzel` ships only Kritzel (plus optional external OTLP configuration and the optional synthetic traffic generator). Operators who only want the game—or already run cluster observability—get a minimal, self-contained chart with no upstream chart dependencies.
+- `deploy/helm/kritzel-observability` composes the official upstream OCI Helm charts (`open-telemetry/opentelemetry-collector`, `prometheus-community/prometheus`, `grafana-community/grafana`, `grafana-community/loki`, `grafana-community/tempo`) in monolithic, single-binary, ephemeral, namespaced-only mode under `restricted-v2` SCC, sharing the canonical dashboards and rules with `docker-compose.observability.yml`. Because Loki and Tempo ship as `StatefulSet`s in their official charts, `StatefulSet` is an allowed namespaced kind for the observability chart alongside `Deployment`.

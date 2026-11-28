@@ -12,17 +12,13 @@ Game:
 Game (no Route or Ingress was created):
   kubectl port-forward --namespace {{ .Release.Namespace }} service/{{ include "kritzel.fullname" . }} 3000:{{ .Values.service.port }}
 {{- end }}
-{{- if .Values.observability.enabled }}
-{{- if .Values.grafana.route.enabled }}
 
-Grafana (user admin, password in the Secret {{ .Values.grafana.existingSecret }}):
-  oc get route {{ include "kritzel.fullname" . }}-grafana --namespace {{ .Release.Namespace }} -o jsonpath='https://{.spec.host}{"\n"}'
+{{- with (include "kritzel.otlpEndpoint" .) }}
+
+Telemetry is enabled and exporting OTLP/HTTP to:
+  {{ . }}
 {{- else }}
 
-Grafana (user admin, password in the Secret {{ .Values.grafana.existingSecret }}):
-  kubectl port-forward --namespace {{ .Release.Namespace }} service/{{ include "kritzel.fullname" . }}-grafana 3001:3000
-{{- end }}
-
-The collector, Prometheus, Loki and Tempo are reachable only inside the
-namespace. Their data is kept for a short time and lost when a pod restarts.
+Telemetry is off. To enable it, deploy `deploy/helm/kritzel-observability` (or
+your own OTLP collector) and set `telemetry.otlpEndpoint`.
 {{- end }}

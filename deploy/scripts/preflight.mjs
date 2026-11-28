@@ -4,26 +4,32 @@
 // namespace, a permission or the quota would make the deployment fail.
 //
 // Usage: node deploy/scripts/preflight.mjs --namespace <ns> --manifests <rendered.yaml>
-//                                           [--release kritzel]
+//                                           [--release kritzel] [--obs-release kritzel-obs]
 //
 // `oc` must be logged in (KUBECONFIG). The manifests are the output of
-// `helm template`; their requests and limits are compared with what the
-// namespace's quotas still allow. Nothing printed here is a secret.
+// `helm template` (one or both charts concatenated); their requests and limits
+// are compared with what the namespace's quotas still allow. Nothing printed
+// here is a secret.
 import { spawnSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { parseAllDocuments } from 'yaml';
 
+const manifestsPaths = [];
 const args = new Map();
 for (let index = 2; index < process.argv.length; index += 2) {
-  args.set(process.argv[index].replace(/^--/, ''), process.argv[index + 1] ?? '');
+  const key = process.argv[index].replace(/^--/, '');
+  const value = process.argv[index + 1] ?? '';
+  if (key === 'manifests') manifestsPaths.push(value);
+  else args.set(key, value);
 }
 const namespace = args.get('namespace') ?? process.env.OPENSHIFT_NAMESPACE ?? '';
-const manifestsPath = args.get('manifests') ?? '';
 const release = args.get('release') ?? 'kritzel';
+const obsRelease = args.get('obs-release') ?? `${release}-obs`;
 
-/** What the chart creates; each needs create, get, patch and delete. */
+/** What the charts create; each needs create, patch and delete. */
 const REQUIRED = [
   'deployments.apps',
+  'statefulsets.apps',
   'services',
   'serviceaccounts',
   'configmaps',
@@ -31,6 +37,8 @@ const REQUIRED = [
   'networkpolicies.networking.k8s.io',
   'routes.route.openshift.io',
 ];
+
+const WORKLOAD_KINDS = new Set(['Deployment', 'StatefulSet']);
 
 const lines = [];
 const say = (ok, text) => {
@@ -145,27 +153,27 @@ if (missing.length > 0) {
 say(true, `may manage ${REQUIRED.length} kinds of objects in ${namespace}`);
 
 // ── 4. Quota and limits ──────────────────────────────────────────────────
-if (manifestsPath) {
-  const manifests = parseAllDocuments(readFileSync(manifestsPath, 'utf8'))
+if (manifestsPaths.length > 0) {
+  const manifests = manifestsPaths
+    .flatMap((file) => parseAllDocuments(readFileSync(file, 'utf8')))
     .map((document) => document.toJS())
     .filter(Boolean);
+  const workloads = manifests.filter((manifest) => WORKLOAD_KINDS.has(manifest.kind));
   const wanted = demand(
-    manifests
-      .filter((manifest) => manifest.kind === 'Deployment')
-      .map((manifest) => ({
-        spec: manifest.spec.template.spec,
-        replicas: manifest.spec.replicas ?? 1,
-      })),
+    workloads.map((manifest) => ({
+      spec: manifest.spec.template.spec,
+      replicas: manifest.spec.replicas ?? 1,
+    })),
   );
 
-  // What this release already uses is released by the upgrade, so it is not counted twice.
+  // What these releases already use is released by the upgrade, so it is not counted twice.
   const running = oc(
     'get',
     'pods',
     '--namespace',
     namespace,
     '--selector',
-    `app.kubernetes.io/instance=${release}`,
+    `app.kubernetes.io/instance in (${release},${obsRelease})`,
     '--output',
     'json',
   );
@@ -209,7 +217,7 @@ if (manifestsPath) {
   for (const range of ranges.ok ? (JSON.parse(ranges.out).items ?? []) : []) {
     for (const limit of range.spec?.limits ?? []) {
       if (limit.type !== 'Container') continue;
-      for (const manifest of manifests.filter((entry) => entry.kind === 'Deployment')) {
+      for (const manifest of workloads) {
         for (const container of manifest.spec.template.spec.containers) {
           for (const resource of ['cpu', 'memory']) {
             const value = quantity(container.resources?.limits?.[resource]);

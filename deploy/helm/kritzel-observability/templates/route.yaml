@@ -1,0 +1,24 @@
+{{- /* OpenShift Route for Grafana only (spec 016): TLS edge, HTTP redirected. */ -}}
+{{- if .Values.grafanaRoute.enabled }}
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ include "kritzel-obs.grafanaService" . }}
+  labels:
+    {{- include "kritzel-obs.labels" . | nindent 4 }}
+    app.kubernetes.io/component: grafana
+spec:
+  {{- with .Values.grafanaRoute.host }}
+  host: {{ . }}
+  {{- end }}
+  to:
+    kind: Service
+    name: {{ include "kritzel-obs.grafanaService" . }}
+    weight: 100
+  port:
+    targetPort: service
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+  wildcardPolicy: None
+{{- end }}

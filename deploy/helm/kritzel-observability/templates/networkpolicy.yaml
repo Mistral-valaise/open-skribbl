@@ -1,0 +1,135 @@
+{{- /*
+Namespaced ingress NetworkPolicies for the observability stack (spec 016):
+- Collector receives OTLP/HTTP (4318) from Kritzel game pods only.
+- Prometheus (9090) & Loki (3100) receive traffic from Collector and Grafana only.
+- Tempo receives traces (4318) from Collector and queries/scrapes (3200) from Collector and Grafana.
+- Grafana receives scrapes (3000) from Collector and, when Route is enabled, traffic from ingress.
+*/ -}}
+{{- if .Values.networkPolicy.enabled }}
+{{- $gameFrom := .Values.networkPolicy.gamePodSelector -}}
+{{- $collectorFrom := dict "matchLabels" (dict "app.kubernetes.io/instance" .Release.Name "app.kubernetes.io/name" "opentelemetry-collector") -}}
+{{- $grafanaFrom := dict "matchLabels" (dict "app.kubernetes.io/instance" .Release.Name "app.kubernetes.io/name" "grafana") -}}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "kritzel-obs.collectorService" . }}
+  labels:
+    {{- include "kritzel-obs.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    {{- toYaml $collectorFrom | nindent 4 }}
+  policyTypes:
+    - Ingress
+  ingress:
+    - ports:
+        - port: 4318
+          protocol: TCP
+      from:
+        - podSelector:
+            {{- toYaml $gameFrom | nindent 12 }}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "kritzel-obs.prometheusService" . }}
+  labels:
+    {{- include "kritzel-obs.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/name: prometheus
+      app.kubernetes.io/component: server
+  policyTypes:
+    - Ingress
+  ingress:
+    - ports:
+        - port: 9090
+          protocol: TCP
+      from:
+        - podSelector:
+            {{- toYaml $collectorFrom | nindent 12 }}
+        - podSelector:
+            {{- toYaml $grafanaFrom | nindent 12 }}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "kritzel-obs.lokiService" . }}
+  labels:
+    {{- include "kritzel-obs.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/name: loki
+      app.kubernetes.io/component: single-binary
+  policyTypes:
+    - Ingress
+  ingress:
+    - ports:
+        - port: 3100
+          protocol: TCP
+      from:
+        - podSelector:
+            {{- toYaml $collectorFrom | nindent 12 }}
+        - podSelector:
+            {{- toYaml $grafanaFrom | nindent 12 }}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "kritzel-obs.tempoService" . }}
+  labels:
+    {{- include "kritzel-obs.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/name: tempo
+  policyTypes:
+    - Ingress
+  ingress:
+    - ports:
+        - port: 4318
+          protocol: TCP
+      from:
+        - podSelector:
+            {{- toYaml $collectorFrom | nindent 12 }}
+    - ports:
+        - port: 3200
+          protocol: TCP
+      from:
+        - podSelector:
+            {{- toYaml $collectorFrom | nindent 12 }}
+        - podSelector:
+            {{- toYaml $grafanaFrom | nindent 12 }}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "kritzel-obs.grafanaService" . }}
+  labels:
+    {{- include "kritzel-obs.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    {{- toYaml $grafanaFrom | nindent 4 }}
+  policyTypes:
+    - Ingress
+  ingress:
+    - ports:
+        - port: 3000
+          protocol: TCP
+      from:
+        - podSelector:
+            {{- toYaml $collectorFrom | nindent 12 }}
+    {{- if .Values.grafanaRoute.enabled }}
+    - ports:
+        - port: 3000
+          protocol: TCP
+      {{- with .Values.networkPolicy.ingressFrom }}
+      from:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- end }}
+{{- end }}

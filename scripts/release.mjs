@@ -100,11 +100,21 @@ export function changelogSection(text, version) {
 }
 
 /** The notes of the GitHub Release: the changelog, then the image and how to verify it. */
-export function releaseNotes({ version, image, digest, repository, serverUrl, sha, changelog }) {
+export function releaseNotes({
+  version,
+  chartVersion = version,
+  image,
+  digest,
+  repository,
+  serverUrl,
+  sha,
+  changelog,
+}) {
   if (!DIGEST.test(digest ?? '')) {
     throw new Error(`'${digest}' is not an image digest (sha256:<64 hex digits>).`);
   }
   const [major, minor] = version.split('.');
+  const owner = repository.split('/')[0].toLowerCase();
   const identity = `${serverUrl}/${repository}/.github/workflows/release.yml@refs/tags/v${version}`;
   return `${changelog}
 
@@ -126,10 +136,16 @@ cosign verify ${image}@${digest} \\
   --certificate-identity ${identity}
 \`\`\`
 
+## Helm chart
+
+\`\`\`bash
+helm install kritzel oci://ghcr.io/${owner}/charts/kritzel --version ${chartVersion}
+\`\`\`
+
 ## Files
 
 - \`kritzel-${version}-linux-amd64.spdx.json\`, \`kritzel-${version}-linux-arm64.spdx.json\`: the software bill of materials of the image for each platform, as recorded when it was built: the operating system packages and Node.js. The npm packages are compiled into the server and the web app; they are the production dependencies of \`pnpm-lock.yaml\` at this tag.
-- \`kritzel-*.tgz\`: the Helm chart, set to this image. \`helm install kritzel ./kritzel-*.tgz\` installs this release.
+- \`kritzel-*.tgz\`: the standalone Helm chart, set to this image (also pushed to \`oci://ghcr.io/${owner}/charts/kritzel\`).
 `;
 }
 
@@ -159,9 +175,13 @@ export function pinChartImage(values, { tag, digest }) {
   return lines.join('\n');
 }
 
-function option(args, name) {
+function optional(args, name) {
   const index = args.indexOf(name);
-  const value = index === -1 ? undefined : args[index + 1];
+  return index === -1 ? undefined : args[index + 1];
+}
+
+function option(args, name) {
+  const value = optional(args, name);
   if (!value) throw new Error(`Missing ${name} <value>.`);
   return value;
 }
@@ -201,6 +221,7 @@ function main([command, ...args]) {
     process.stdout.write(
       releaseNotes({
         version: planned.version,
+        chartVersion: optional(args, '--chart-version'),
         image: planned.image,
         digest: option(args, '--digest'),
         repository: process.env.GITHUB_REPOSITORY,

@@ -1,4 +1,4 @@
-{{- /* OpenShift Routes: TLS ends at the router, HTTP is redirected (spec 016). */ -}}
+{{- /* OpenShift Route: TLS ends at the router, HTTP is redirected (spec 016). */ -}}
 {{- if .Values.route.enabled }}
 {{- $ctx := dict "root" . "component" "game" }}
 apiVersion: route.openshift.io/v1
@@ -12,30 +12,6 @@ metadata:
     haproxy.router.openshift.io/timeout-tunnel: {{ .Values.route.tunnelTimeout | quote }}
 spec:
   {{- with .Values.route.host }}
-  host: {{ . }}
-  {{- end }}
-  to:
-    kind: Service
-    name: {{ include "kritzel.componentName" $ctx }}
-    weight: 100
-  port:
-    targetPort: http
-  tls:
-    termination: edge
-    insecureEdgeTerminationPolicy: Redirect
-  wildcardPolicy: None
-{{- end }}
-{{- if and .Values.observability.enabled .Values.grafana.route.enabled }}
-{{- $ctx := dict "root" . "component" "grafana" }}
----
-apiVersion: route.openshift.io/v1
-kind: Route
-metadata:
-  name: {{ include "kritzel.componentName" $ctx }}
-  labels:
-    {{- include "kritzel.labels" $ctx | nindent 4 }}
-spec:
-  {{- with .Values.grafana.route.host }}
   host: {{ . }}
   {{- end }}
   to:

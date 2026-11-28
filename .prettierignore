@@ -4,12 +4,14 @@ coverage
 packages/content/solo/drawings
 
 # Generated: pnpm dashboards:generate and pnpm slo:generate
-deploy/helm/kritzel/files/grafana/dashboards/*.json
-deploy/helm/kritzel/files/prometheus/rules/sloth-kritzel.yaml
-deploy/helm/kritzel/files/grafana/dashboards/sloth-*.json
+deploy/helm/kritzel-observability/files/grafana/dashboards/*.json
+deploy/helm/kritzel-observability/files/prometheus/rules/sloth-kritzel.yaml
+deploy/helm/kritzel-observability/files/grafana/dashboards/sloth-*.json
 
-# Helm templates are not YAML until they are rendered
-deploy/helm/kritzel/templates
+# Helm templates are not YAML until they are rendered, and charts/ contains upstream tarballs
+deploy/helm/*/templates
+deploy/helm/*/charts
+deploy/helm/*/Chart.lock
 
 # Promo film: working files of the video tool, and its storyboard notes
 marketing/promo/.hyperframes

@@ -15,29 +15,33 @@ concurrency:
 jobs:
   check:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
-      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+      - uses: ./.github/actions/setup-node-pnpm
+      - uses: ./.github/actions/setup-helm
+      - name: Cache observability Helm dependencies
+        id: helm-deps
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
-          node-version-file: .nvmrc
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      # The chart tests render the Helm chart (spec 016); the version the
-      # deployment uses, verified by checksum.
-      - name: Install helm
-        env:
-          HELM_VERSION: v4.3.1
-          HELM_SHA256: 0403a88ae20913d11b10a2467b50087721fea7581736da6b9d3992f5357fe54b
-        run: |
-          set -euo pipefail
-          mkdir -p "$RUNNER_TEMP/bin" && cd "$RUNNER_TEMP"
-          curl --fail --silent --show-error --location --output helm.tar.gz \
-            "https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz"
-          echo "${HELM_SHA256}  helm.tar.gz" | sha256sum --check --strict
-          tar --extract --gzip --file helm.tar.gz --strip-components 1 --directory bin linux-amd64/helm
-          echo "$RUNNER_TEMP/bin" >> "$GITHUB_PATH"
+          path: deploy/helm/kritzel-observability/charts
+          key: ${{ runner.os }}-helm-obs-${{ hashFiles('deploy/helm/kritzel-observability/Chart.lock') }}
+      - name: Build observability Helm dependencies
+        if: steps.helm-deps.outputs.cache-hit != 'true'
+        run: helm dependency build deploy/helm/kritzel-observability
       - run: pnpm check
+      - name: Check package and chart version sync
+        run: node scripts/release-prepare.mjs --check
+      - name: Spec coverage summary
+        if: always()
+        run: |
+          {
+            echo "## Spec coverage"
+            echo ""
+            echo '```text'
+            pnpm spec:coverage || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
       # GitHub refuses a workflow file with an invalid expression only after
       # it is merged; actionlint says so before.
       - name: Lint the workflows
@@ -46,16 +50,20 @@ jobs:
 
   e2e:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
-      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
-        with:
-          node-version-file: .nvmrc
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm exec playwright install --with-deps chromium
+      - uses: ./.github/actions/setup-node-pnpm
+      - uses: ./.github/actions/setup-playwright
       - run: pnpm e2e
+      - name: Upload Playwright failure artifacts
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: e2e-test-results
+          path: test-results/
+          retention-days: 7
+          if-no-files-found: ignore
 
   # The image, built the way the README says, started and played through, also
   # behind a TLS proxy. The release runs the same workflow on the digest it
@@ -67,15 +75,11 @@ jobs:
   # through its real APIs (spec 015).
   observability:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
-      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
-        with:
-          node-version-file: .nvmrc
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm exec playwright install --with-deps chromium
+      - uses: ./.github/actions/setup-node-pnpm
+      - uses: ./.github/actions/setup-playwright
       - run: pnpm obs:up
       - name: Signals, correlation, redaction and objectives
         run: pnpm exec playwright test e2e/observability.spec.ts
@@ -86,5 +90,13 @@ jobs:
         run: |
           docker compose --env-file .env.observability -f docker-compose.yml -f docker-compose.observability.yml ps
           docker compose --env-file .env.observability -f docker-compose.yml -f docker-compose.observability.yml logs --tail 80 --no-color
+      - name: Upload observability failure artifacts
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: observability-test-results
+          path: test-results/
+          retention-days: 7
+          if-no-files-found: ignore
       - run: pnpm obs:down
         if: always()

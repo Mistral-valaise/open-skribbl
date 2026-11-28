@@ -15,3 +15,7 @@ marketing/promo/.hyperframes/
 marketing/promo/renders/
 # The rendered film is kept: a release attaches it
 !marketing/promo/dist/
+
+# Local agent worktrees and downloaded Helm chart dependencies (Chart.lock is tracked)
+.claude/worktrees/
+deploy/helm/*/charts/

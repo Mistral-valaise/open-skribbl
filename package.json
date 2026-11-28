@@ -27,7 +27,8 @@
     "obs:status": "node scripts/obs.mjs status",
     "dashboards:generate": "node scripts/dashboards.mjs",
     "slo:generate": "node scripts/slo.mjs",
-    "obs:traffic": "node scripts/obs.mjs traffic"
+    "obs:traffic": "node scripts/obs.mjs traffic",
+    "release:prepare": "node scripts/release-prepare.mjs"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.14.1",

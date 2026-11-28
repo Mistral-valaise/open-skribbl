@@ -69,7 +69,7 @@ Before anything is published, a tag run stops with a message that names the prob
 Created only by a tag run, after promotion. Title `Kritzel X.Y.Z`. The notes are the changelog section, followed by the image name, its digest and a `cosign verify` command with the workflow identity. Assets:
 
 - the software bill of materials of each platform, extracted from the image, as `kritzel-X.Y.Z-linux-amd64.spdx.json` and `kritzel-X.Y.Z-linux-arm64.spdx.json`;
-- the Helm chart packaged from `deploy/helm/kritzel`, with `appVersion` set to the version and `image.tag` and `image.digest` set to the released image, so the chart installs the release it came with;
+- the standalone Helm chart packaged from `deploy/helm/kritzel`, with `appVersion` set to the version and `image.tag` and `image.digest` set to the released image, so the chart installs the release it came with (also pushed as an OCI artifact to `oci://ghcr.io/<owner>/charts/kritzel`);
 - every file in `marketing/promo/dist/`, when that directory exists.
 
 ### Permissions
@@ -84,13 +84,13 @@ The default of every workflow is `contents: read`. The reusable image test decla
 | `scan`    | `packages: read`                                            |
 | `sign`    | `packages: write`, `id-token: write`, `attestations: write` |
 | `promote` | `packages: write`                                           |
-| `release` | `contents: write`, `packages: read`                         |
+| `release` | `contents: write`, `packages: write`                        |
 
-`id-token: write` and `attestations: write` appear nowhere else. Workflows use the repository's `GITHUB_TOKEN` and the run's OIDC token and no other secret, except the deployment workflow's cluster credentials (spec 016).
+`attestations: write` appears nowhere else. `id-token: write` appears only on `release.yml#sign` (for keyless cosign/attestation) and `scorecard.yml#analysis` (for publishing OpenSSF Scorecard results). Workflows use the repository's `GITHUB_TOKEN` and the run's OIDC token and no other secret, except the deployment workflow's cluster credentials (spec 016).
 
 ### Time limits
 
-Every job of the release workflow has a time limit, so a step that stalls ends the run as failed instead of holding it open for the six hours GitHub allows by default. The limits are several times what a job normally takes:
+Every job of every workflow has a time limit (`timeout-minutes`), so a step that stalls ends the run as failed instead of holding it open for the six hours GitHub allows by default. In the release workflow, the limits are several times what a job normally takes:
 
 | Job                                       | Limit      |
 | ----------------------------------------- | ---------- |
@@ -153,6 +153,11 @@ Dependabot proposes updates every week for npm packages, GitHub Actions and the 
 - **AC-017-27** The hosting guide explains what `latest`, `edge`, `sha-<commit>` and version tags mean, how to verify a signature and how to roll back.
 - **AC-017-28** Every job of the release workflow ends after a time limit: 30 minutes for `build`, 20 minutes for the job of the reusable image test, 10 minutes for every other job.
 - **AC-017-29** The build stage of the image runs on the build platform, the runtime stage on the target platform, and the runtime stage runs no command other than removing files.
+- **AC-017-30** Every job of every workflow sets an explicit `timeout-minutes` limit.
+- **AC-017-31** A tag release publishes the packaged standalone `kritzel` Helm chart as an OCI artifact to `oci://ghcr.io/<owner>/charts` alongside the GitHub Release asset, and the release notes include the OCI install command.
+- **AC-017-32** OpenSSF Scorecard runs on pushes to `main` and weekly with a pinned `ossf/scorecard-action`, uploads SARIF results, publishes results, and `README.md` displays the Scorecard badge.
+- **AC-017-33** Both stages of `Dockerfile` pin the base image by `sha256` digest.
+- **AC-017-34** `prepare-release.yml` (`workflow_dispatch`) and `scripts/release-prepare.mjs` bump `package.json` and the Helm `Chart.yaml` files and draft `CHANGELOG.md`; CI verifies `package.json` version matches `Chart.yaml` `appVersion`.
 
 ## Out of scope
 

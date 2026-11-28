@@ -1,0 +1,82 @@
+name: PR Hygiene
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pr-hygiene-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  hygiene:
+    name: PR title & hygiene
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Validate Conventional Commit PR title
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          node -e '
+            const title = process.env.PR_TITLE ?? "";
+            const pattern = /^(feat|fix|chore|ci|docs|refactor|perf|test|build|revert|security)(\([a-z0-9._/-]+\))?(!)?: .+/;
+            if (!pattern.test(title)) {
+              console.error("::error::PR title does not match Conventional Commits: \"" + title + "\"");
+              console.error("Expected: <type>[optional (scope)][!]: <description>");
+              console.error("Allowed types: feat, fix, chore, ci, docs, refactor, perf, test, build, revert, security");
+              console.error("Examples: \"feat(shared): add hint schedule (AC-006-15)\", \"fix(web): keep canvas visible on mobile\", \"ci: pin workflow actions\"");
+              process.exit(1);
+            }
+          '
+
+      - name: Verify package.json and Chart.yaml appVersion are in sync
+        run: node scripts/release-prepare.mjs --check
+
+      - name: Summarize changed specs and CHANGELOG status
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          set -euo pipefail
+          changed_files="$(git diff --name-only "$BASE_SHA" HEAD)"
+          changed_specs="$(printf '%s\n' "$changed_files" | grep '^docs/specs/' || true)"
+          if printf '%s\n' "$changed_files" | grep -qx 'CHANGELOG.md'; then
+            changelog_updated='Yes'
+          else
+            changelog_updated='No'
+          fi
+
+          {
+            echo '### PR Hygiene Summary'
+            echo ''
+            echo "- **CHANGELOG.md updated:** ${changelog_updated}"
+            echo '- **Changed spec files:**'
+            if [ -n "$changed_specs" ]; then
+              printf '%s\n' "$changed_specs" | sed 's/^/  - `/' | sed 's/$/`/'
+            else
+              echo '  - None'
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  label:
+    name: Auto-label
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/labeler@bf12e9b00b37c5c0ca2b87b79b2daf7891dbda13 # v7.0.0
+        with:
+          sync-labels: false

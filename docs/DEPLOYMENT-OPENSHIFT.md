@@ -6,31 +6,38 @@ The demo is disposable. One game process holds every room in memory, the telemet
 
 ## What gets installed
 
-`deploy/helm/kritzel` has two profiles:
+Two focused charts live under `deploy/helm/`:
 
-| Profile             | Values file        | Installs                                                                                                                                           |
-| ------------------- | ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Game only (default) | `values.yaml`      | The game: one Deployment, Service, ServiceAccount and NetworkPolicy. No telemetry.                                                                 |
-| Demo                | `values-demo.yaml` | The game with telemetry, an OpenTelemetry Collector, Prometheus, Loki, Tempo, Grafana, the traffic generator, and Routes for the game and Grafana. |
+| Chart                               | Profile / Values                   | Installs                                                                                                                                                                                |
+| ----------------------------------- | ---------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `deploy/helm/kritzel`               | `values.yaml` (default)            | The game alone: one Deployment, Service, ServiceAccount and NetworkPolicy. No telemetry.                                                                                                |
+| `deploy/helm/kritzel`               | `values-demo.yaml`                 | The game with telemetry pointed at `kritzel-obs-opentelemetry-collector`, an edge-TLS Route and the traffic generator.                                                                  |
+| `deploy/helm/kritzel-observability` | `values.yaml` / `values-demo.yaml` | OpenTelemetry Collector, Prometheus, Loki (monolithic), Tempo (single binary) and Grafana composed from official upstream Helm charts, plus optional Grafana Route and NetworkPolicies. |
 
-Everything is namespaced: Deployments, Services, ServiceAccounts, ConfigMaps, NetworkPolicies, Routes and, only if asked for, PersistentVolumeClaims. The chart needs no operator, no custom resource definition and no cluster role. Every container runs under the `restricted-v2` security context constraint with a read-only root file system and its own ServiceAccount without a mounted token. The collector, the backends and Grafana read the same configuration files as the Compose stack (`deploy/helm/kritzel/files/`).
+Everything is namespaced: Deployments, StatefulSets (Loki and Tempo), Services, ServiceAccounts, ConfigMaps, NetworkPolicies, Routes and, only if asked for, PersistentVolumeClaims. Neither chart needs an operator, a custom resource definition or a cluster role. Every container runs under the `restricted-v2` security context constraint with a read-only root file system and pod-level `automountServiceAccountToken: false`. The collector, Prometheus, Loki, Tempo and Grafana read the same configuration files as the Compose stack (`deploy/helm/kritzel-observability/files/`).
 
 ## Deploying by hand
 
-You need `oc`, `helm` 4, a namespace that exists and a login to it. Nothing below creates a namespace or touches anything outside the release.
+You need `oc`, `helm` 4, a namespace that exists and a login to it. Nothing below creates a namespace or touches anything outside the releases.
 
 ```sh
 oc login --token=<token> --server=https://api.<cluster>:6443
 export NAMESPACE=<user>-dev
 
-# 1. Render and check before anything changes.
-helm template kritzel deploy/helm/kritzel --namespace "$NAMESPACE" \
-  --values deploy/helm/kritzel/values-demo.yaml \
-  --set-string image.digest=sha256:<digest> \
-  --set-string grafana.existingSecret=kritzel-grafana > /tmp/kritzel.yaml
+# 1. Fetch upstream observability chart dependencies, render and check before anything changes.
+helm dependency build deploy/helm/kritzel-observability
+{
+  helm template kritzel-obs deploy/helm/kritzel-observability --namespace "$NAMESPACE" \
+    --values deploy/helm/kritzel-observability/values-demo.yaml \
+    --set-string grafana.admin.existingSecret=kritzel-grafana
+  echo "---"
+  helm template kritzel deploy/helm/kritzel --namespace "$NAMESPACE" \
+    --values deploy/helm/kritzel/values-demo.yaml \
+    --set-string image.digest=sha256:<digest>
+} > /tmp/kritzel.yaml
 node deploy/scripts/preflight.mjs --namespace "$NAMESPACE" --manifests /tmp/kritzel.yaml
 
-# 2. Deploy. The script stores the Grafana password in a Secret, then runs
+# 2. Deploy both releases. The script stores the Grafana password in a Secret, then runs
 #    helm upgrade --install --wait --timeout 10m --rollback-on-failure.
 NAMESPACE="$NAMESPACE" IMAGE_DIGEST=sha256:<digest> deploy/scripts/deploy.sh
 
@@ -39,10 +46,10 @@ node deploy/scripts/verify.mjs --namespace "$NAMESPACE"
 ```
 
 - **The image** is given by digest, never by a moving tag. Every commit of `main` is published as `ghcr.io/mistral-valaise/open-skribbl:sha-<commit>`; read its digest with `docker buildx imagetools inspect ghcr.io/mistral-valaise/open-skribbl:sha-<commit>`. That tag is pushed before the release workflow has tested, scanned and signed the image; [verify the signature](HOSTING.md#verifying-the-signature) of the digest to know that it passed. A release has the same digest as the `sha-<commit>` image of its commit. The GHCR package has to be public, or the namespace needs a pull secret named in `imagePullSecrets`.
-- **The Grafana password** is never a chart value. `deploy.sh` takes it from `GRAFANA_ADMIN_PASSWORD` and writes it to the Secret `kritzel-grafana` (key `admin-password`). Without the variable it keeps an existing Secret, or generates a password on first use. Read it with `oc get secret kritzel-grafana --namespace "$NAMESPACE" -o jsonpath='{.data.admin-password}' | base64 -d`.
-- **Options** of `deploy.sh`: `GRAFANA_ROUTE=false` keeps Grafana off the internet (use `oc port-forward --namespace "$NAMESPACE" service/kritzel-grafana 3001:3000`), `TRAFFIC=false` leaves the traffic generator out, `IMAGE_REPOSITORY` and `RELEASE` change their defaults.
-- **Game only**: `helm upgrade --install kritzel deploy/helm/kritzel --namespace "$NAMESPACE" --set route.enabled=true`.
-- **Outside OpenShift** there are no Routes; bring your own Ingress. Kubernetes cannot verify that the named user of the game and Prometheus images is not root, so set `securityContext.runAsUser` (for example `1000`).
+- **The Grafana password** is never a chart value. `deploy.sh` takes it from `GRAFANA_ADMIN_PASSWORD` and writes it to the Secret `kritzel-grafana` (keys `admin-user` and `admin-password`). Without the variable it keeps an existing Secret, or generates a password on first use. Read it with `oc get secret kritzel-grafana --namespace "$NAMESPACE" -o jsonpath='{.data.admin-password}' | base64 -d`.
+- **Options** of `deploy.sh`: `GRAFANA_ROUTE=false` keeps Grafana off the internet (use `oc port-forward --namespace "$NAMESPACE" service/kritzel-obs-grafana 3001:3000`), `TRAFFIC=false` leaves the traffic generator out, `IMAGE_REPOSITORY`, `RELEASE` and `OBS_RELEASE` change their defaults.
+- **Game only**: `helm upgrade --install kritzel deploy/helm/kritzel --namespace "$NAMESPACE" --set route.enabled=true` (or install from OCI: `helm install kritzel oci://ghcr.io/mistral-valaise/charts/kritzel`).
+- **Outside OpenShift** there are no Routes; bring your own Ingress. Kubernetes cannot verify that the named user of the game image is not root, so set `securityContext.runAsUser` (for example `1000`).
 
 The preflight changes nothing. It stops, with a line saying what to do, when the token is rejected, the cluster cannot be reached, the namespace does not exist, a permission is missing, or the quota or LimitRange cannot hold the chart's requests and limits.
 
@@ -61,11 +68,11 @@ Set up once, in **Settings → Environments → `dev`**:
 
 Also in the environment, restrict **Deployment branches** to `main`. The workflow refuses commits that are not on `main` on its own, but the environment should not hand its secrets to another branch either.
 
-Run it from **Actions → Deploy OpenShift demo → Run workflow**. Inputs: the commit (default: the head of `main`), optionally an image digest, whether Grafana gets a Route, whether synthetic traffic runs. To deploy after every successful CI run on `main`, set the repository variable `DEPLOY_DEMO_ON_MAIN` to `true`.
+Run it from **Actions → Deploy OpenShift demo → Run workflow**. Inputs: the commit (default: the head of `main`), optionally an image digest, whether Grafana gets a Route, whether synthetic traffic runs. To deploy after every successful Release run on `main` (once CI has passed), set the repository variable `DEPLOY_DEMO_ON_MAIN` to `true`.
 
 What it guarantees:
 
-- It runs only by hand or after CI on `main`, never for a pull request, so code from a fork never meets the credentials.
+- It runs only by hand or after Release on `main`, never for a pull request, so code from a fork never meets the credentials.
 - It deploys only a commit that is on `main` and whose CI run succeeded, by the digest of that commit's image.
 - One run at a time; a run is never cancelled halfway.
 - Permissions are read-only. Actions are pinned to commit SHAs; `oc` and `helm` are downloaded in pinned versions and verified by checksum.

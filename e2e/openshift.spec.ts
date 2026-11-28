@@ -132,22 +132,22 @@ test.describe('OpenShift demo deployment', () => {
   });
 
   test('AC-016-27: with the collector stopped a complete game is still played', () => {
-    oc('scale', 'deployment/kritzel-collector', '--replicas=0');
+    oc('scale', 'deployment/kritzel-obs-opentelemetry-collector', '--replicas=0');
     try {
       oc(
         'wait',
         '--for=delete',
         'pod',
         '--selector',
-        'app.kubernetes.io/component=collector',
+        'app.kubernetes.io/name=opentelemetry-collector,app.kubernetes.io/instance=kritzel-obs',
         '--timeout=120s',
       );
       const game = playThroughRoute();
       expect(game.output).toContain('"completed":true');
       expect(game.status, game.output).toBe(0);
     } finally {
-      oc('scale', 'deployment/kritzel-collector', '--replicas=1');
-      oc('rollout', 'status', 'deployment/kritzel-collector', '--timeout=180s');
+      oc('scale', 'deployment/kritzel-obs-opentelemetry-collector', '--replicas=1');
+      oc('rollout', 'status', 'deployment/kritzel-obs-opentelemetry-collector', '--timeout=180s');
     }
   });
 

@@ -9,6 +9,7 @@ One command starts it, one link invites your friends, and nobody is tracked whil
 
 [![CI](https://github.com/Mistral-valaise/open-skribbl/actions/workflows/ci.yml/badge.svg)](https://github.com/Mistral-valaise/open-skribbl/actions/workflows/ci.yml)
 [![Release](https://img.shields.io/github/v/release/Mistral-valaise/open-skribbl?label=release)](https://github.com/Mistral-valaise/open-skribbl/releases/latest)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/Mistral-valaise/open-skribbl/badge)](https://scorecard.dev/viewer/?uri=github.com/Mistral-valaise/open-skribbl)
 [![Licence: MIT](https://img.shields.io/badge/licence-MIT-6a5af9)](LICENSE)
 
 <a href="marketing/promo/dist/kritzel-promo.mp4"><img src="docs/assets/readme/preview.gif" alt="A lighthouse is drawn stroke by stroke while three players guess: a tower, a candle, a rocket, and finally the lighthouse" width="840"></a>
@@ -171,11 +172,11 @@ Grafana is then on <http://127.0.0.1:3001> (user `admin`, generated password in 
 
 ![The overview dashboard in Grafana: players, rooms, request rates and service level objectives](docs/assets/observability/overview.png)
 
-Kritzel can also run on a cluster: a Helm chart installs the game alone or together with this stack, and a workflow keeps a demo on the OpenShift Developer Sandbox. See [docs/DEPLOYMENT-OPENSHIFT.md](docs/DEPLOYMENT-OPENSHIFT.md).
+Kritzel can also run on a cluster: `deploy/helm/kritzel` installs the game alone (and is published to `oci://ghcr.io/mistral-valaise/charts/kritzel`), while `deploy/helm/kritzel-observability` installs the optional observability stack from official upstream Helm charts. A workflow keeps a demo on the OpenShift Developer Sandbox. See [docs/DEPLOYMENT-OPENSHIFT.md](docs/DEPLOYMENT-OPENSHIFT.md).
 
 ## Contributing
 
-Read [`AGENTS.md`](AGENTS.md) first; it applies to human contributors too. Word lists and translations are especially welcome: the interface dictionaries are in `apps/web/src/i18n/`, the word lists in `packages/content/words/`.
+Read [`CONTRIBUTING.md`](CONTRIBUTING.md) and [`AGENTS.md`](AGENTS.md) first; the same spec-driven loop applies to human contributors and coding agents. Word lists and translations are especially welcome: the interface dictionaries are in `apps/web/src/i18n/`, the word lists in `packages/content/words/`.
 
 ## Licence and credits
 

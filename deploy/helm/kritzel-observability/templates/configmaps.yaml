@@ -1,0 +1,76 @@
+{{- include "kritzel-obs.validate" . -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "kritzel-obs.fullname" . }}-collector-config
+  labels:
+    {{- include "kritzel-obs.labels" . | nindent 4 }}
+data:
+  relay: |
+    {{- .Files.Get "files/collector/config.yaml" | nindent 4 }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "kritzel-obs.fullname" . }}-prometheus-config
+  labels:
+    {{- include "kritzel-obs.labels" . | nindent 4 }}
+data:
+  prometheus.yml: |
+    {{- .Files.Get "files/prometheus/prometheus.yml" | nindent 4 }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kritzel-prometheus-rules
+  labels:
+    {{- include "kritzel-obs.labels" . | nindent 4 }}
+data:
+  {{- range $path, $_ := .Files.Glob "files/prometheus/rules/*.yaml" }}
+  {{ base $path }}: |
+    {{- $.Files.Get $path | nindent 4 }}
+  {{- end }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "kritzel-obs.fullname" . }}-loki-config
+  labels:
+    {{- include "kritzel-obs.labels" . | nindent 4 }}
+data:
+  config.yaml: |
+    {{- .Files.Get "files/loki/loki.yaml" | nindent 4 }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kritzel-tempo-config
+  labels:
+    {{- include "kritzel-obs.labels" . | nindent 4 }}
+data:
+  tempo.yaml: |
+    {{- .Files.Get "files/tempo/tempo.yaml" | nindent 4 }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "kritzel-obs.fullname" . }}-grafana-provisioning
+  labels:
+    {{- include "kritzel-obs.labels" . | nindent 4 }}
+data:
+  datasources.yaml: |
+    {{- .Files.Get "files/grafana/provisioning/datasources/datasources.yaml" | nindent 4 }}
+  dashboards.yaml: |
+    {{- .Files.Get "files/grafana/provisioning/dashboards/dashboards.yaml" | nindent 4 }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "kritzel-obs.fullname" . }}-grafana-dashboards
+  labels:
+    {{- include "kritzel-obs.labels" . | nindent 4 }}
+data:
+  {{- range $path, $_ := .Files.Glob "files/grafana/dashboards/*.json" }}
+  {{ base $path }}: |
+    {{- $.Files.Get $path | nindent 4 }}
+  {{- end }}

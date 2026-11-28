@@ -1,0 +1,60 @@
+'area: web':
+  - changed-files:
+      - any-glob-to-any-file:
+          - apps/web/**
+
+'area: server':
+  - changed-files:
+      - any-glob-to-any-file:
+          - apps/server/**
+
+'area: shared':
+  - changed-files:
+      - any-glob-to-any-file:
+          - packages/shared/**
+
+'area: content':
+  - changed-files:
+      - any-glob-to-any-file:
+          - packages/content/**
+
+'area: helm':
+  - changed-files:
+      - any-glob-to-any-file:
+          - deploy/**
+
+'area: ci':
+  - changed-files:
+      - any-glob-to-any-file:
+          - .github/**
+          - scripts/release*
+          - scripts/scan-*
+          - Dockerfile
+          - .trivyignore
+
+'area: observability':
+  - changed-files:
+      - any-glob-to-any-file:
+          - deploy/helm/kritzel-observability/**
+          - docker-compose.observability.yml
+          - scripts/dashboards.mjs
+          - scripts/slo.mjs
+          - scripts/obs.mjs
+          - apps/server/src/telemetry/**
+
+'area: docs':
+  - changed-files:
+      - any-glob-to-any-file:
+          - docs/**
+          - '*.md'
+
+'area: spec':
+  - changed-files:
+      - any-glob-to-any-file:
+          - docs/specs/**
+
+'area: e2e':
+  - changed-files:
+      - any-glob-to-any-file:
+          - e2e/**
+          - playwright.config.ts

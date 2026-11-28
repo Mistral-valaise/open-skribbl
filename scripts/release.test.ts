@@ -126,6 +126,21 @@ describe('build once (spec 017)', () => {
     expect(read('Dockerfile')).toContain('ARG KRITZEL_VERSION');
   });
 
+  it('AC-017-29: only the runtime stage is built for the target platform, and it runs nothing but a removal', () => {
+    const stages = read('Dockerfile')
+      .split(/^(?=FROM )/m)
+      .filter((stage) => stage.startsWith('FROM '));
+    expect(stages).toHaveLength(2);
+    const [build, runtime] = stages as [string, string];
+    // Install and compile once, natively: the output is the same for every platform.
+    expect(build).toMatch(/^FROM --platform=\$BUILDPLATFORM \S+ AS build$/m);
+    expect(build).toContain('RUN pnpm build');
+    // The runtime stage follows the target platform and executes no Node.js under emulation.
+    expect(runtime).toMatch(/^FROM (?!--platform)\S+$/m);
+    const commands = [...runtime.matchAll(/^RUN (\S+)/gm)].map((match) => match[1]);
+    expect(commands).toEqual(['rm']);
+  });
+
   it('AC-017-26: the runtime stage removes the package managers of the base image', () => {
     const runtime = read('Dockerfile')
       .split(/^FROM /m)

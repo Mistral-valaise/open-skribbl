@@ -3,9 +3,9 @@ name: kritzel
 description: Kritzel, a self-hosted, ad-free draw-and-guess party game
 type: application
 # Version of the chart. Raise it when the chart changes.
-version: 2.0.0
+version: 2.0.1
 # Version of the game this chart was written for. The image tag or digest is set in values.
-appVersion: '1.0.0'
+appVersion: '1.0.1'
 home: https://github.com/Mistral-valaise/open-skribbl
 sources:
   - https://github.com/Mistral-valaise/open-skribbl

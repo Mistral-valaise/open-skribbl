@@ -2,6 +2,21 @@
 
 Notable changes to Kritzel, newest first. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html). A release is the image `ghcr.io/mistral-valaise/open-skribbl:<version>`; [`docs/HOSTING.md`](docs/HOSTING.md) explains the tags.
 
+## [1.0.1] - 2026-11-28
+
+### Added
+
+- **devops**: harden CI/CD, add OSS governance, and split Helm charts (specs 016, 017)
+
+### Fixed
+
+- **ci**: enable Actions PR creation and harden Prepare Release workflow ([#19](https://github.com/Mistral-valaise/open-skribbl/pull/19))
+- **observability**: parameterize Loki data dir for Helm (/var/loki) and Compose (/loki) ([#18](https://github.com/Mistral-valaise/open-skribbl/pull/18))
+
+### Changed
+
+- Build the JavaScript on the build platform, not under emulation (AC-017-29)
+
 ## [1.0.0] - 2026-11-27
 
 The first release: the complete game, a way to host it in one command, and a release process that publishes only an image that was tested, scanned and signed.
@@ -35,4 +50,5 @@ The first release: the complete game, a way to host it in one command, and a rel
 
 - Created by [Mistral N](https://mistraln.de/). The interface names its author in the footer of the home, join and solo screens.
 
+[1.0.1]: https://github.com/Mistral-valaise/open-skribbl/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/Mistral-valaise/open-skribbl/releases/tag/v1.0.0

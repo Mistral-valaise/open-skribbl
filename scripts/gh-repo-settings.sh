@@ -13,6 +13,12 @@ gh api --method PATCH "repos/$REPO" \
   --field allow_auto_merge=true \
   --silent
 
+echo "==> Enabling GitHub Actions PR creation while keeping read-only default token permissions on $REPO"
+gh api --method PUT "repos/$REPO/actions/permissions/workflow" \
+  --field default_workflow_permissions=read \
+  --field can_approve_pull_request_reviews=true \
+  --silent
+
 echo "==> Ensuring structured labels exist on $REPO"
 ensure_label() {
   local name="$1" color="$2" desc="$3"
